@@ -44,3 +44,27 @@ This repository follows a **Documentation First Development** methodology.
 Every feature is:
 
 Requirements → Design → Documentation → Implementation → Testing
+
+## 🚀 Roadmap
+
+### Completed
+
+- ✅ Google Authentication
+- ✅ User Synchronization
+- ✅ OpenStreetMap
+- ✅ Live GPS
+- ✅ Road Event Markers
+
+### In Progress
+
+- 🔄 Incident Details
+- 🔄 Report Incident
+
+### Planned
+
+- ⏳ Image Upload
+- ⏳ Voting
+- ⏳ Notifications
+- ⏳ Dynamic Routing
+- ⏳ Offline Maps
+- ⏳ AI Route Optimization
