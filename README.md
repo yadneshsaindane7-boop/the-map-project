@@ -1,2 +1,9 @@
-# the-map-project
-A GIS-based Smart Road Navigation &amp; Live Road Intelligence System for real-time road closures, hazards, and dynamic routing.
+# The Map Project
+
+Internal codename for a GIS-based Smart Road Navigation & Live Road Intelligence System.
+
+Status:
+Planning Phase
+
+Current Milestone:
+Project Foundation
