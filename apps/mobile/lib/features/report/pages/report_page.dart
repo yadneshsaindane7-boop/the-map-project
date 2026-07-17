@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../map/providers/location_provider.dart';
 import '../models/event_type.dart';
 import '../providers/event_types_provider.dart';
+import '../providers/report_controller.dart';
 import '../providers/report_provider.dart';
-import '../providers/report_repository_provider.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
   const ReportPage({super.key});
@@ -30,7 +30,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
   Future<void> _submitReport() async {
     final reportState = ref.read(reportProvider);
     final reportNotifier = ref.read(reportProvider.notifier);
-    final repository = ref.read(reportRepositoryProvider);
+    final controller = ref.read(reportControllerProvider);
 
     final position = await ref.read(currentLocationProvider.future);
 
@@ -41,7 +41,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     try {
       reportNotifier.setSubmitting(true);
 
-      final reportId = await repository.submitReport(
+      final reportId = await controller.submitReport(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         latitude: position.latitude,
@@ -71,7 +71,9 @@ class _ReportPageState extends ConsumerState<ReportPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to submit report\n$e'),
+          content: Text(
+            'Failed to submit report\n$e',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -117,7 +119,6 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 20),
 
                     TextFormField(
@@ -169,7 +170,9 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           decoration: const InputDecoration(
                             labelText: "Incident Type",
                             border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.warning_amber_rounded),
+                            prefixIcon: Icon(
+                              Icons.warning_amber_rounded,
+                            ),
                           ),
                           items: types
                               .map(
