@@ -1,22 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/incident_type.dart';
+import '../models/event_type.dart';
 
 class ReportFormState {
-  final IncidentType incidentType;
+  final EventType? selectedEventType;
   final bool isSubmitting;
 
   const ReportFormState({
-    this.incidentType = IncidentType.roadClosed,
+    this.selectedEventType,
     this.isSubmitting = false,
   });
 
   ReportFormState copyWith({
-    IncidentType? incidentType,
+    EventType? selectedEventType,
     bool? isSubmitting,
+    bool clearSelectedEventType = false,
   }) {
     return ReportFormState(
-      incidentType: incidentType ?? this.incidentType,
+      selectedEventType: clearSelectedEventType
+          ? null
+          : (selectedEventType ?? this.selectedEventType),
       isSubmitting: isSubmitting ?? this.isSubmitting,
     );
   }
@@ -28,9 +31,15 @@ class ReportFormNotifier extends Notifier<ReportFormState> {
     return const ReportFormState();
   }
 
-  void setIncidentType(IncidentType type) {
+  void setSelectedEventType(EventType eventType) {
     state = state.copyWith(
-      incidentType: type,
+      selectedEventType: eventType,
+    );
+  }
+
+  void clearSelectedEventType() {
+    state = state.copyWith(
+      clearSelectedEventType: true,
     );
   }
 
