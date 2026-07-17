@@ -1,0 +1,117 @@
+{
+  "title": "The Map Project - Chen ER Diagram",
+  "version": "1.0",
+  "entities": [
+    {
+      "id": "user",
+      "name": "USER",
+      "attributes": [
+        { "name": "user_id", "key": "PK" },
+        { "name": "name" },
+        { "name": "email" },
+        { "name": "role" },
+        { "name": "created_at" }
+      ]
+    },
+    {
+      "id": "incident_report",
+      "name": "INCIDENT_REPORT",
+      "attributes": [
+        { "name": "report_id", "key": "PK" },
+        { "name": "title" },
+        { "name": "description" },
+        { "name": "location (Geometry)" },
+        { "name": "latitude" },
+        { "name": "longitude" },
+        { "name": "status" },
+        { "name": "created_at" },
+        { "name": "user_id", "key": "FK" },
+        { "name": "event_type_id", "key": "FK" }
+      ]
+    },
+    {
+      "id": "event_type",
+      "name": "EVENT_TYPE",
+      "attributes": [
+        { "name": "event_type_id", "key": "PK" },
+        { "name": "name" },
+        { "name": "description" }
+      ]
+    },
+    {
+      "id": "organization",
+      "name": "ORGANIZATION",
+      "attributes": [
+        { "name": "organization_id", "key": "PK" },
+        { "name": "name" },
+        { "name": "type" },
+        { "name": "contact" }
+      ]
+    },
+    {
+      "id": "road_event",
+      "name": "ROAD_EVENT",
+      "attributes": [
+        { "name": "road_event_id", "key": "PK" },
+        { "name": "title" },
+        { "name": "description" },
+        { "name": "latitude" },
+        { "name": "longitude" },
+        { "name": "status" },
+        { "name": "created_at" },
+        { "name": "organization_id", "key": "FK" },
+        { "name": "event_type_id", "key": "FK" },
+        { "name": "incident_report_id", "key": "FK" }
+      ]
+    },
+    {
+      "id": "road_event_segment",
+      "name": "ROAD_EVENT_SEGMENT",
+      "attributes": [
+        { "name": "segment_id", "key": "PK" },
+        { "name": "road_event_id", "key": "FK" },
+        { "name": "osm_way_id" },
+        { "name": "weight_modifier" },
+        { "name": "is_closed" }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "name": "REPORTS",
+      "from": "user",
+      "to": "incident_report",
+      "cardinality": "1:N"
+    },
+    {
+      "name": "HAS_TYPE",
+      "from": "event_type",
+      "to": "incident_report",
+      "cardinality": "1:N"
+    },
+    {
+      "name": "CREATES",
+      "from": "organization",
+      "to": "road_event",
+      "cardinality": "1:N"
+    },
+    {
+      "name": "HAS_TYPE",
+      "from": "event_type",
+      "to": "road_event",
+      "cardinality": "1:N"
+    },
+    {
+      "name": "APPROVES",
+      "from": "incident_report",
+      "to": "road_event",
+      "cardinality": "1:0..1"
+    },
+    {
+      "name": "CONTAINS",
+      "from": "road_event",
+      "to": "road_event_segment",
+      "cardinality": "1:N"
+    }
+  ]
+}
