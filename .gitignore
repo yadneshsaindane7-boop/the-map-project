@@ -224,4 +224,29 @@ dist
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/flutter,node,visualstudiocode
+# End of https://www.toptal.com/developers/gitignore/api/flutter,node,visualstudiocodemkdir .github\ISSUE_TEMPLATE
+mkdir .github\workflows
+
+mkdir docs\adr
+mkdir docs\architecture
+mkdir docs\api
+mkdir docs\database
+mkdir docs\backend
+mkdir docs\ui
+mkdir docs\deployment
+mkdir docs\testing
+mkdir docs\meeting-notes
+mkdir docs\research
+
+mkdir frontend\flutter_app
+
+mkdir backend
+
+mkdir database\schema
+mkdir database\migrations
+mkdir database\seeds
+mkdir database\diagrams
+
+mkdir assets
+mkdir scripts
+mkdir .vscode

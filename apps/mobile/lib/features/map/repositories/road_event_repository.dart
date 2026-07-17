@@ -12,13 +12,15 @@ class RoadEventRepository {
         .select()
         .order('created_at', ascending: false);
 
-    debugPrint("=================================");
-    debugPrint("Road Events Count: ${response.length}");
+    debugPrint("========== ROAD EVENTS ==========");
+    debugPrint("Count : ${response.length}");
     debugPrint(response.toString());
-    debugPrint("=================================");
+    debugPrint("================================");
 
     return response
-        .map<RoadEvent>((json) => RoadEvent.fromJson(json))
+        .map<RoadEvent>(
+          (json) => RoadEvent.fromJson(json),
+        )
         .toList();
   }
 }

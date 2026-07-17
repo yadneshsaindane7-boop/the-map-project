@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../map/pages/map_page.dart';
+import '../../report/pages/report_page.dart';
 import '../providers/navigation_provider.dart';
 import '../widgets/bottom_nav.dart';
 
@@ -14,15 +15,7 @@ class ShellPage extends ConsumerWidget {
 
     final pages = [
       const MapPage(),
-
-      const Scaffold(
-        body: Center(
-          child: Text(
-            'Report',
-            style: TextStyle(fontSize: 24),
-          ),
-        ),
-      ),
+      const ReportPage(),
 
       const Scaffold(
         body: Center(
