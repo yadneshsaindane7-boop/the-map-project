@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../navigation/providers/route_provider.dart';
 import '../providers/destination_provider.dart';
 import '../providers/search_provider.dart';
 
@@ -47,6 +48,9 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
     ref.read(searchProvider.notifier).clearResults();
 
     ref.read(destinationProvider.notifier).clearDestination();
+
+    // ✅ Clear the current route
+    ref.read(routeProvider.notifier).clearRoute();
 
     setState(() {});
   }

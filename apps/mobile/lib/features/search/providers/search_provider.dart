@@ -1,10 +1,30 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/search_result.dart';
+import '../repositories/search_repository.dart';
 import '../services/nominatim_service.dart';
+import '../services/photon_service.dart';
+import '../services/search_service.dart';
+
+final photonServiceProvider = Provider<PhotonService>((ref) {
+  return PhotonService();
+});
 
 final nominatimServiceProvider = Provider<NominatimService>((ref) {
   return NominatimService();
+});
+
+final searchRepositoryProvider = Provider<SearchRepository>((ref) {
+  return SearchRepository(
+    photonService: ref.read(photonServiceProvider),
+    nominatimService: ref.read(nominatimServiceProvider),
+  );
+});
+
+final searchServiceProvider = Provider<SearchService>((ref) {
+  return SearchService(
+    repository: ref.read(searchRepositoryProvider),
+  );
 });
 
 class SearchState {
@@ -28,11 +48,11 @@ class SearchState {
 }
 
 class SearchNotifier extends Notifier<SearchState> {
-  late final NominatimService _service;
+  late final SearchService _searchService;
 
   @override
   SearchState build() {
-    _service = ref.read(nominatimServiceProvider);
+    _searchService = ref.read(searchServiceProvider);
     return const SearchState();
   }
 
@@ -40,10 +60,7 @@ class SearchNotifier extends Notifier<SearchState> {
     final trimmed = query.trim();
 
     if (trimmed.isEmpty) {
-      state = state.copyWith(
-        isLoading: false,
-        results: const [],
-      );
+      state = const SearchState();
       return;
     }
 
@@ -52,25 +69,19 @@ class SearchNotifier extends Notifier<SearchState> {
     );
 
     try {
-      final results = await _service.search(trimmed);
+      final results = await _searchService.search(trimmed);
 
-      state = state.copyWith(
+      state = SearchState(
         isLoading: false,
         results: results,
       );
     } catch (_) {
-      state = state.copyWith(
-        isLoading: false,
-        results: const [],
-      );
+      state = const SearchState();
     }
   }
 
   void clearResults() {
-    state = state.copyWith(
-      isLoading: false,
-      results: const [],
-    );
+    state = const SearchState();
   }
 }
 
