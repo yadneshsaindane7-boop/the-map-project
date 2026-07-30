@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../core/map/map_styles.dart';
+import '../../../core/map/map_tile_provider.dart';
+
 import '../providers/location_provider.dart';
 import '../providers/map_controller_provider.dart';
 import '../widgets/road_event_markers.dart';
@@ -19,6 +22,8 @@ class MapPage extends ConsumerStatefulWidget {
 class _MapPageState extends ConsumerState<MapPage> {
   bool _cameraMoved = false;
 
+  MapStyle _selectedStyle = MapStyle.streets;
+
   @override
   Widget build(BuildContext context) {
     final location = ref.watch(currentLocationProvider);
@@ -28,6 +33,28 @@ class _MapPageState extends ConsumerState<MapPage> {
       appBar: AppBar(
         title: const Text('The Map Project'),
         centerTitle: true,
+        actions: [
+          PopupMenuButton<MapStyle>(
+            icon: const Icon(Icons.layers),
+            tooltip: 'Map Style',
+            initialValue: _selectedStyle,
+            onSelected: (style) {
+              setState(() {
+                _selectedStyle = style;
+              });
+            },
+            itemBuilder: (context) {
+              return MapStyle.values
+                  .map(
+                    (style) => PopupMenuItem<MapStyle>(
+                      value: style,
+                      child: Text(style.displayName),
+                    ),
+                  )
+                  .toList();
+            },
+          ),
+        ],
       ),
       body: location.when(
         loading: () => const Center(
@@ -58,9 +85,10 @@ class _MapPageState extends ConsumerState<MapPage> {
             ),
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.mobile',
+                urlTemplate: MapTileProvider.getTileUrl(
+                  _selectedStyle,
+                ),
+                userAgentPackageName: 'com.themapproject.mobile',
               ),
 
               UserLocationMarker(
