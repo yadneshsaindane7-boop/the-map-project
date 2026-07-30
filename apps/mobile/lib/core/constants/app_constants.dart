@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConstants {
   // ==============================
   // App Information
@@ -9,11 +11,25 @@ class AppConstants {
   // Supabase
   // ==============================
 
-  static const String supabaseUrl =
-      'https://gmtgwctrlnahclnfiblp.supabase.co';
+  static String get supabaseUrl =>
+      dotenv.env['SUPABASE_URL']!;
 
-  static const String supabasePublishableKey =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtdGd3Y3RybG5haGNsbmZpYmxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQxMDc0NTQsImV4cCI6MjA5OTY4MzQ1NH0.FHs-cCilkf-iaQwhb5LnL-hEev--M1ZNwyT9c8B6YrQ';
+  static String get supabasePublishableKey =>
+      dotenv.env['SUPABASE_ANON_KEY']!;
+
+  // ==============================
+  // MapTiler
+  // ==============================
+
+  static String get mapTilerApiKey =>
+      dotenv.env['MAPTILER_API_KEY']!;
+
+  // ==============================
+  // GraphHopper
+  // ==============================
+
+  static String get graphHopperApiKey =>
+      dotenv.env['GRAPHHOPPER_API_KEY']!;
 
   // ==============================
   // Deep Link

@@ -7,6 +7,9 @@ import 'package:latlong2/latlong.dart';
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
 
+import '../../navigation/providers/route_provider.dart';
+import '../../navigation/widgets/route_polyline.dart';
+
 import '../../search/providers/destination_provider.dart';
 import '../../search/widgets/destination_marker.dart';
 import '../../search/widgets/search_panel.dart';
@@ -116,6 +119,8 @@ class _MapPageState extends ConsumerState<MapPage> {
                         'com.themapproject.mobile',
                   ),
 
+                  const RoutePolyline(),
+
                   UserLocationMarker(
                     position: userLocation,
                   ),
@@ -136,7 +141,30 @@ class _MapPageState extends ConsumerState<MapPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: SearchPanel(
-                    onDestinationSelected: () {},
+                    onDestinationSelected: () async {
+                      final destination =
+                          ref.read(destinationProvider);
+
+                      if (destination == null) {
+                        ref
+                            .read(routeProvider.notifier)
+                            .clearRoute();
+                        return;
+                      }
+
+                      await ref
+                          .read(routeProvider.notifier)
+                          .loadRoute(
+                            startLatitude:
+                                userLocation.latitude,
+                            startLongitude:
+                                userLocation.longitude,
+                            endLatitude:
+                                destination.latitude,
+                            endLongitude:
+                                destination.longitude,
+                          );
+                    },
                   ),
                 ),
               ),
