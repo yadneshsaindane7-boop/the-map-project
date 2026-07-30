@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../core/map/camera_fit_service.dart';
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
 
@@ -31,6 +32,9 @@ class MapPage extends ConsumerStatefulWidget {
 
 class _MapPageState extends ConsumerState<MapPage> {
   bool _cameraMoved = false;
+
+  /// Prevents fitting the same route repeatedly.
+  DateTime? _lastRouteFit;
 
   MapStyle _selectedStyle = MapStyle.streets;
 
@@ -68,6 +72,7 @@ class _MapPageState extends ConsumerState<MapPage> {
     final mapController = ref.read(mapControllerProvider);
 
     final destination = ref.watch(destinationProvider);
+    final routeState = ref.watch(routeProvider);
 
     return Scaffold(
       body: location.when(
@@ -91,7 +96,19 @@ class _MapPageState extends ConsumerState<MapPage> {
             _cameraMoved = true;
           }
 
-          if (destination != null) {
+          if (routeState.hasRoute &&
+              routeState.lastUpdated != null &&
+              routeState.lastUpdated != _lastRouteFit) {
+            _lastRouteFit = routeState.lastUpdated;
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              mapController.fitCamera(
+                CameraFitService.fitRoute(
+                  routeState.route!.points,
+                ),
+              );
+            });
+          } else if (destination != null && !routeState.hasRoute) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               mapController.move(
                 LatLng(
