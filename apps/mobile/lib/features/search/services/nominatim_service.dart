@@ -9,33 +9,43 @@ class NominatimService {
       'https://nominatim.openstreetmap.org/search';
 
   Future<List<SearchResult>> search(String query) async {
-    final trimmed = query.trim();
+    final uri = Uri.parse(_baseUrl).replace(
+      queryParameters: {
+        'q': query,
+        'format': 'jsonv2',
+        'limit': '10',
 
-    if (trimmed.isEmpty) {
-      return [];
-    }
+        // India only
+        'countrycodes': 'in',
 
-    final uri = Uri.parse(
-      '$_baseUrl?q=${Uri.encodeQueryComponent(trimmed)}'
-      '&format=jsonv2'
-      '&limit=10',
+        // English names
+        'accept-language': 'en',
+
+        // Useful later for address parsing
+        'addressdetails': '1',
+
+        // Prefer Nashik area
+        'viewbox':
+            '73.7000,20.1500,74.1000,19.7500',
+
+        // Bias search toward the viewbox
+        'bounded': '0',
+      },
     );
 
     final response = await http.get(
       uri,
-      headers: const {
+      headers: {
         'User-Agent': 'TheMapProject/1.0',
         'Accept': 'application/json',
       },
     );
 
     if (response.statusCode != 200) {
-      throw Exception(
-        'Search request failed (${response.statusCode})',
-      );
+      throw Exception('Failed to search location');
     }
 
-    final List<dynamic> data = jsonDecode(response.body);
+    final List<dynamic> data = json.decode(response.body);
 
     return data
         .map((json) => SearchResult.fromJson(json))
