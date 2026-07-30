@@ -7,9 +7,16 @@ import 'package:latlong2/latlong.dart';
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
 
+import '../../search/providers/destination_provider.dart';
+import '../../search/widgets/destination_marker.dart';
+import '../../search/widgets/search_panel.dart';
+
 import '../providers/location_provider.dart';
 import '../providers/map_controller_provider.dart';
+
+import '../widgets/map_floating_controls.dart';
 import '../widgets/road_event_markers.dart';
+import '../widgets/route_info_card.dart';
 import '../widgets/user_location_marker.dart';
 
 class MapPage extends ConsumerStatefulWidget {
@@ -24,38 +31,42 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   MapStyle _selectedStyle = MapStyle.streets;
 
+  void _showMapStyleMenu() {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: MapStyle.values.map((style) {
+              return ListTile(
+                leading: const Icon(Icons.map),
+                title: Text(style.displayName),
+                trailing:
+                    style == _selectedStyle ? const Icon(Icons.check) : null,
+                onTap: () {
+                  Navigator.pop(context);
+
+                  setState(() {
+                    _selectedStyle = style;
+                  });
+                },
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final location = ref.watch(currentLocationProvider);
     final mapController = ref.read(mapControllerProvider);
 
+    final destination = ref.watch(destinationProvider);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('The Map Project'),
-        centerTitle: true,
-        actions: [
-          PopupMenuButton<MapStyle>(
-            icon: const Icon(Icons.layers),
-            tooltip: 'Map Style',
-            initialValue: _selectedStyle,
-            onSelected: (style) {
-              setState(() {
-                _selectedStyle = style;
-              });
-            },
-            itemBuilder: (context) {
-              return MapStyle.values
-                  .map(
-                    (style) => PopupMenuItem<MapStyle>(
-                      value: style,
-                      child: Text(style.displayName),
-                    ),
-                  )
-                  .toList();
-            },
-          ),
-        ],
-      ),
       body: location.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
@@ -77,25 +88,79 @@ class _MapPageState extends ConsumerState<MapPage> {
             _cameraMoved = true;
           }
 
-          return FlutterMap(
-            mapController: mapController,
-            options: MapOptions(
-              initialCenter: userLocation,
-              initialZoom: 17,
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: MapTileProvider.getTileUrl(
-                  _selectedStyle,
+          if (destination != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              mapController.move(
+                LatLng(
+                  destination.latitude,
+                  destination.longitude,
                 ),
-                userAgentPackageName: 'com.themapproject.mobile',
+                16,
+              );
+            });
+          }
+
+          return Stack(
+            children: [
+              FlutterMap(
+                mapController: mapController,
+                options: MapOptions(
+                  initialCenter: userLocation,
+                  initialZoom: 17,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        MapTileProvider.getTileUrl(_selectedStyle),
+                    userAgentPackageName:
+                        'com.themapproject.mobile',
+                  ),
+
+                  UserLocationMarker(
+                    position: userLocation,
+                  ),
+
+                  if (destination != null)
+                    DestinationMarker(
+                      position: LatLng(
+                        destination.latitude,
+                        destination.longitude,
+                      ),
+                    ),
+
+                  const RoadEventMarkers(),
+                ],
               ),
 
-              UserLocationMarker(
-                position: userLocation,
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: SearchPanel(
+                    onDestinationSelected: () {},
+                  ),
+                ),
               ),
 
-              const RoadEventMarkers(),
+              Positioned(
+                right: 16,
+                bottom: 120,
+                child: MapFloatingControls(
+                  onLayersPressed: _showMapStyleMenu,
+                  onMyLocationPressed: () {
+                    mapController.move(
+                      userLocation,
+                      17,
+                    );
+                  },
+                ),
+              ),
+
+              const Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: RouteInfoCard(),
+              ),
             ],
           );
         },
