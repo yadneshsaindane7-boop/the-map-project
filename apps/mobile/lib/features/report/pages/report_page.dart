@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../map/providers/location_provider.dart';
+
 import '../models/event_type.dart';
+
 import '../providers/event_types_provider.dart';
 import '../providers/report_controller.dart';
 import '../providers/report_provider.dart';
+
+import '../widgets/location_picker_page.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
   const ReportPage({super.key});
@@ -27,25 +32,58 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     super.dispose();
   }
 
+  Future<void> _pickLocation(
+    LatLng currentLocation,
+  ) async {
+    final result = await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerPage(
+          initialLocation: currentLocation,
+        ),
+      ),
+    );
+
+    if (result != null) {
+      ref
+          .read(reportProvider.notifier)
+          .setSelectedLocation(result);
+    }
+  }
+
   Future<void> _submitReport() async {
     final reportState = ref.read(reportProvider);
-    final reportNotifier = ref.read(reportProvider.notifier);
-    final controller = ref.read(reportControllerProvider);
 
-    final position = await ref.read(currentLocationProvider.future);
+    final reportNotifier =
+        ref.read(reportProvider.notifier);
+
+    final controller =
+        ref.read(reportControllerProvider);
+
+    final position =
+        await ref.read(currentLocationProvider.future);
 
     if (reportState.selectedEventType == null) {
       return;
     }
+
+    final latitude =
+        reportState.selectedLocation?.latitude ??
+            position.latitude;
+
+    final longitude =
+        reportState.selectedLocation?.longitude ??
+            position.longitude;
 
     try {
       reportNotifier.setSubmitting(true);
 
       final reportId = await controller.submitReport(
         title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        latitude: position.latitude,
-        longitude: position.longitude,
+        description:
+            _descriptionController.text.trim(),
+        latitude: latitude,
+        longitude: longitude,
         eventType: reportState.selectedEventType!,
       );
 
@@ -53,10 +91,10 @@ class _ReportPageState extends ConsumerState<ReportPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Report submitted successfully!\nID: $reportId',
-          ),
           backgroundColor: Colors.green,
+          content: Text(
+            "Report submitted successfully!\nID: $reportId",
+          ),
         ),
       );
 
@@ -65,16 +103,16 @@ class _ReportPageState extends ConsumerState<ReportPage> {
       _titleController.clear();
       _descriptionController.clear();
 
-      reportNotifier.clearSelectedEventType();
+      reportNotifier.reset();
     } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Failed to submit report\n$e',
-          ),
           backgroundColor: Colors.red,
+          content: Text(
+            "Failed to submit report\n$e",
+          ),
         ),
       );
     } finally {
@@ -85,14 +123,19 @@ class _ReportPageState extends ConsumerState<ReportPage> {
   @override
   Widget build(BuildContext context) {
     final reportState = ref.watch(reportProvider);
-    final reportNotifier = ref.read(reportProvider.notifier);
 
-    final location = ref.watch(currentLocationProvider);
-    final eventTypes = ref.watch(eventTypesProvider);
+    final reportNotifier =
+        ref.read(reportProvider.notifier);
+
+    final location =
+        ref.watch(currentLocationProvider);
+
+    final eventTypes =
+        ref.watch(eventTypesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Report Incident'),
+        title: const Text("Report Incident"),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -100,28 +143,99 @@ class _ReportPageState extends ConsumerState<ReportPage> {
           loading: () => const Center(
             child: CircularProgressIndicator(),
           ),
-          error: (error, stackTrace) => Center(
+          error: (error, stackTrace) =>
+              Center(
             child: Text(error.toString()),
           ),
           data: (position) {
+            final selectedLocation =
+                reportState.selectedLocation ??
+                    LatLng(
+                      position.latitude,
+                      position.longitude,
+                    );
+
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding:
+                  const EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.location_on),
-                        title: const Text("Current Location"),
-                        subtitle: Text(
-                          "${position.latitude}, ${position.longitude}",
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment
+                                  .start,
+                          children: [
+                            const Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Incident Location",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight:
+                                        FontWeight
+                                            .bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(
+                              height: 16,
+                            ),
+
+                            Text(
+                              "Latitude : ${selectedLocation.latitude.toStringAsFixed(5)}",
+                            ),
+
+                            const SizedBox(
+                              height: 6,
+                            ),
+
+                            Text(
+                              "Longitude : ${selectedLocation.longitude.toStringAsFixed(5)}",
+                            ),
+
+                            const SizedBox(
+                              height: 16,
+                            ),
+
+                            SizedBox(
+                              width:
+                                  double.infinity,
+                              child:
+                                  OutlinedButton.icon(
+                                icon: const Icon(
+                                  Icons.map,
+                                ),
+                                label: const Text(
+                                  "Choose on Map",
+                                ),
+                                onPressed: () =>
+                                    _pickLocation(
+                                  LatLng(
+                                    position.latitude,
+                                    position.longitude,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
 
-                    TextFormField(
+                    const SizedBox(height: 20),
+                                        TextFormField(
                       controller: _titleController,
                       decoration: const InputDecoration(
                         labelText: "Incident Title",
@@ -129,7 +243,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         prefixIcon: Icon(Icons.title),
                       ),
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
+                        if (value == null ||
+                            value.trim().isEmpty) {
                           return "Enter incident title";
                         }
                         return null;
@@ -148,7 +263,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         prefixIcon: Icon(Icons.description),
                       ),
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
+                        if (value == null ||
+                            value.trim().isEmpty) {
                           return "Enter description";
                         }
                         return null;
@@ -166,7 +282,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                       ),
                       data: (types) {
                         return DropdownButtonFormField<EventType>(
-                          initialValue: reportState.selectedEventType,
+                          initialValue:
+                              reportState.selectedEventType,
                           decoration: const InputDecoration(
                             labelText: "Incident Type",
                             border: OutlineInputBorder(),
@@ -176,15 +293,21 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           ),
                           items: types
                               .map(
-                                (eventType) => DropdownMenuItem<EventType>(
+                                (eventType) =>
+                                    DropdownMenuItem<
+                                        EventType>(
                                   value: eventType,
-                                  child: Text(eventType.name),
+                                  child:
+                                      Text(eventType.name),
                                 ),
                               )
                               .toList(),
                           onChanged: (value) {
                             if (value != null) {
-                              reportNotifier.setSelectedEventType(value);
+                              reportNotifier
+                                  .setSelectedEventType(
+                                value,
+                              );
                             }
                           },
                           validator: (value) {
@@ -203,20 +326,24 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                       width: double.infinity,
                       height: 55,
                       child: FilledButton.icon(
-                        onPressed: reportState.isSubmitting
-                            ? null
-                            : () async {
-                                if (!_formKey.currentState!.validate()) {
-                                  return;
-                                }
+                        onPressed:
+                            reportState.isSubmitting
+                                ? null
+                                : () async {
+                                    if (!_formKey
+                                        .currentState!
+                                        .validate()) {
+                                      return;
+                                    }
 
-                                await _submitReport();
-                              },
+                                    await _submitReport();
+                                  },
                         icon: reportState.isSubmitting
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(
+                                child:
+                                    CircularProgressIndicator(
                                   strokeWidth: 2,
                                 ),
                               )
