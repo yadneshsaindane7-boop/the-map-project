@@ -18,15 +18,30 @@ class RoadEventMarkers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("");
+    debugPrint("========== ROAD EVENT MARKERS ==========");
+    debugPrint("Total Events : ${events.length}");
+
+    for (final event in events) {
+      debugPrint(
+        "Marker -> ${event.title} : ${event.latitude}, ${event.longitude}",
+      );
+    }
+
+    debugPrint("========================================");
+    debugPrint("");
+
     return MarkerLayer(
       markers: events.map((event) {
         return Marker(
-          point: LatLng(
-            event.latitude,
-            event.longitude,
-          ),
-          width: 50,
-          height: 50,
+          // TEMPORARY TEST
+          // We intentionally place every event at the user's current
+          // location to verify that markers render correctly.
+          point: currentLocation,
+
+          width: 55,
+          height: 55,
+
           child: GestureDetector(
             onTap: () {
               final distanceMeters =
@@ -46,10 +61,16 @@ class RoadEventMarkers extends StatelessWidget {
                 ),
               );
             },
-            child: const Icon(
-              Icons.warning_rounded,
-              color: Colors.red,
-              size: 38,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.warning,
+                color: Colors.white,
+                size: 30,
+              ),
             ),
           ),
         );

@@ -6,12 +6,19 @@ class CameraFitService {
   const CameraFitService._();
 
   static CameraFit fitRoute(List<LatLng> points) {
+    return fitPoints(points);
+  }
+
+  static CameraFit fitPoints(List<LatLng> points) {
     if (points.isEmpty) {
-      throw ArgumentError('Route points cannot be empty.');
+      throw ArgumentError(
+        'Points cannot be empty.',
+      );
     }
 
     double minLatitude = points.first.latitude;
     double maxLatitude = points.first.latitude;
+
     double minLongitude = points.first.longitude;
     double maxLongitude = points.first.longitude;
 
@@ -34,8 +41,14 @@ class CameraFitService {
     }
 
     final bounds = LatLngBounds(
-      LatLng(minLatitude, minLongitude),
-      LatLng(maxLatitude, maxLongitude),
+      LatLng(
+        minLatitude,
+        minLongitude,
+      ),
+      LatLng(
+        maxLatitude,
+        maxLongitude,
+      ),
     );
 
     return CameraFit.bounds(
