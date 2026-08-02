@@ -8,7 +8,31 @@ final roadEventRepositoryProvider =
   return RoadEventRepository();
 });
 
+class RoadEventsNotifier
+    extends AsyncNotifier<List<RoadEvent>> {
+  late final RoadEventRepository _repository;
+
+  @override
+  Future<List<RoadEvent>> build() async {
+    _repository = ref.read(
+      roadEventRepositoryProvider,
+    );
+
+    return _repository.getRoadEvents();
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+
+    state = await AsyncValue.guard(
+      () => _repository.getRoadEvents(),
+    );
+  }
+}
+
 final roadEventsProvider =
-    FutureProvider<List<RoadEvent>>((ref) async {
-  return ref.read(roadEventRepositoryProvider).getRoadEvents();
-});
+    AsyncNotifierProvider<
+        RoadEventsNotifier,
+        List<RoadEvent>>(
+  RoadEventsNotifier.new,
+);
