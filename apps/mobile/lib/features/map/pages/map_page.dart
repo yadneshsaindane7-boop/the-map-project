@@ -17,6 +17,7 @@ import '../../search/widgets/search_panel.dart';
 
 import '../providers/location_provider.dart';
 import '../providers/map_controller_provider.dart';
+import '../providers/road_event_provider.dart';
 
 import '../widgets/map_floating_controls.dart';
 import '../widgets/road_event_markers.dart';
@@ -33,7 +34,6 @@ class MapPage extends ConsumerStatefulWidget {
 class _MapPageState extends ConsumerState<MapPage> {
   bool _cameraMoved = false;
 
-  /// Prevents fitting the same route repeatedly.
   DateTime? _lastRouteFit;
 
   MapStyle _selectedStyle = MapStyle.streets;
@@ -49,8 +49,9 @@ class _MapPageState extends ConsumerState<MapPage> {
               return ListTile(
                 leading: const Icon(Icons.map),
                 title: Text(style.displayName),
-                trailing:
-                    style == _selectedStyle ? const Icon(Icons.check) : null,
+                trailing: style == _selectedStyle
+                    ? const Icon(Icons.check)
+                    : null,
                 onTap: () {
                   Navigator.pop(context);
 
@@ -69,10 +70,18 @@ class _MapPageState extends ConsumerState<MapPage> {
   @override
   Widget build(BuildContext context) {
     final location = ref.watch(currentLocationProvider);
-    final mapController = ref.read(mapControllerProvider);
 
-    final destination = ref.watch(destinationProvider);
-    final routeState = ref.watch(routeProvider);
+    final mapController =
+        ref.read(mapControllerProvider);
+
+    final destination =
+        ref.watch(destinationProvider);
+
+    final routeState =
+        ref.watch(routeProvider);
+
+    final roadEvents =
+        ref.watch(roadEventsProvider);
 
     return Scaffold(
       body: location.when(
@@ -89,8 +98,12 @@ class _MapPageState extends ConsumerState<MapPage> {
           );
 
           if (!_cameraMoved) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              mapController.move(userLocation, 17);
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) {
+              mapController.move(
+                userLocation,
+                17,
+              );
             });
 
             _cameraMoved = true;
@@ -98,18 +111,23 @@ class _MapPageState extends ConsumerState<MapPage> {
 
           if (routeState.hasRoute &&
               routeState.lastUpdated != null &&
-              routeState.lastUpdated != _lastRouteFit) {
-            _lastRouteFit = routeState.lastUpdated;
+              routeState.lastUpdated !=
+                  _lastRouteFit) {
+            _lastRouteFit =
+                routeState.lastUpdated;
 
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) {
               mapController.fitCamera(
                 CameraFitService.fitRoute(
                   routeState.route!.points,
                 ),
               );
             });
-          } else if (destination != null && !routeState.hasRoute) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+          } else if (destination != null &&
+              !routeState.hasRoute) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) {
               mapController.move(
                 LatLng(
                   destination.latitude,
@@ -131,7 +149,9 @@ class _MapPageState extends ConsumerState<MapPage> {
                 children: [
                   TileLayer(
                     urlTemplate:
-                        MapTileProvider.getTileUrl(_selectedStyle),
+                        MapTileProvider.getTileUrl(
+                      _selectedStyle,
+                    ),
                     userAgentPackageName:
                         'com.themapproject.mobile',
                   ),
@@ -149,8 +169,17 @@ class _MapPageState extends ConsumerState<MapPage> {
                         destination.longitude,
                       ),
                     ),
-
-                  const RoadEventMarkers(),
+                                      roadEvents.when(
+                    loading: () => const MarkerLayer(
+                      markers: [],
+                    ), error: (error, stackTrace) => const MarkerLayer(
+                  markers: [],
+),
+                    data: (events) => RoadEventMarkers(
+                      events: events,
+                      currentLocation: userLocation,
+                    ),
+                  ),
                 ],
               ),
 
@@ -166,6 +195,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                         ref
                             .read(routeProvider.notifier)
                             .clearRoute();
+
                         return;
                       }
 
