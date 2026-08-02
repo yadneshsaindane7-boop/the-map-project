@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../features/settings/pages/about_page.dart';
+import '../../../features/settings/pages/language_page.dart';
+import '../../../features/settings/pages/notifications_page.dart';
+
 import '../providers/profile_provider.dart';
 
 import '../widgets/logout_button.dart';
@@ -42,23 +46,20 @@ class ProfilePage extends ConsumerWidget {
                 GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,
-                  physics:
-                      const NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
                   childAspectRatio: 1.25,
                   children: [
                     ProfileStatsCard(
                       title: "Reports",
-                      value:
-                          user.totalReports.toString(),
+                      value: user.totalReports.toString(),
                       icon: Icons.description,
                       iconColor: Colors.blue,
                     ),
                     ProfileStatsCard(
                       title: "Active",
-                      value:
-                          user.activeReports.toString(),
+                      value: user.activeReports.toString(),
                       icon: Icons.warning,
                       iconColor: Colors.orange,
                     ),
@@ -81,45 +82,60 @@ class ProfilePage extends ConsumerWidget {
 
                 const ProfileAchievements(),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Settings",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(
-                          fontWeight:
-                              FontWeight.bold,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
 
                 ProfileMenuTile(
                   icon: Icons.notifications,
                   title: "Notifications",
-                  subtitle:
-                      "Manage notification preferences",
-                  onTap: () {},
+                  subtitle: "Manage notification preferences",
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const NotificationsPage(),
+                      ),
+                    );
+                  },
                 ),
 
                 ProfileMenuTile(
                   icon: Icons.language,
                   title: "Language",
                   subtitle: "English",
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const LanguagePage(),
+                      ),
+                    );
+                  },
                 ),
 
                 ProfileMenuTile(
                   icon: Icons.info_outline,
                   title: "About",
-                  subtitle:
-                      "The Map Project v1.0",
-                  onTap: () {},
+                  subtitle: "The Map Project v1.0",
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const AboutPage(),
+                      ),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 30),
