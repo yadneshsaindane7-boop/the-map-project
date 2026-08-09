@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../navigation/models/route_model.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
 
@@ -31,6 +32,22 @@ class RouteInfoCard extends ConsumerWidget {
           child: journeyState.isNavigating
               ? _NavigationModeCard(
                   route: route,
+                  remainingDistanceMeters:
+                      journeyState.remainingDistanceMeters ??
+                          route.distance,
+                  remainingDurationMillis:
+                      journeyState.remainingDurationMillis ??
+                          route.time,
+                  instruction: journeyState.currentInstruction?.text,
+                  instructionDistance:
+                      journeyState.currentInstruction?.distance,
+                  onEndJourney: () {
+                    ref
+                        .read(
+                          journeyNavigationProvider.notifier,
+                        )
+                        .stopNavigation();
+                  },
                 )
               : _RoutePreviewCard(
                   route: route,
@@ -39,7 +56,12 @@ class RouteInfoCard extends ConsumerWidget {
                         .read(
                           journeyNavigationProvider.notifier,
                         )
-                        .startNavigation();
+                        .startNavigation(
+                          initialDistanceMeters:
+                              route.distance,
+                          initialDurationMillis:
+                              route.time,
+                        );
                   },
                 ),
         ),
@@ -49,7 +71,7 @@ class RouteInfoCard extends ConsumerWidget {
 }
 
 class _RoutePreviewCard extends StatelessWidget {
-  final dynamic route;
+  final RouteModel route;
   final VoidCallback onStart;
 
   const _RoutePreviewCard({
@@ -109,52 +131,140 @@ class _RoutePreviewCard extends StatelessWidget {
   }
 }
 
-class _NavigationModeCard extends ConsumerWidget {
-  final dynamic route;
+class _NavigationModeCard extends StatelessWidget {
+  final RouteModel route;
+  final double remainingDistanceMeters;
+  final int remainingDurationMillis;
+  final String? instruction;
+  final double? instructionDistance;
+  final VoidCallback onEndJourney;
 
   const _NavigationModeCard({
     required this.route,
+    required this.remainingDistanceMeters,
+    required this.remainingDurationMillis,
+    required this.instruction,
+    required this.instructionDistance,
+    required this.onEndJourney,
   });
 
+  String _formatDistance(double meters) {
+    if (meters < 1000) {
+      return '${meters.round()} m';
+    }
+
+    return '${(meters / 1000).toStringAsFixed(1)} km';
+  }
+
+  String _formatDuration(int milliseconds) {
+    final totalMinutes =
+        (milliseconds / 60000).ceil();
+
+    if (totalMinutes <= 1) {
+      return '1 min';
+    }
+
+    if (totalMinutes < 60) {
+      return '$totalMinutes min';
+    }
+
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
+
+    if (minutes == 0) {
+      return '$hours hr';
+    }
+
+    return '$hours hr $minutes min';
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Row(
+  Widget build(BuildContext context) {
+    final instructionText =
+        instruction?.trim().isNotEmpty == true
+            ? instruction!
+            : 'Continue on the current route';
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          child: _InfoTile(
-            icon: Icons.navigation,
-            title: 'Remaining',
-            value:
-                '${route.distanceKm.toStringAsFixed(1)} km',
-          ),
+        Row(
+          children: [
+            const Icon(
+              Icons.navigation,
+              size: 30,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                instructionText,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'End journey',
+              icon: const Icon(
+                Icons.close,
+                color: Colors.red,
+              ),
+              onPressed: onEndJourney,
+            ),
+          ],
         ),
-        Container(
-          width: 1,
-          height: 45,
-          color: Colors.grey.shade300,
-        ),
-        Expanded(
-          child: _InfoTile(
-            icon: Icons.access_time,
-            title: 'ETA',
-            value:
-                '${route.durationMinutes.round()} min',
+
+        if (instructionDistance != null) ...[
+          const SizedBox(height: 6),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(left: 42),
+              child: Text(
+                'In ${_formatDistance(instructionDistance!)}',
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontSize: 14,
+                ),
+              ),
+            ),
           ),
-        ),
-        const SizedBox(width: 12),
-        IconButton(
-          tooltip: 'End journey',
-          icon: const Icon(
-            Icons.close,
-            color: Colors.red,
-          ),
-          onPressed: () {
-            ref
-                .read(
-                  journeyNavigationProvider.notifier,
-                )
-                .stopNavigation();
-          },
+        ],
+
+        const SizedBox(height: 16),
+        Divider(color: Colors.grey.shade300),
+        const SizedBox(height: 8),
+
+        Row(
+          children: [
+            Expanded(
+              child: _InfoTile(
+                icon: Icons.route,
+                title: 'Remaining',
+                value: _formatDistance(
+                  remainingDistanceMeters,
+                ),
+              ),
+            ),
+            Container(
+              width: 1,
+              height: 45,
+              color: Colors.grey.shade300,
+            ),
+            Expanded(
+              child: _InfoTile(
+                icon: Icons.access_time,
+                title: 'ETA',
+                value: _formatDuration(
+                  remainingDurationMillis,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
