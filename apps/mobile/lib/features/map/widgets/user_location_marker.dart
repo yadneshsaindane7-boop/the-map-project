@@ -16,12 +16,37 @@ class UserLocationMarker extends StatelessWidget {
       markers: [
         Marker(
           point: position,
-          width: 50,
-          height: 50,
-          child: const Icon(
-            Icons.my_location,
-            color: Colors.blue,
-            size: 40,
+          width: 48,
+          height: 48,
+          alignment: Alignment.center,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(
+                    alpha: 0.25,
+                  ),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(4),
+            child: Container(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue,
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.navigation,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+            ),
           ),
         ),
       ],
