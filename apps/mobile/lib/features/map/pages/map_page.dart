@@ -8,6 +8,8 @@ import '../../../core/map/camera_fit_service.dart';
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
 
+import '../../navigation/providers/navigation_provider.dart';
+import '../../navigation/providers/live_location_provider.dart';
 import '../../navigation/providers/route_provider.dart';
 import '../../navigation/widgets/route_polyline.dart';
 
@@ -18,7 +20,6 @@ import '../../search/widgets/search_panel.dart';
 import '../providers/location_provider.dart';
 import '../providers/map_controller_provider.dart';
 import '../providers/road_event_provider.dart';
-import '../providers/selected_map_location_provider.dart';
 
 import '../widgets/map_floating_controls.dart';
 import '../widgets/road_event_markers.dart';
@@ -34,15 +35,15 @@ class MapPage extends ConsumerStatefulWidget {
 
 class _MapPageState extends ConsumerState<MapPage> {
   bool _cameraMoved = false;
+
   DateTime? _lastRouteFit;
-  LatLng? _lastSelectedMapLocation;
 
   MapStyle _selectedStyle = MapStyle.streets;
 
   void _showMapStyleMenu() {
     showModalBottomSheet(
       context: context,
-      builder: (context) {
+      builder: (_) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -92,35 +93,67 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final location = ref.watch(currentLocationProvider);
+    final initialLocation =
+        ref.watch(currentLocationProvider);
 
-    final mapController = ref.read(mapControllerProvider);
+    final liveLocation =
+        ref.watch(liveLocationProvider);
 
-    final destination = ref.watch(destinationProvider);
+    final journeyState =
+        ref.watch(journeyNavigationProvider);
 
-    final selectedMapLocation =
-        ref.watch(selectedMapLocationProvider);
+    final mapController =
+        ref.read(mapControllerProvider);
 
-    final routeState = ref.watch(routeProvider);
+    final destination =
+        ref.watch(destinationProvider);
 
-    final roadEvents = ref.watch(roadEventsProvider);
+    final routeState =
+        ref.watch(routeProvider);
+
+    final roadEvents =
+        ref.watch(roadEventsProvider);
 
     return Scaffold(
-      body: location.when(
+      body: initialLocation.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
         error: (error, stackTrace) => Center(
           child: Text(error.toString()),
         ),
-        data: (Position position) {
-          final userLocation = LatLng(
-            position.latitude,
-            position.longitude,
+        data: (Position initialPosition) {
+          LatLng userLocation = LatLng(
+            initialPosition.latitude,
+            initialPosition.longitude,
           );
 
+          /*
+           * When navigation is active, use the continuous
+           * GPS location instead of the original location.
+           */
+          if (journeyState.isNavigating) {
+            liveLocation.whenData(
+              (Position livePosition) {
+                userLocation = LatLng(
+                  livePosition.latitude,
+                  livePosition.longitude,
+                );
+
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) {
+                  mapController.move(
+                    userLocation,
+                    18,
+                  );
+                });
+              },
+            );
+          }
+
           if (!_cameraMoved) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) {
               mapController.move(
                 userLocation,
                 17,
@@ -130,25 +163,14 @@ class _MapPageState extends ConsumerState<MapPage> {
             _cameraMoved = true;
           }
 
-          // Move to the alert location when "View on Map" is pressed.
-          if (selectedMapLocation != null &&
-              selectedMapLocation != _lastSelectedMapLocation) {
-            _lastSelectedMapLocation = selectedMapLocation;
-
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              mapController.move(
-                selectedMapLocation,
-                17,
-              );
-            });
-          }
-
           if (routeState.hasRoute &&
               routeState.lastUpdated != null &&
               routeState.lastUpdated != _lastRouteFit) {
-            _lastRouteFit = routeState.lastUpdated;
+            _lastRouteFit =
+                routeState.lastUpdated;
 
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) {
               mapController.fitCamera(
                 CameraFitService.fitRoute(
                   routeState.route!.points,
@@ -156,9 +178,9 @@ class _MapPageState extends ConsumerState<MapPage> {
               );
             });
           } else if (destination != null &&
-              !routeState.hasRoute &&
-              selectedMapLocation == null) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
+              !routeState.hasRoute) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) {
               mapController.move(
                 LatLng(
                   destination.latitude,
@@ -179,7 +201,8 @@ class _MapPageState extends ConsumerState<MapPage> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: MapTileProvider.getTileUrl(
+                    urlTemplate:
+                        MapTileProvider.getTileUrl(
                       _selectedStyle,
                     ),
                     userAgentPackageName:
@@ -200,34 +223,20 @@ class _MapPageState extends ConsumerState<MapPage> {
                       ),
                     ),
 
-                  // Selected alert location.
-                  if (selectedMapLocation != null)
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: selectedMapLocation,
-                          width: 60,
-                          height: 60,
-                          child: const Icon(
-                            Icons.warning_rounded,
-                            color: Colors.red,
-                            size: 48,
-                          ),
-                        ),
-                      ],
-                    ),
-
                   roadEvents.when(
-                    loading: () => const MarkerLayer(
+                    loading: () =>
+                        const MarkerLayer(
                       markers: [],
                     ),
                     error: (error, stackTrace) =>
                         const MarkerLayer(
                       markers: [],
                     ),
-                    data: (events) => RoadEventMarkers(
+                    data: (events) =>
+                        RoadEventMarkers(
                       events: events,
-                      currentLocation: userLocation,
+                      currentLocation:
+                          userLocation,
                     ),
                   ),
                 ],
@@ -235,31 +244,43 @@ class _MapPageState extends ConsumerState<MapPage> {
 
               SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding:
+                      const EdgeInsets.all(16),
                   child: SearchPanel(
-                    onDestinationSelected: () async {
+                    onDestinationSelected:
+                        () async {
                       final selectedDestination =
-                          ref.read(destinationProvider);
+                          ref.read(
+                        destinationProvider,
+                      );
 
-                      if (selectedDestination == null) {
+                      if (selectedDestination ==
+                          null) {
                         ref
-                            .read(routeProvider.notifier)
+                            .read(
+                              routeProvider
+                                  .notifier,
+                            )
                             .clearRoute();
 
                         return;
                       }
 
                       await ref
-                          .read(routeProvider.notifier)
+                          .read(
+                            routeProvider.notifier,
+                          )
                           .loadRoute(
                             startLatitude:
                                 userLocation.latitude,
                             startLongitude:
                                 userLocation.longitude,
                             endLatitude:
-                                selectedDestination.latitude,
+                                selectedDestination
+                                    .latitude,
                             endLongitude:
-                                selectedDestination.longitude,
+                                selectedDestination
+                                    .longitude,
                           );
                     },
                   ),
@@ -270,8 +291,12 @@ class _MapPageState extends ConsumerState<MapPage> {
                 right: 16,
                 bottom: 200,
                 child: roadEvents.when(
-                  loading: () => const SizedBox.shrink(),
-                  error: (error, stackTrace) =>
+                  loading: () =>
+                      const SizedBox.shrink(),
+                  error: (
+                    error,
+                    stackTrace,
+                  ) =>
                       const SizedBox.shrink(),
                   data: (events) =>
                       FloatingActionButton.small(
@@ -295,7 +320,8 @@ class _MapPageState extends ConsumerState<MapPage> {
                 right: 16,
                 bottom: 120,
                 child: MapFloatingControls(
-                  onLayersPressed: _showMapStyleMenu,
+                  onLayersPressed:
+                      _showMapStyleMenu,
                   onMyLocationPressed: () {
                     mapController.move(
                       userLocation,

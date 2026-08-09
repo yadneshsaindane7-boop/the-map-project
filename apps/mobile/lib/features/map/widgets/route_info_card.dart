@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
 
 class RouteInfoCard extends ConsumerWidget {
@@ -9,6 +10,7 @@ class RouteInfoCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final routeState = ref.watch(routeProvider);
+    final journeyState = ref.watch(journeyNavigationProvider);
 
     if (!routeState.hasRoute) {
       return const SizedBox.shrink();
@@ -25,34 +27,136 @@ class RouteInfoCard extends ConsumerWidget {
           borderRadius: BorderRadius.circular(18),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _InfoTile(
-                icon: Icons.route,
-                title: "Distance",
-                value:
-                    "${route.distanceKm.toStringAsFixed(1)} km",
-              ),
-              Container(
-                width: 1,
-                height: 40,
-                color: Colors.grey.shade300,
-              ),
-              _InfoTile(
-                icon: Icons.access_time,
-                title: "ETA",
-                value:
-                    "${route.durationMinutes.round()} min",
-              ),
-            ],
-          ),
+          padding: const EdgeInsets.all(16),
+          child: journeyState.isNavigating
+              ? _NavigationModeCard(
+                  route: route,
+                )
+              : _RoutePreviewCard(
+                  route: route,
+                  onStart: () {
+                    ref
+                        .read(
+                          journeyNavigationProvider.notifier,
+                        )
+                        .startNavigation();
+                  },
+                ),
         ),
       ),
+    );
+  }
+}
+
+class _RoutePreviewCard extends StatelessWidget {
+  final dynamic route;
+  final VoidCallback onStart;
+
+  const _RoutePreviewCard({
+    required this.route,
+    required this.onStart,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _InfoTile(
+                icon: Icons.route,
+                title: 'Distance',
+                value:
+                    '${route.distanceKm.toStringAsFixed(1)} km',
+              ),
+            ),
+            Container(
+              width: 1,
+              height: 45,
+              color: Colors.grey.shade300,
+            ),
+            Expanded(
+              child: _InfoTile(
+                icon: Icons.access_time,
+                title: 'ETA',
+                value:
+                    '${route.durationMinutes.round()} min',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: onStart,
+            icon: const Icon(Icons.navigation),
+            label: const Text('START'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                vertical: 14,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NavigationModeCard extends ConsumerWidget {
+  final dynamic route;
+
+  const _NavigationModeCard({
+    required this.route,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      children: [
+        Expanded(
+          child: _InfoTile(
+            icon: Icons.navigation,
+            title: 'Remaining',
+            value:
+                '${route.distanceKm.toStringAsFixed(1)} km',
+          ),
+        ),
+        Container(
+          width: 1,
+          height: 45,
+          color: Colors.grey.shade300,
+        ),
+        Expanded(
+          child: _InfoTile(
+            icon: Icons.access_time,
+            title: 'ETA',
+            value:
+                '${route.durationMinutes.round()} min',
+          ),
+        ),
+        const SizedBox(width: 12),
+        IconButton(
+          tooltip: 'End journey',
+          icon: const Icon(
+            Icons.close,
+            color: Colors.red,
+          ),
+          onPressed: () {
+            ref
+                .read(
+                  journeyNavigationProvider.notifier,
+                )
+                .stopNavigation();
+          },
+        ),
+      ],
     );
   }
 }

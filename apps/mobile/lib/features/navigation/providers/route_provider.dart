@@ -44,6 +44,7 @@ class RouteNotifier extends Notifier<RouteState> {
   @override
   RouteState build() {
     _service = ref.read(graphHopperServiceProvider);
+
     return const RouteState();
   }
 
@@ -53,9 +54,10 @@ class RouteNotifier extends Notifier<RouteState> {
     required double endLatitude,
     required double endLongitude,
   }) async {
-    state = state.copyWith(
+    state = RouteState(
       isLoading: true,
-      error: null,
+      route: state.route,
+      lastUpdated: state.lastUpdated,
     );
 
     try {
