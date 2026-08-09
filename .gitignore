@@ -224,29 +224,24 @@ dist
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/flutter,node,visualstudiocodemkdir .github\ISSUE_TEMPLATE
-mkdir .github\workflows
+# ==============================
+# Python Backend
+# ==============================
 
-mkdir docs\adr
-mkdir docs\architecture
-mkdir docs\api
-mkdir docs\database
-mkdir docs\backend
-mkdir docs\ui
-mkdir docs\deployment
-mkdir docs\testing
-mkdir docs\meeting-notes
-mkdir docs\research
+backend/venv/
+backend/.venv/
+backend/__pycache__/
+backend/**/*.pyc
+backend/.pytest_cache/
+backend/cache/
 
-mkdir frontend\flutter_app
+# Large local routing data
+backend/data/raw/
+backend/data/processed/
+backend/data/graphs/
+backend/data/nashik/
 
-mkdir backend
-
-mkdir database\schema
-mkdir database\migrations
-mkdir database\seeds
-mkdir database\diagrams
-
-mkdir assets
-mkdir scripts
-mkdir .vscode
+# Python environment files
+backend/.env
+backend/.env.*
+!backend/.env.example
