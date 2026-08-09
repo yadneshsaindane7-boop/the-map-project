@@ -15,10 +15,10 @@ import '../../search/providers/destination_provider.dart';
 import '../../search/widgets/destination_marker.dart';
 import '../../search/widgets/search_panel.dart';
 
-import '../models/road_event.dart';
 import '../providers/location_provider.dart';
 import '../providers/map_controller_provider.dart';
 import '../providers/road_event_provider.dart';
+import '../providers/selected_map_location_provider.dart';
 
 import '../widgets/map_floating_controls.dart';
 import '../widgets/road_event_markers.dart';
@@ -34,15 +34,15 @@ class MapPage extends ConsumerStatefulWidget {
 
 class _MapPageState extends ConsumerState<MapPage> {
   bool _cameraMoved = false;
-
   DateTime? _lastRouteFit;
+  LatLng? _lastSelectedMapLocation;
 
   MapStyle _selectedStyle = MapStyle.streets;
 
   void _showMapStyleMenu() {
     showModalBottomSheet(
       context: context,
-      builder: (_) {
+      builder: (context) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -50,10 +50,9 @@ class _MapPageState extends ConsumerState<MapPage> {
               return ListTile(
                 leading: const Icon(Icons.map),
                 title: Text(style.displayName),
-                trailing:
-                    style == _selectedStyle
-                        ? const Icon(Icons.check)
-                        : null,
+                trailing: style == _selectedStyle
+                    ? const Icon(Icons.check)
+                    : null,
                 onTap: () {
                   Navigator.pop(context);
 
@@ -71,21 +70,20 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   void _zoomToReports(
     MapController controller,
-    List<RoadEvent> events,
+    List events,
   ) {
     if (events.isEmpty) {
       return;
     }
 
-    final points =
-        events
-            .map(
-              (e) => LatLng(
-                e.latitude,
-                e.longitude,
-              ),
-            )
-            .toList();
+    final points = events
+        .map(
+          (event) => LatLng(
+            event.latitude,
+            event.longitude,
+          ),
+        )
+        .toList();
 
     controller.fitCamera(
       CameraFitService.fitPoints(points),
@@ -94,32 +92,27 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final location =
-        ref.watch(currentLocationProvider);
+    final location = ref.watch(currentLocationProvider);
 
-    final mapController =
-        ref.read(mapControllerProvider);
+    final mapController = ref.read(mapControllerProvider);
 
-    final destination =
-        ref.watch(destinationProvider);
+    final destination = ref.watch(destinationProvider);
 
-    final routeState =
-        ref.watch(routeProvider);
+    final selectedMapLocation =
+        ref.watch(selectedMapLocationProvider);
 
-    final roadEvents =
-        ref.watch(roadEventsProvider);
+    final routeState = ref.watch(routeProvider);
+
+    final roadEvents = ref.watch(roadEventsProvider);
 
     return Scaffold(
       body: location.when(
-        loading:
-            () => const Center(
-              child:
-                  CircularProgressIndicator(),
-            ),
-        error:
-            (error, stackTrace) => Center(
-              child: Text(error.toString()),
-            ),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        error: (error, stackTrace) => Center(
+          child: Text(error.toString()),
+        ),
         data: (Position position) {
           final userLocation = LatLng(
             position.latitude,
@@ -127,8 +120,7 @@ class _MapPageState extends ConsumerState<MapPage> {
           );
 
           if (!_cameraMoved) {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               mapController.move(
                 userLocation,
                 17,
@@ -138,15 +130,25 @@ class _MapPageState extends ConsumerState<MapPage> {
             _cameraMoved = true;
           }
 
+          // Move to the alert location when "View on Map" is pressed.
+          if (selectedMapLocation != null &&
+              selectedMapLocation != _lastSelectedMapLocation) {
+            _lastSelectedMapLocation = selectedMapLocation;
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              mapController.move(
+                selectedMapLocation,
+                17,
+              );
+            });
+          }
+
           if (routeState.hasRoute &&
               routeState.lastUpdated != null &&
-              routeState.lastUpdated !=
-                  _lastRouteFit) {
-            _lastRouteFit =
-                routeState.lastUpdated;
+              routeState.lastUpdated != _lastRouteFit) {
+            _lastRouteFit = routeState.lastUpdated;
 
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               mapController.fitCamera(
                 CameraFitService.fitRoute(
                   routeState.route!.points,
@@ -154,9 +156,9 @@ class _MapPageState extends ConsumerState<MapPage> {
               );
             });
           } else if (destination != null &&
-              !routeState.hasRoute) {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) {
+              !routeState.hasRoute &&
+              selectedMapLocation == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               mapController.move(
                 LatLng(
                   destination.latitude,
@@ -177,10 +179,9 @@ class _MapPageState extends ConsumerState<MapPage> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate:
-                        MapTileProvider.getTileUrl(
-                          _selectedStyle,
-                        ),
+                    urlTemplate: MapTileProvider.getTileUrl(
+                      _selectedStyle,
+                    ),
                     userAgentPackageName:
                         'com.themapproject.mobile',
                   ),
@@ -199,24 +200,37 @@ class _MapPageState extends ConsumerState<MapPage> {
                       ),
                     ),
 
+                  // Selected alert location.
+                  if (selectedMapLocation != null)
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: selectedMapLocation,
+                          width: 60,
+                          height: 60,
+                          child: const Icon(
+                            Icons.warning_rounded,
+                            color: Colors.red,
+                            size: 48,
+                          ),
+                        ),
+                      ],
+                    ),
+
                   roadEvents.when(
-                    loading:
-                        () => const MarkerLayer(
-                          markers: [],
-                        ),
-                    error:
-                        (error, stackTrace) =>
-                            const MarkerLayer(
-                              markers: [],
-                            ),
-                    data:
-                        (events) => RoadEventMarkers(
-                          events: events,
-                          currentLocation:
-                              userLocation,
-                        ),
+                    loading: () => const MarkerLayer(
+                      markers: [],
+                    ),
+                    error: (error, stackTrace) =>
+                        const MarkerLayer(
+                      markers: [],
+                    ),
+                    data: (events) => RoadEventMarkers(
+                      events: events,
+                      currentLocation: userLocation,
+                    ),
                   ),
-                                  ],
+                ],
               ),
 
               SafeArea(
@@ -224,10 +238,10 @@ class _MapPageState extends ConsumerState<MapPage> {
                   padding: const EdgeInsets.all(16),
                   child: SearchPanel(
                     onDestinationSelected: () async {
-                      final destination =
+                      final selectedDestination =
                           ref.read(destinationProvider);
 
-                      if (destination == null) {
+                      if (selectedDestination == null) {
                         ref
                             .read(routeProvider.notifier)
                             .clearRoute();
@@ -243,9 +257,9 @@ class _MapPageState extends ConsumerState<MapPage> {
                             startLongitude:
                                 userLocation.longitude,
                             endLatitude:
-                                destination.latitude,
+                                selectedDestination.latitude,
                             endLongitude:
-                                destination.longitude,
+                                selectedDestination.longitude,
                           );
                     },
                   ),
@@ -257,10 +271,12 @@ class _MapPageState extends ConsumerState<MapPage> {
                 bottom: 200,
                 child: roadEvents.when(
                   loading: () => const SizedBox.shrink(),
-                  error: (error, stackTrace) => const SizedBox.shrink(),
-                  data: (events) => FloatingActionButton.small(
-                    heroTag: "zoom_reports",
-                    tooltip: "Zoom to Reports",
+                  error: (error, stackTrace) =>
+                      const SizedBox.shrink(),
+                  data: (events) =>
+                      FloatingActionButton.small(
+                    heroTag: 'zoom_reports',
+                    tooltip: 'Zoom to Reports',
                     backgroundColor: Colors.red,
                     onPressed: () {
                       _zoomToReports(

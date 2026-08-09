@@ -56,7 +56,7 @@ class RoadEventsNotifier extends AsyncNotifier<List<RoadEvent>> {
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: "public",
-          table: "road_events",
+          table: "incident_reports",
           callback: (payload) async {
             debugPrint("");
             debugPrint(

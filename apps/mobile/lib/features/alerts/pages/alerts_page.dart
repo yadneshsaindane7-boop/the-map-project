@@ -16,6 +16,15 @@ class AlertsPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Traffic Alerts'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: 'Refresh',
+            onPressed: () {
+              ref.invalidate(alertsProvider);
+            },
+            icon: const Icon(Icons.refresh),
+          ),
+        ],
       ),
       body: alerts.when(
         loading: () => const Center(
@@ -40,7 +49,6 @@ class AlertsPage extends ConsumerWidget {
                 const SizedBox(height: 20),
                 FilledButton.icon(
                   onPressed: () {
-                    // Rebuilds the provider.
                     ref.invalidate(alertsProvider);
                   },
                   icon: const Icon(Icons.refresh),
@@ -57,9 +65,9 @@ class AlertsPage extends ConsumerWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              // Refresh and wait for the new value.
-              final future = ref.refresh(alertsProvider.future);
-              await future;
+              ref.invalidate(alertsProvider);
+
+              await ref.read(alertsProvider.future);
             },
             child: ListView.builder(
               padding: const EdgeInsets.all(16),

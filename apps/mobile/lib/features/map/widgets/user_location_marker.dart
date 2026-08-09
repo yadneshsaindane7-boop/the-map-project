@@ -3,12 +3,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class UserLocationMarker extends StatelessWidget {
-  final LatLng position;
-
   const UserLocationMarker({
     super.key,
     required this.position,
   });
+
+  final LatLng position;
 
   @override
   Widget build(BuildContext context) {

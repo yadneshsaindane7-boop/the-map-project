@@ -18,34 +18,18 @@ class RoadEventMarkers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("");
-    debugPrint("========== ROAD EVENT MARKERS ==========");
-    debugPrint("Total Events : ${events.length}");
-
-    for (final event in events) {
-      debugPrint(
-        "Marker -> ${event.title} : ${event.latitude}, ${event.longitude}",
-      );
-    }
-
-    debugPrint("========================================");
-    debugPrint("");
-
     return MarkerLayer(
       markers: events.map((event) {
         return Marker(
-          // TEMPORARY TEST
-          // We intentionally place every event at the user's current
-          // location to verify that markers render correctly.
-          point: currentLocation,
-
+          point: LatLng(
+            event.latitude,
+            event.longitude,
+          ),
           width: 55,
           height: 55,
-
           child: GestureDetector(
             onTap: () {
-              final distanceMeters =
-                  Geolocator.distanceBetween(
+              final distanceMeters = Geolocator.distanceBetween(
                 currentLocation.latitude,
                 currentLocation.longitude,
                 event.latitude,

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../map/providers/selected_map_location_provider.dart';
+import '../../navigation/providers/navigation_provider.dart';
 import '../models/traffic_alert.dart';
 import 'alert_status_chip.dart';
 
-class AlertCard extends StatelessWidget {
+class AlertCard extends ConsumerWidget {
   const AlertCard({
     super.key,
     required this.alert,
@@ -12,34 +15,32 @@ class AlertCard extends StatelessWidget {
   final TrafficAlert alert;
 
   String get timeAgo {
-    final difference =
-        DateTime.now().difference(alert.createdAt);
+    final difference = DateTime.now().difference(alert.createdAt);
 
     if (difference.inMinutes < 1) {
-      return "Just now";
+      return 'Just now';
     }
 
     if (difference.inMinutes < 60) {
-      return "${difference.inMinutes} min ago";
+      return '${difference.inMinutes} min ago';
     }
 
     if (difference.inHours < 24) {
-      return "${difference.inHours} hr ago";
+      return '${difference.inHours} hr ago';
     }
 
-    return "${difference.inDays} day ago";
+    return '${difference.inDays} day ago';
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
@@ -47,68 +48,51 @@ class AlertCard extends StatelessWidget {
                   Icons.warning_amber_rounded,
                   color: Colors.red,
                 ),
-
                 const SizedBox(width: 8),
-
                 Expanded(
                   child: Text(
                     alert.title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(
-                          fontWeight:
-                              FontWeight.bold,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                   ),
                 ),
-
                 AlertStatusChip(
                   status: alert.status,
                 ),
               ],
             ),
-
             const SizedBox(height: 10),
-
             Text(alert.description),
-
             const SizedBox(height: 16),
-
             Row(
               children: [
                 const Icon(
                   Icons.access_time,
                   size: 18,
                 ),
-
                 const SizedBox(width: 6),
-
                 Text(timeAgo),
               ],
             ),
-
             const SizedBox(height: 16),
-
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Map integration coming soon.",
-                      ),
-                    ),
-                  );
+                  ref
+                      .read(selectedMapLocationProvider.notifier)
+                      .selectLocation(
+                        latitude: alert.latitude,
+                        longitude: alert.longitude,
+                      );
+
+                  ref
+                      .read(navigationProvider.notifier)
+                      .changeTab(0);
                 },
-                icon: const Icon(
-                  Icons.map,
-                ),
-                label: const Text(
-                  "View on Map",
-                ),
+                icon: const Icon(Icons.map),
+                label: const Text('View on Map'),
               ),
             ),
           ],
