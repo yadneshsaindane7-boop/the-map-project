@@ -1,13 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../map/models/road_event.dart';
-import '../../map/providers/road_event_provider.dart';
 import '../models/route_model.dart';
-import '../services/graphhopper_service.dart';
+import '../services/routing_backend/routing_backend_service.dart';
 
-final graphHopperServiceProvider =
-    Provider<GraphHopperService>((ref) {
-  return GraphHopperService();
+final routingBackendServiceProvider =
+    Provider<RoutingBackendService>((ref) {
+  return RoutingBackendService();
 });
 
 class RouteState {
@@ -33,38 +31,26 @@ class RouteState {
     RouteModel? route,
     String? error,
     DateTime? lastUpdated,
+    bool clearError = false,
   }) {
     return RouteState(
       isLoading: isLoading ?? this.isLoading,
       isRerouting: isRerouting ?? this.isRerouting,
       route: route ?? this.route,
-      error: error,
+      error: clearError ? null : error ?? this.error,
       lastUpdated: lastUpdated ?? this.lastUpdated,
     );
   }
 }
 
 class RouteNotifier extends Notifier<RouteState> {
-  late final GraphHopperService _service;
+  late final RoutingBackendService _service;
 
   @override
   RouteState build() {
-    _service = ref.read(graphHopperServiceProvider);
+    _service = ref.read(routingBackendServiceProvider);
 
     return const RouteState();
-  }
-
-  List<RoadEvent> _getActiveRoadEvents() {
-    final roadEventsState =
-        ref.read(roadEventsProvider);
-
-    return roadEventsState.maybeWhen(
-      data: (events) => events
-          .whereType<RoadEvent>()
-          .where((event) => event.shouldAvoid)
-          .toList(),
-      orElse: () => const <RoadEvent>[],
-    );
   }
 
   Future<void> loadRoute({
@@ -73,31 +59,28 @@ class RouteNotifier extends Notifier<RouteState> {
     required double endLatitude,
     required double endLongitude,
   }) async {
-    state = RouteState(
+    state = state.copyWith(
       isLoading: true,
-      route: state.route,
-      lastUpdated: state.lastUpdated,
+      isRerouting: false,
+      clearError: true,
     );
 
     try {
-      final activeClosures = _getActiveRoadEvents();
-
       final route = await _service.getRoute(
         startLatitude: startLatitude,
         startLongitude: startLongitude,
         endLatitude: endLatitude,
         endLongitude: endLongitude,
-        roadEvents: activeClosures,
       );
 
       state = RouteState(
         route: route,
         lastUpdated: DateTime.now(),
       );
-    } catch (e) {
+    } catch (error) {
       state = RouteState(
         route: state.route,
-        error: e.toString(),
+        error: error.toString(),
         lastUpdated: state.lastUpdated,
       );
     }
@@ -109,35 +92,31 @@ class RouteNotifier extends Notifier<RouteState> {
     required double endLatitude,
     required double endLongitude,
   }) async {
-    if (state.isRerouting) {
+    if (state.isLoading || state.isRerouting) {
       return;
     }
 
-    state = RouteState(
+    state = state.copyWith(
       isRerouting: true,
-      route: state.route,
-      lastUpdated: state.lastUpdated,
+      clearError: true,
     );
 
     try {
-      final activeClosures = _getActiveRoadEvents();
-
       final route = await _service.getRoute(
         startLatitude: startLatitude,
         startLongitude: startLongitude,
         endLatitude: endLatitude,
         endLongitude: endLongitude,
-        roadEvents: activeClosures,
       );
 
       state = RouteState(
         route: route,
         lastUpdated: DateTime.now(),
       );
-    } catch (e) {
+    } catch (error) {
       state = RouteState(
         route: state.route,
-        error: e.toString(),
+        error: error.toString(),
         lastUpdated: state.lastUpdated,
       );
     }
@@ -145,6 +124,12 @@ class RouteNotifier extends Notifier<RouteState> {
 
   void clearRoute() {
     state = const RouteState();
+  }
+
+  void clearError() {
+    state = state.copyWith(
+      clearError: true,
+    );
   }
 }
 

@@ -15,35 +15,51 @@ class RouteModel {
     required this.instructions,
   });
 
-  factory RouteModel.fromGraphHopper(
+  factory RouteModel.fromBackend(
     Map<String, dynamic> json,
   ) {
-    final path = json['paths'][0];
+    final rawCoordinates =
+        json['coordinates'] as List<dynamic>? ?? [];
 
-    final coordinates =
-        path['points']['coordinates'] as List<dynamic>;
+    final points = rawCoordinates.map<LatLng>(
+      (coordinate) {
+        final data =
+            coordinate as Map<String, dynamic>;
 
-    final points = coordinates.map((coordinate) {
-      return LatLng(
-        (coordinate[1] as num).toDouble(),
-        (coordinate[0] as num).toDouble(),
+        return LatLng(
+          (data['latitude'] as num).toDouble(),
+          (data['longitude'] as num).toDouble(),
+        );
+      },
+    ).toList();
+
+    // Calculate the total route distance from the
+    // coordinates returned by the routing backend.
+    const distanceCalculator = Distance();
+
+    double totalDistanceMeters = 0;
+
+    for (var index = 0;
+        index < points.length - 1;
+        index++) {
+      totalDistanceMeters += distanceCalculator.as(
+        LengthUnit.Meter,
+        points[index],
+        points[index + 1],
       );
-    }).toList();
+    }
 
-    final instructions =
-        (path['instructions'] as List<dynamic>)
-            .map(
-              (instruction) =>
-                  RouteInstruction.fromJson(instruction),
-            )
-            .toList();
+    // Backend returns total_cost_seconds.
+    final totalTimeSeconds =
+        (json['total_cost_seconds'] as num?)
+            ?.toDouble() ??
+        0.0;
 
     return RouteModel(
-      distance:
-          (path['distance'] as num).toDouble(),
-      time: path['time'],
+      distance: totalDistanceMeters,
+      time: (totalTimeSeconds * 1000).round(),
       points: points,
-      instructions: instructions,
+      instructions: const [],
     );
   }
 

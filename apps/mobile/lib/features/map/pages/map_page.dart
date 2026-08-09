@@ -35,22 +35,23 @@ class MapPage extends ConsumerStatefulWidget {
 }
 
 class _MapPageState extends ConsumerState<MapPage> {
+  bool _cameraMoved = false;
+
+  MapStyle _selectedStyle = MapStyle.streets;
+
+  DateTime? _lastRouteFit;
+  LatLng? _lastSelectedAlertLocation;
+
   static const double _arrivalThresholdMeters = 30;
   static const double _offRouteThresholdMeters = 50;
 
   static const Duration _rerouteCooldown =
       Duration(seconds: 15);
 
-  bool _cameraMoved = false;
   bool _arrivalHandled = false;
   bool _rerouteInProgress = false;
 
-  DateTime? _lastRouteFit;
   DateTime? _lastRerouteTime;
-
-  LatLng? _lastSelectedAlertLocation;
-
-  MapStyle _selectedStyle = MapStyle.streets;
 
   void _showMapStyleMenu() {
     showModalBottomSheet(
@@ -146,6 +147,10 @@ class _MapPageState extends ConsumerState<MapPage> {
       return;
     }
 
+    if (route.points.isEmpty) {
+      return;
+    }
+
     final routePoints = List<LatLng>.from(
       route.points,
     );
@@ -162,15 +167,6 @@ class _MapPageState extends ConsumerState<MapPage> {
 
     _rerouteInProgress = true;
     _lastRerouteTime = now;
-
-    debugPrint('');
-    debugPrint('========== OFF ROUTE DETECTED ==========');
-    debugPrint(
-      'Distance from route: '
-      '${distanceFromRoute.toStringAsFixed(1)} meters',
-    );
-    debugPrint('Starting automatic reroute...');
-    debugPrint('========================================');
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -190,92 +186,13 @@ class _MapPageState extends ConsumerState<MapPage> {
             endLatitude: destination.latitude,
             endLongitude: destination.longitude,
           );
-
+    } catch (error) {
       debugPrint(
-        'Automatic reroute completed.',
-      );
-    } catch (e) {
-      debugPrint(
-        'Automatic reroute failed: $e',
+        'Automatic reroute failed: $error',
       );
     } finally {
       _rerouteInProgress = false;
     }
-  }
-
-  void _updateCurrentInstruction({
-    required LatLng userLocation,
-    required dynamic route,
-  }) {
-    final routePoints = List<LatLng>.from(
-      route.points,
-    );
-
-    final instructions = route.instructions;
-
-    if (routePoints.length < 2 ||
-        instructions.isEmpty) {
-      return;
-    }
-
-    int nearestPointIndex = 0;
-    double nearestDistance = double.infinity;
-
-    for (int i = 0; i < routePoints.length; i++) {
-      final distance = Geolocator.distanceBetween(
-        userLocation.latitude,
-        userLocation.longitude,
-        routePoints[i].latitude,
-        routePoints[i].longitude,
-      );
-
-      if (distance < nearestDistance) {
-        nearestDistance = distance;
-        nearestPointIndex = i;
-      }
-    }
-
-    final routeProgress =
-        nearestPointIndex /
-        (routePoints.length - 1);
-
-    int instructionIndex =
-        (routeProgress * instructions.length).floor();
-
-    instructionIndex = instructionIndex
-        .clamp(
-          0,
-          instructions.length - 1,
-        )
-        .toInt();
-
-    final currentInstruction =
-        instructions[instructionIndex];
-
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        if (!mounted) {
-          return;
-        }
-
-        final journeyState = ref.read(
-          journeyNavigationProvider,
-        );
-
-        if (!journeyState.isNavigating) {
-          return;
-        }
-
-        ref
-            .read(
-              journeyNavigationProvider.notifier,
-            )
-            .updateInstruction(
-              instructionIndex: instructionIndex,
-              instruction: currentInstruction,
-            );
-      },
-    );
   }
 
   void _updateJourneyProgress({
@@ -283,6 +200,10 @@ class _MapPageState extends ConsumerState<MapPage> {
     required dynamic destination,
     required dynamic route,
   }) {
+    if (route.points.isEmpty) {
+      return;
+    }
+
     final straightLineDistance =
         Geolocator.distanceBetween(
       userLocation.latitude,
@@ -333,12 +254,12 @@ class _MapPageState extends ConsumerState<MapPage> {
       destination.longitude,
     );
 
-    double progressRatio = 1;
+    double progressRatio = 1.0;
 
     if (initialStraightLineDistance > 0) {
       progressRatio =
           straightLineDistance /
-          initialStraightLineDistance;
+              initialStraightLineDistance;
     }
 
     progressRatio = progressRatio.clamp(
@@ -358,11 +279,11 @@ class _MapPageState extends ConsumerState<MapPage> {
           return;
         }
 
-        final currentJourneyState = ref.read(
+        final journeyState = ref.read(
           journeyNavigationProvider,
         );
 
-        if (!currentJourneyState.isNavigating) {
+        if (!journeyState.isNavigating) {
           return;
         }
 
@@ -376,6 +297,141 @@ class _MapPageState extends ConsumerState<MapPage> {
               remainingDurationMillis:
                   remainingDuration,
             );
+      },
+    );
+  }
+
+  Future<void> _loadRoute({
+    required LatLng userLocation,
+  }) async {
+    final destination = ref.read(
+      destinationProvider,
+    );
+
+    if (destination == null) {
+      return;
+    }
+
+    _arrivalHandled = false;
+    _rerouteInProgress = false;
+    _lastRerouteTime = null;
+
+    debugPrint('');
+    debugPrint('========== LOADING ROUTE ==========');
+    debugPrint(
+      'START: '
+      '${userLocation.latitude}, '
+      '${userLocation.longitude}',
+    );
+    debugPrint(
+      'DESTINATION: '
+      '${destination.latitude}, '
+      '${destination.longitude}',
+    );
+    debugPrint('===================================');
+
+    try {
+      await ref
+          .read(routeProvider.notifier)
+          .loadRoute(
+            startLatitude:
+                userLocation.latitude,
+            startLongitude:
+                userLocation.longitude,
+            endLatitude:
+                destination.latitude,
+            endLongitude:
+                destination.longitude,
+          );
+
+      if (!mounted) {
+        return;
+      }
+
+      final routeState = ref.read(
+        routeProvider,
+      );
+
+      if (routeState.hasRoute &&
+          routeState.route != null) {
+        final route = routeState.route!;
+
+        debugPrint('');
+        debugPrint('========== ROUTE RESULT ==========');
+        debugPrint(
+          'Route points: '
+          '${route.points.length}',
+        );
+        debugPrint(
+          'Route time: '
+          '${route.time}',
+        );
+        debugPrint(
+          'Route distance: '
+          '${route.distance}',
+        );
+        debugPrint('==================================');
+
+        if (route.points.length >= 2) {
+          mapControllerSafeFit(
+            route.points,
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Route was returned but contains too few points.',
+              ),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              routeState.error ??
+                  'Unable to find a route.',
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      debugPrint(
+        'Route loading error: $error',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to load route: $error',
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  void mapControllerSafeFit(
+    List<LatLng> points,
+  ) {
+    if (points.length < 2) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (!mounted) {
+          return;
+        }
+
+        final controller = ref.read(
+          mapControllerProvider,
+        );
+
+        controller.fitCamera(
+          CameraFitService.fitRoute(points),
+        );
       },
     );
   }
@@ -423,13 +479,21 @@ class _MapPageState extends ConsumerState<MapPage> {
 
     return Scaffold(
       body: initialLocation.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, stackTrace) => Center(
-          child: Text(error.toString()),
-        ),
-        data: (Position initialPosition) {
+        loading: () {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+        error: (error, stackTrace) {
+          return Center(
+            child: Text(
+              error.toString(),
+            ),
+          );
+        },
+        data: (
+          Position initialPosition,
+        ) {
           LatLng userLocation = LatLng(
             initialPosition.latitude,
             initialPosition.longitude,
@@ -446,38 +510,23 @@ class _MapPageState extends ConsumerState<MapPage> {
             );
           }
 
-          if (journeyState.isNavigating &&
-              destination != null &&
-              routeState.hasRoute &&
-              liveLocation.hasValue) {
-            _updateJourneyProgress(
-              userLocation: userLocation,
-              destination: destination,
-              route: routeState.route!,
-            );
-
-            _updateCurrentInstruction(
-              userLocation: userLocation,
-              route: routeState.route!,
-            );
-
+          if (!_cameraMoved) {
             WidgetsBinding.instance.addPostFrameCallback(
               (_) {
                 if (!mounted) {
                   return;
                 }
 
-                _checkOffRoute(
-                  userLocation: userLocation,
-                  destination: destination,
-                  route: routeState.route!,
+                mapController.move(
+                  userLocation,
+                  17,
                 );
               },
             );
+
+            _cameraMoved = true;
           }
 
-          // Move the map to the alert selected
-          // from the Alerts page.
           if (selectedAlertLocation != null &&
               selectedAlertLocation !=
                   _lastSelectedAlertLocation) {
@@ -500,73 +549,71 @@ class _MapPageState extends ConsumerState<MapPage> {
 
           if (journeyState.isNavigating &&
               liveLocation.hasValue) {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) {
-              if (!mounted) {
-                return;
-              }
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                if (!mounted) {
+                  return;
+                }
 
-              mapController.move(
-                userLocation,
-                18,
-              );
-            });
-          }
-
-          if (!_cameraMoved) {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) {
-              if (!mounted) {
-                return;
-              }
-
-              mapController.move(
-                userLocation,
-                17,
-              );
-            });
-
-            _cameraMoved = true;
+                mapController.move(
+                  userLocation,
+                  18,
+                );
+              },
+            );
           }
 
           if (routeState.hasRoute &&
+              routeState.route != null &&
+              routeState.route!.points.length >= 2 &&
               routeState.lastUpdated != null &&
               routeState.lastUpdated != _lastRouteFit) {
             _lastRouteFit =
                 routeState.lastUpdated;
 
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) {
-              if (!mounted) {
-                return;
-              }
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                if (!mounted) {
+                  return;
+                }
 
-              if (!journeyState.isNavigating &&
-                  selectedAlertLocation == null) {
-                mapController.fitCamera(
-                  CameraFitService.fitRoute(
-                    routeState.route!.points,
-                  ),
+                if (!journeyState.isNavigating &&
+                    selectedAlertLocation == null) {
+                  mapController.fitCamera(
+                    CameraFitService.fitRoute(
+                      routeState.route!.points,
+                    ),
+                  );
+                }
+              },
+            );
+          }
+
+          if (journeyState.isNavigating &&
+              destination != null &&
+              routeState.hasRoute &&
+              routeState.route != null &&
+              routeState.route!.points.isNotEmpty &&
+              liveLocation.hasValue) {
+            _updateJourneyProgress(
+              userLocation: userLocation,
+              destination: destination,
+              route: routeState.route!,
+            );
+
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) {
+                if (!mounted) {
+                  return;
+                }
+
+                _checkOffRoute(
+                  userLocation: userLocation,
+                  destination: destination,
+                  route: routeState.route!,
                 );
-              }
-            });
-          } else if (destination != null &&
-              !routeState.hasRoute &&
-              selectedAlertLocation == null) {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) {
-              if (!mounted) {
-                return;
-              }
-
-              mapController.move(
-                LatLng(
-                  destination.latitude,
-                  destination.longitude,
-                ),
-                16,
-              );
-            });
+              },
+            );
           }
 
           return Stack(
@@ -589,10 +636,6 @@ class _MapPageState extends ConsumerState<MapPage> {
 
                   const RoutePolyline(),
 
-                  UserLocationMarker(
-                    position: userLocation,
-                  ),
-
                   if (destination != null)
                     DestinationMarker(
                       position: LatLng(
@@ -606,7 +649,10 @@ class _MapPageState extends ConsumerState<MapPage> {
                         const MarkerLayer(
                       markers: [],
                     ),
-                    error: (error, stackTrace) =>
+                    error: (
+                      error,
+                      stackTrace,
+                    ) =>
                         const MarkerLayer(
                       markers: [],
                     ),
@@ -616,6 +662,10 @@ class _MapPageState extends ConsumerState<MapPage> {
                       currentLocation:
                           userLocation,
                     ),
+                  ),
+
+                  UserLocationMarker(
+                    position: userLocation,
                   ),
                 ],
               ),
@@ -627,63 +677,24 @@ class _MapPageState extends ConsumerState<MapPage> {
                   child: SearchPanel(
                     onDestinationSelected:
                         () async {
-                      _arrivalHandled = false;
-                      _rerouteInProgress = false;
-                      _lastRerouteTime = null;
-
-                      ref
-                          .read(
-                            journeyNavigationProvider
-                                .notifier,
-                          )
-                          .stopNavigation();
-
-                      final selectedDestination =
-                          ref.read(
-                        destinationProvider,
+                      await _loadRoute(
+                        userLocation: userLocation,
                       );
-
-                      if (selectedDestination ==
-                          null) {
-                        ref
-                            .read(
-                              routeProvider.notifier,
-                            )
-                            .clearRoute();
-
-                        return;
-                      }
-
-                      await ref
-                          .read(
-                            routeProvider.notifier,
-                          )
-                          .loadRoute(
-                            startLatitude:
-                                userLocation.latitude,
-                            startLongitude:
-                                userLocation.longitude,
-                            endLatitude:
-                                selectedDestination
-                                    .latitude,
-                            endLongitude:
-                                selectedDestination
-                                    .longitude,
-                          );
                     },
                   ),
                 ),
               ),
 
-              if (routeState.isRerouting)
+              if (routeState.isLoading)
                 const Positioned(
-                  top: 100,
+                  top: 90,
                   left: 0,
                   right: 0,
                   child: Center(
                     child: Card(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
+                        padding:
+                            EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
@@ -700,9 +711,78 @@ class _MapPageState extends ConsumerState<MapPage> {
                               ),
                             ),
                             SizedBox(width: 12),
-                            Text('Rerouting...'),
+                            Text(
+                              'Finding route...',
+                            ),
                           ],
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              if (routeState.isRerouting)
+                const Positioned(
+                  top: 90,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Card(
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          mainAxisSize:
+                              MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 18,
+                              height: 18,
+                              child:
+                                  CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              'Rerouting...',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              if (routeState.error != null)
+                Positioned(
+                  top: 150,
+                  left: 16,
+                  right: 16,
+                  child: Card(
+                    color: Colors.red.shade50,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              routeState.error!,
+                              maxLines: 3,
+                              overflow:
+                                  TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

@@ -31,6 +31,13 @@ class AppConstants {
   static String get graphHopperApiKey =>
       dotenv.env['GRAPHHOPPER_API_KEY']!;
 
+// ==============================
+// Routing Backend
+// ==============================
+
+static String get routingBackendUrl =>
+    dotenv.env['ROUTING_BACKEND_URL']!;
+
   // ==============================
   // Deep Link
   // ==============================
