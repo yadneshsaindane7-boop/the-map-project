@@ -8,8 +8,8 @@ import '../../../core/map/camera_fit_service.dart';
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
 
-import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/live_location_provider.dart';
+import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
 import '../../navigation/widgets/route_polyline.dart';
 
@@ -93,26 +93,33 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final initialLocation =
-        ref.watch(currentLocationProvider);
+    final initialLocation = ref.watch(
+      currentLocationProvider,
+    );
 
-    final liveLocation =
-        ref.watch(liveLocationProvider);
+    final liveLocation = ref.watch(
+      liveLocationProvider,
+    );
 
-    final journeyState =
-        ref.watch(journeyNavigationProvider);
+    final journeyState = ref.watch(
+      journeyNavigationProvider,
+    );
 
-    final mapController =
-        ref.read(mapControllerProvider);
+    final mapController = ref.read(
+      mapControllerProvider,
+    );
 
-    final destination =
-        ref.watch(destinationProvider);
+    final destination = ref.watch(
+      destinationProvider,
+    );
 
-    final routeState =
-        ref.watch(routeProvider);
+    final routeState = ref.watch(
+      routeProvider,
+    );
 
-    final roadEvents =
-        ref.watch(roadEventsProvider);
+    final roadEvents = ref.watch(
+      roadEventsProvider,
+    );
 
     return Scaffold(
       body: initialLocation.when(
@@ -129,8 +136,8 @@ class _MapPageState extends ConsumerState<MapPage> {
           );
 
           /*
-           * When navigation is active, use the continuous
-           * GPS location instead of the original location.
+           * During an active journey, the live GPS stream
+           * becomes the source of truth for the user's location.
            */
           if (journeyState.isNavigating) {
             liveLocation.whenData(
@@ -139,18 +146,29 @@ class _MapPageState extends ConsumerState<MapPage> {
                   livePosition.latitude,
                   livePosition.longitude,
                 );
-
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) {
-                  mapController.move(
-                    userLocation,
-                    18,
-                  );
-                });
               },
             );
           }
 
+          /*
+           * Move the camera after every live GPS update
+           * while navigation is active.
+           */
+          if (journeyState.isNavigating &&
+              liveLocation.hasValue) {
+            WidgetsBinding.instance
+                .addPostFrameCallback((_) {
+              mapController.move(
+                userLocation,
+                18,
+              );
+            });
+          }
+
+          /*
+           * Move to the user's initial location once
+           * when the map is first loaded.
+           */
           if (!_cameraMoved) {
             WidgetsBinding.instance
                 .addPostFrameCallback((_) {
@@ -163,6 +181,10 @@ class _MapPageState extends ConsumerState<MapPage> {
             _cameraMoved = true;
           }
 
+          /*
+           * Fit the complete route once whenever
+           * a newly calculated route is received.
+           */
           if (routeState.hasRoute &&
               routeState.lastUpdated != null &&
               routeState.lastUpdated != _lastRouteFit) {
@@ -258,8 +280,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                           null) {
                         ref
                             .read(
-                              routeProvider
-                                  .notifier,
+                              routeProvider.notifier,
                             )
                             .clearRoute();
 
