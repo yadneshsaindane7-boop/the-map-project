@@ -8,10 +8,7 @@ import '../providers/destination_provider.dart';
 import '../providers/search_provider.dart';
 
 class SearchPanel extends ConsumerStatefulWidget {
-  const SearchPanel({
-    super.key,
-    this.onDestinationSelected,
-  });
+  const SearchPanel({super.key, this.onDestinationSelected});
 
   final VoidCallback? onDestinationSelected;
 
@@ -34,12 +31,9 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
   void _onChanged(String value) {
     _debounce?.cancel();
 
-    _debounce = Timer(
-      const Duration(milliseconds: 500),
-      () {
-        ref.read(searchProvider.notifier).search(value);
-      },
-    );
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      ref.read(searchProvider.notifier).search(value);
+    });
   }
 
   void _clearSearch() {
@@ -49,7 +43,6 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
 
     ref.read(destinationProvider.notifier).clearDestination();
 
-    // ✅ Clear the current route
     ref.read(routeProvider.notifier).clearRoute();
 
     setState(() {});
@@ -77,53 +70,59 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
                 hintText: 'Search destination...',
                 prefixIcon: const Icon(Icons.search),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 suffixIcon: searchState.isLoading
                     ? const Padding(
                         padding: EdgeInsets.all(14),
                         child: SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
                       )
                     : (_controller.text.isEmpty
-                        ? null
-                        : IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: _clearSearch,
-                          )),
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: _clearSearch,
+                            )),
               ),
             ),
-            if (searchState.results.isNotEmpty)
+            if (searchState.results.isNotEmpty) ...[
               const Divider(height: 1),
-            ...searchState.results.map(
-              (result) => ListTile(
-                leading: const Icon(Icons.location_on),
-                title: Text(
-                  result.displayName,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 300),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: searchState.results.length,
+                  itemBuilder: (context, index) {
+                    final result = searchState.results[index];
+
+                    return ListTile(
+                      leading: const Icon(Icons.location_on),
+                      title: Text(
+                        result.displayName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onTap: () {
+                        ref
+                            .read(destinationProvider.notifier)
+                            .setDestination(result);
+
+                        ref.read(searchProvider.notifier).clearResults();
+
+                        _controller.text = result.displayName;
+
+                        widget.onDestinationSelected?.call();
+
+                        setState(() {});
+                      },
+                    );
+                  },
                 ),
-                onTap: () {
-                  ref
-                      .read(destinationProvider.notifier)
-                      .setDestination(result);
-
-                  ref.read(searchProvider.notifier).clearResults();
-
-                  _controller.text = result.displayName;
-
-                  widget.onDestinationSelected?.call();
-
-                  setState(() {});
-                },
               ),
-            ),
+            ],
           ],
         ),
       ),

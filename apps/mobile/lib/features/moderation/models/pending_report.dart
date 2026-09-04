@@ -9,6 +9,7 @@ class PendingReport {
     required this.createdAt,
     required this.userId,
     required this.eventTypeId,
+    required this.osmWayId,
   });
 
   final String id;
@@ -20,8 +21,11 @@ class PendingReport {
   final DateTime createdAt;
   final String? userId;
   final String eventTypeId;
+  final int? osmWayId;
 
   factory PendingReport.fromMap(Map<String, dynamic> map) {
+    final osmWayIdValue = map['osm_way_id'];
+
     return PendingReport(
       id: map['id'] as String,
       title: map['title'] as String,
@@ -32,6 +36,11 @@ class PendingReport {
       createdAt: DateTime.parse(map['created_at'] as String),
       userId: map['user_id'] as String?,
       eventTypeId: map['event_type_id'] as String,
+      osmWayId: osmWayIdValue == null
+          ? null
+          : osmWayIdValue is num
+          ? osmWayIdValue.toInt()
+          : int.parse(osmWayIdValue.toString()),
     );
   }
 
@@ -46,6 +55,7 @@ class PendingReport {
       'created_at': createdAt.toIso8601String(),
       'user_id': userId,
       'event_type_id': eventTypeId,
+      'osm_way_id': osmWayId,
     };
   }
 
@@ -59,6 +69,7 @@ class PendingReport {
     DateTime? createdAt,
     String? userId,
     String? eventTypeId,
+    int? osmWayId,
   }) {
     return PendingReport(
       id: id ?? this.id,
@@ -70,6 +81,7 @@ class PendingReport {
       createdAt: createdAt ?? this.createdAt,
       userId: userId ?? this.userId,
       eventTypeId: eventTypeId ?? this.eventTypeId,
+      osmWayId: osmWayId ?? this.osmWayId,
     );
   }
 

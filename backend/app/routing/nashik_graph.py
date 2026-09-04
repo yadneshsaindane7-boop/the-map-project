@@ -1,3 +1,4 @@
+import math
 from pathlib import Path
 
 import networkx as nx
@@ -50,10 +51,7 @@ class NashikRoadGraph:
 
         return self._nodes
 
-    def get_coordinates(
-        self,
-        node_id,
-    ):
+    def get_coordinates(self, node_id):
         if self.graph is None:
             raise RuntimeError(
                 "Graph has not been loaded."
@@ -69,7 +67,6 @@ class NashikRoadGraph:
                 float(data["latitude"]),
                 float(data["longitude"]),
             )
-
         except (
             KeyError,
             TypeError,
@@ -77,10 +74,7 @@ class NashikRoadGraph:
         ):
             return None
 
-    def get_neighbors(
-        self,
-        node_id,
-    ):
+    def get_neighbors(self, node_id):
         if self.graph is None:
             raise RuntimeError(
                 "Graph has not been loaded."
@@ -107,7 +101,6 @@ class NashikRoadGraph:
                         0,
                     )
                 )
-
             except (
                 TypeError,
                 ValueError,
@@ -145,10 +138,7 @@ class NashikRoadGraph:
 
         return neighbors
 
-    def get_edge_cost(
-        self,
-        edge,
-    ):
+    def get_edge_cost(self, edge):
         return (
             edge["travel_time"]
             + edge.get(
@@ -157,11 +147,7 @@ class NashikRoadGraph:
             )
         )
 
-    def find_nearest_node(
-        self,
-        latitude,
-        longitude,
-    ):
+    def find_nearest_node(self, latitude, longitude):
         if self.graph is None:
             raise RuntimeError(
                 "Graph has not been loaded."
@@ -184,7 +170,6 @@ class NashikRoadGraph:
                 node_longitude = float(
                     data["longitude"]
                 )
-
             except (
                 KeyError,
                 TypeError,
@@ -304,3 +289,189 @@ class NashikRoadGraph:
             "key": best_key,
             "data": best_data,
         }
+
+    def get_edges_by_osm_way_id(
+        self,
+        osm_way_id,
+    ):
+        """
+        Find every graph edge belonging to
+        the specified OSM way.
+
+        The GraphML stores OSM way IDs as strings.
+        """
+
+        if self.graph is None:
+            raise RuntimeError(
+                "Graph has not been loaded."
+            )
+
+        osm_way_id = str(osm_way_id)
+
+        matching_edges = []
+
+        for source, target, key, data in self.graph.edges(
+            keys=True,
+            data=True,
+        ):
+            graph_osmid = data.get("osmid")
+
+            if graph_osmid is None:
+                continue
+
+            if str(graph_osmid) != osm_way_id:
+                continue
+
+            matching_edges.append(
+                {
+                    "source": source,
+                    "target": target,
+                    "key": key,
+                }
+            )
+
+        return matching_edges
+
+    def block_osm_way(
+        self,
+        osm_way_id,
+    ):
+        """
+        Block every graph edge associated with
+        an OSM way ID.
+
+        Returns the number of blocked edges.
+        """
+
+        matching_edges = (
+            self.get_edges_by_osm_way_id(
+                osm_way_id
+            )
+        )
+
+        for edge in matching_edges:
+            self.block_edge(
+                source=edge["source"],
+                target=edge["target"],
+                key=edge["key"],
+            )
+
+        return len(matching_edges)
+
+    def apply_penalty_to_osm_way(
+        self,
+        osm_way_id,
+        penalty,
+    ):
+        """
+        Apply a travel-time penalty to every
+        graph edge associated with an OSM way ID.
+
+        Returns the number of affected edges.
+        """
+
+        matching_edges = (
+            self.get_edges_by_osm_way_id(
+                osm_way_id
+            )
+        )
+
+        for edge in matching_edges:
+            self.apply_penalty_to_edge(
+                source=edge["source"],
+                target=edge["target"],
+                key=edge["key"],
+                penalty=penalty,
+            )
+
+        return len(matching_edges)
+
+    def find_nearest_osm_way(
+        self,
+        latitude,
+        longitude,
+        max_candidates=15,
+    ):
+        """
+        Resolve the nearest road edge / OSM way to a geographic coordinate (lat, lon).
+        Calculates perpendicular distance to candidate edge line segments.
+        Returns a dict containing osm_way_id, distance_meters, name, highway, etc.
+        """
+        if self.graph is None:
+            raise RuntimeError("Graph has not been loaded.")
+
+        lat = float(latitude)
+        lon = float(longitude)
+
+        # Collect candidate nearest nodes
+        node_dists = []
+        for nid, data in self.graph.nodes(data=True):
+            try:
+                nlat = float(data["latitude"])
+                nlon = float(data["longitude"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            d_sq = (nlat - lat) ** 2 + (nlon - lon) ** 2
+            node_dists.append((d_sq, nid))
+
+        node_dists.sort(key=lambda item: item[0])
+        candidates = node_dists[:max_candidates]
+
+        cos_lat = math.cos(math.radians(20.0))
+        best_edge = None
+        min_dist = float("inf")
+        checked_edges = set()
+
+        for _, nid in candidates:
+            incident_edges = list(
+                self.graph.out_edges(nid, keys=True, data=True)
+            ) + list(self.graph.in_edges(nid, keys=True, data=True))
+
+            for u, v, k, d in incident_edges:
+                edge_key = (str(u), str(v), str(k))
+                if edge_key in checked_edges:
+                    continue
+                checked_edges.add(edge_key)
+
+                osmid = d.get("osmid")
+                if not osmid:
+                    continue
+
+                try:
+                    u_data = self.graph.nodes[u]
+                    v_data = self.graph.nodes[v]
+                    u_lat = float(u_data["latitude"])
+                    u_lon = float(u_data["longitude"])
+                    v_lat = float(v_data["latitude"])
+                    v_lon = float(v_data["longitude"])
+                except (KeyError, TypeError, ValueError):
+                    continue
+
+                # Project point to segment in approximate local meters
+                px_m = (lon - u_lon) * 111320.0 * cos_lat
+                py_m = (lat - u_lat) * 110540.0
+                vx_m = (v_lon - u_lon) * 111320.0 * cos_lat
+                vy_m = (v_lat - u_lat) * 110540.0
+
+                seg_len_sq = vx_m * vx_m + vy_m * vy_m
+                if seg_len_sq == 0:
+                    dist = math.sqrt(px_m * px_m + py_m * py_m)
+                else:
+                    t = max(0.0, min(1.0, (px_m * vx_m + py_m * vy_m) / seg_len_sq))
+                    dist_x = px_m - (vx_m * t)
+                    dist_y = py_m - (vy_m * t)
+                    dist = math.sqrt(dist_x * dist_x + dist_y * dist_y)
+
+                if dist < min_dist:
+                    min_dist = dist
+                    best_edge = {
+                        "osm_way_id": int(osmid),
+                        "distance_meters": round(dist, 2),
+                        "name": str(d.get("name") or ""),
+                        "highway": str(d.get("highway") or ""),
+                        "source_node": str(u),
+                        "target_node": str(v),
+                        "speed_limit": d.get("maxspeed"),
+                    }
+
+        return best_edge

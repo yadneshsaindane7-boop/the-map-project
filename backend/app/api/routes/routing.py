@@ -70,6 +70,47 @@ def routing_status(request: Request):
     }
 
 
+@router.get("/routing/nearest-way")
+def get_nearest_way(
+    latitude: float,
+    longitude: float,
+    request: Request,
+):
+    routing_engine = getattr(
+        request.app.state,
+        "routing_engine",
+        None,
+    )
+
+    if routing_engine is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Routing engine is not ready yet.",
+        )
+
+    try:
+        way_info = routing_engine.find_nearest_osm_way(
+            latitude=latitude,
+            longitude=longitude,
+        )
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to resolve nearest road: {str(error)}",
+        )
+
+    if way_info is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No nearby road edge found for the selected coordinates.",
+        )
+
+    return {
+        "success": True,
+        **way_info,
+    }
+
+
 @router.post("/routing/route")
 def calculate_route(
     route_request: RouteRequest,
@@ -88,6 +129,20 @@ def calculate_route(
                 "Routing engine is not ready yet."
             ),
         )
+
+    # Synchronize active road events from Supabase if connected
+    road_event_service = getattr(
+        request.app.state,
+        "road_event_service",
+        None,
+    )
+    if road_event_service and road_event_service.is_connected():
+        try:
+            restrictions = road_event_service.fetch_active_restrictions()
+            routing_engine.sync_active_events(restrictions)
+        except Exception:
+            # Database or network issues must not crash or corrupt routing
+            pass
 
     try:
         result = routing_engine.find_route(

@@ -10,6 +10,8 @@ import '../providers/event_types_provider.dart';
 import '../providers/report_controller.dart';
 import '../providers/report_provider.dart';
 
+import '../services/nearest_way_service.dart';
+
 import '../widgets/location_picker_page.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
@@ -25,6 +27,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  final NearestWayService _nearestWayService = NearestWayService();
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -32,59 +36,54 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     super.dispose();
   }
 
-  Future<void> _pickLocation(
-    LatLng currentLocation,
-  ) async {
+  Future<void> _pickLocation(LatLng currentLocation) async {
     final result = await Navigator.push<LatLng>(
       context,
       MaterialPageRoute(
-        builder: (_) => LocationPickerPage(
-          initialLocation: currentLocation,
-        ),
+        builder: (_) => LocationPickerPage(initialLocation: currentLocation),
       ),
     );
 
     if (result != null) {
-      ref
-          .read(reportProvider.notifier)
-          .setSelectedLocation(result);
+      ref.read(reportProvider.notifier).setSelectedLocation(result);
     }
   }
 
   Future<void> _submitReport() async {
     final reportState = ref.read(reportProvider);
 
-    final reportNotifier =
-        ref.read(reportProvider.notifier);
+    final reportNotifier = ref.read(reportProvider.notifier);
 
-    final controller =
-        ref.read(reportControllerProvider);
+    final controller = ref.read(reportControllerProvider);
 
-    final position =
-        await ref.read(currentLocationProvider.future);
+    final position = await ref.read(currentLocationProvider.future);
 
     if (reportState.selectedEventType == null) {
       return;
     }
 
     final latitude =
-        reportState.selectedLocation?.latitude ??
-            position.latitude;
+        reportState.selectedLocation?.latitude ?? position.latitude;
 
     final longitude =
-        reportState.selectedLocation?.longitude ??
-            position.longitude;
+        reportState.selectedLocation?.longitude ?? position.longitude;
 
     try {
       reportNotifier.setSubmitting(true);
 
+      // Resolve the selected location to the actual
+      // OSM road way before submitting the incident.
+      final nearestWay = await _nearestWayService.resolveNearestWay(
+        LatLng(latitude, longitude),
+      );
+
       final reportId = await controller.submitReport(
         title: _titleController.text.trim(),
-        description:
-            _descriptionController.text.trim(),
+        description: _descriptionController.text.trim(),
         latitude: latitude,
         longitude: longitude,
         eventType: reportState.selectedEventType!,
+        osmWayId: nearestWay.osmWayId,
       );
 
       if (!mounted) return;
@@ -93,7 +92,9 @@ class _ReportPageState extends ConsumerState<ReportPage> {
         SnackBar(
           backgroundColor: Colors.green,
           content: Text(
-            "Report submitted successfully!\nID: $reportId",
+            "Report submitted successfully!\n"
+            "Road: ${nearestWay.name ?? 'Unknown'}\n"
+            "ID: $reportId",
           ),
         ),
       );
@@ -110,9 +111,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
-          content: Text(
-            "Failed to submit report\n$e",
-          ),
+          content: Text("Failed to submit report\n$e"),
         ),
       );
     } finally {
@@ -124,108 +123,72 @@ class _ReportPageState extends ConsumerState<ReportPage> {
   Widget build(BuildContext context) {
     final reportState = ref.watch(reportProvider);
 
-    final reportNotifier =
-        ref.read(reportProvider.notifier);
+    final reportNotifier = ref.read(reportProvider.notifier);
 
-    final location =
-        ref.watch(currentLocationProvider);
+    final location = ref.watch(currentLocationProvider);
 
-    final eventTypes =
-        ref.watch(eventTypesProvider);
+    final eventTypes = ref.watch(eventTypesProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Report Incident"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Report Incident"), centerTitle: true),
       body: SafeArea(
         child: location.when(
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
-          error: (error, stackTrace) =>
-              Center(
-            child: Text(error.toString()),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) => Center(child: Text(error.toString())),
           data: (position) {
             final selectedLocation =
                 reportState.selectedLocation ??
-                    LatLng(
-                      position.latitude,
-                      position.longitude,
-                    );
+                LatLng(position.latitude, position.longitude);
 
             return SingleChildScrollView(
-              padding:
-                  const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     Card(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Row(
                               children: [
-                                Icon(
-                                  Icons.location_on,
-                                ),
+                                Icon(Icons.location_on),
                                 SizedBox(width: 8),
                                 Text(
                                   "Incident Location",
                                   style: TextStyle(
                                     fontSize: 18,
-                                    fontWeight:
-                                        FontWeight
-                                            .bold,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ],
                             ),
 
-                            const SizedBox(
-                              height: 16,
-                            ),
+                            const SizedBox(height: 16),
 
                             Text(
-                              "Latitude : ${selectedLocation.latitude.toStringAsFixed(5)}",
+                              "Latitude : "
+                              "${selectedLocation.latitude.toStringAsFixed(5)}",
                             ),
 
-                            const SizedBox(
-                              height: 6,
-                            ),
+                            const SizedBox(height: 6),
 
                             Text(
-                              "Longitude : ${selectedLocation.longitude.toStringAsFixed(5)}",
+                              "Longitude : "
+                              "${selectedLocation.longitude.toStringAsFixed(5)}",
                             ),
 
-                            const SizedBox(
-                              height: 16,
-                            ),
+                            const SizedBox(height: 16),
 
                             SizedBox(
-                              width:
-                                  double.infinity,
-                              child:
-                                  OutlinedButton.icon(
-                                icon: const Icon(
-                                  Icons.map,
-                                ),
-                                label: const Text(
-                                  "Choose on Map",
-                                ),
-                                onPressed: () =>
-                                    _pickLocation(
-                                  LatLng(
-                                    position.latitude,
-                                    position.longitude,
-                                  ),
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                icon: const Icon(Icons.map),
+                                label: const Text("Choose on Map"),
+                                onPressed: () => _pickLocation(
+                                  LatLng(position.latitude, position.longitude),
                                 ),
                               ),
                             ),
@@ -235,7 +198,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                     ),
 
                     const SizedBox(height: 20),
-                                        TextFormField(
+
+                    TextFormField(
                       controller: _titleController,
                       decoration: const InputDecoration(
                         labelText: "Incident Title",
@@ -243,8 +207,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         prefixIcon: Icon(Icons.title),
                       ),
                       validator: (value) {
-                        if (value == null ||
-                            value.trim().isEmpty) {
+                        if (value == null || value.trim().isEmpty) {
                           return "Enter incident title";
                         }
                         return null;
@@ -263,8 +226,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         prefixIcon: Icon(Icons.description),
                       ),
                       validator: (value) {
-                        if (value == null ||
-                            value.trim().isEmpty) {
+                        if (value == null || value.trim().isEmpty) {
                           return "Enter description";
                         }
                         return null;
@@ -274,40 +236,29 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                     const SizedBox(height: 20),
 
                     eventTypes.when(
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      error: (error, stackTrace) => Text(
-                        "Failed to load event types\n$error",
-                      ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (error, stackTrace) =>
+                          Text("Failed to load event types\n$error"),
                       data: (types) {
                         return DropdownButtonFormField<EventType>(
-                          initialValue:
-                              reportState.selectedEventType,
+                          initialValue: reportState.selectedEventType,
                           decoration: const InputDecoration(
                             labelText: "Incident Type",
                             border: OutlineInputBorder(),
-                            prefixIcon: Icon(
-                              Icons.warning_amber_rounded,
-                            ),
+                            prefixIcon: Icon(Icons.warning_amber_rounded),
                           ),
                           items: types
                               .map(
-                                (eventType) =>
-                                    DropdownMenuItem<
-                                        EventType>(
+                                (eventType) => DropdownMenuItem<EventType>(
                                   value: eventType,
-                                  child:
-                                      Text(eventType.name),
+                                  child: Text(eventType.name),
                                 ),
                               )
                               .toList(),
                           onChanged: (value) {
                             if (value != null) {
-                              reportNotifier
-                                  .setSelectedEventType(
-                                value,
-                              );
+                              reportNotifier.setSelectedEventType(value);
                             }
                           },
                           validator: (value) {
@@ -326,31 +277,27 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                       width: double.infinity,
                       height: 55,
                       child: FilledButton.icon(
-                        onPressed:
-                            reportState.isSubmitting
-                                ? null
-                                : () async {
-                                    if (!_formKey
-                                        .currentState!
-                                        .validate()) {
-                                      return;
-                                    }
+                        onPressed: reportState.isSubmitting
+                            ? null
+                            : () async {
+                                if (!_formKey.currentState!.validate()) {
+                                  return;
+                                }
 
-                                    await _submitReport();
-                                  },
+                                await _submitReport();
+                              },
                         icon: reportState.isSubmitting
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child:
-                                    CircularProgressIndicator(
+                                child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                 ),
                               )
                             : const Icon(Icons.send),
                         label: Text(
                           reportState.isSubmitting
-                              ? "Submitting..."
+                              ? "Resolving Road..."
                               : "Submit Incident",
                         ),
                       ),

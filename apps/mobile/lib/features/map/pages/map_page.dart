@@ -17,6 +17,7 @@ import '../../search/providers/destination_provider.dart';
 import '../../search/widgets/destination_marker.dart';
 import '../../search/widgets/search_panel.dart';
 
+import '../models/road_event.dart';
 import '../providers/location_provider.dart';
 import '../providers/map_controller_provider.dart';
 import '../providers/road_event_provider.dart';
@@ -53,6 +54,11 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   DateTime? _lastRerouteTime;
 
+  // Tracks route-relevant active incidents that have already
+  // been seen by the navigation screen.
+  bool _roadEventsInitialized = false;
+  Set<String> _knownRoadEventSignatures = {};
+
   void _showMapStyleMenu() {
     showModalBottomSheet(
       context: context,
@@ -84,7 +90,7 @@ class _MapPageState extends ConsumerState<MapPage> {
 
   void _zoomToReports(
     MapController controller,
-    List events,
+    List<RoadEvent> events,
   ) {
     if (events.isEmpty) {
       return;
@@ -301,6 +307,230 @@ class _MapPageState extends ConsumerState<MapPage> {
     );
   }
 
+  String _roadEventSignature(
+    RoadEvent event,
+  ) {
+    return '${event.id}|'
+        '${event.status.trim().toLowerCase()}|'
+        '${event.osmWayId}';
+  }
+
+  Set<String> _getRouteRelevantEventSignatures(
+    List<RoadEvent> events,
+  ) {
+    return events
+        .where(
+          (event) =>
+              event.status.trim().toLowerCase() ==
+                  'active' &&
+              event.osmWayId != null,
+        )
+        .map(_roadEventSignature)
+        .toSet();
+  }
+
+  void _handleRoadEventChanges(
+    List<RoadEvent> events,
+  ) {
+    final currentSignatures =
+        _getRouteRelevantEventSignatures(events);
+
+    // The first provider load establishes the baseline.
+    // We do not reroute simply because the app started.
+    if (!_roadEventsInitialized) {
+      _knownRoadEventSignatures =
+          currentSignatures;
+      _roadEventsInitialized = true;
+
+      debugPrint(
+        'Road event baseline initialized: '
+        '${currentSignatures.length} active route-relevant events.',
+      );
+
+      return;
+    }
+
+    final changed =
+        !_setEquals(
+      _knownRoadEventSignatures,
+      currentSignatures,
+    );
+
+    if (!changed) {
+      return;
+    }
+
+    debugPrint(
+      'Route-relevant road events changed.',
+    );
+    debugPrint(
+      'Previous active events: '
+      '${_knownRoadEventSignatures.length}',
+    );
+    debugPrint(
+      'Current active events: '
+      '${currentSignatures.length}',
+    );
+
+    _knownRoadEventSignatures =
+        currentSignatures;
+
+    if (!mounted) {
+      return;
+    }
+
+    final journeyState = ref.read(
+      journeyNavigationProvider,
+    );
+
+    final routeState = ref.read(
+      routeProvider,
+    );
+
+    final liveLocationState = ref.read(
+      liveLocationProvider,
+    );
+
+    final destination = ref.read(
+      destinationProvider,
+    );
+
+    if (!journeyState.isNavigating) {
+      debugPrint(
+        'Incident change detected, but navigation '
+        'is not active. No reroute.',
+      );
+      return;
+    }
+
+    if (!routeState.hasRoute ||
+        routeState.route == null) {
+      debugPrint(
+        'Incident change detected, but there is '
+        'no active route. No reroute.',
+      );
+      return;
+    }
+
+    if (!liveLocationState.hasValue) {
+      debugPrint(
+        'Incident change detected, but live '
+        'location is unavailable. No reroute.',
+      );
+      return;
+    }
+
+    if (destination == null) {
+      debugPrint(
+        'Incident change detected, but destination '
+        'is unavailable. No reroute.',
+      );
+      return;
+    }
+
+    final position =
+        liveLocationState.value!;
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (!mounted) {
+          return;
+        }
+
+        _rerouteForIncident(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          destination: destination,
+        );
+      },
+    );
+  }
+
+  bool _setEquals(
+    Set<String> first,
+    Set<String> second,
+  ) {
+    if (first.length != second.length) {
+      return false;
+    }
+
+    return first.containsAll(second);
+  }
+
+  Future<void> _rerouteForIncident({
+    required double latitude,
+    required double longitude,
+    required dynamic destination,
+  }) async {
+    if (_rerouteInProgress) {
+      debugPrint(
+        'Incident reroute skipped: reroute already in progress.',
+      );
+      return;
+    }
+
+    final now = DateTime.now();
+
+    if (_lastRerouteTime != null &&
+        now.difference(_lastRerouteTime!) <
+            _rerouteCooldown) {
+      debugPrint(
+        'Incident reroute skipped: cooldown active.',
+      );
+      return;
+    }
+
+    _rerouteInProgress = true;
+    _lastRerouteTime = now;
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Road incident detected. Rerouting...',
+          ),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+
+    debugPrint(
+      '========== INCIDENT-AWARE REROUTE =========='
+    );
+    debugPrint(
+      'START: $latitude, $longitude',
+    );
+    debugPrint(
+      'DESTINATION: '
+      '${destination.latitude}, '
+      '${destination.longitude}',
+    );
+    debugPrint(
+      '============================================'
+    );
+
+    try {
+      await ref
+          .read(routeProvider.notifier)
+          .reroute(
+            startLatitude: latitude,
+            startLongitude: longitude,
+            endLatitude: destination.latitude,
+            endLongitude: destination.longitude,
+          );
+
+      debugPrint(
+        'Incident-aware reroute completed.',
+      );
+    } catch (error) {
+      debugPrint(
+        'Incident-aware reroute failed: $error',
+      );
+    } finally {
+      _rerouteInProgress = false;
+    }
+  }
+
   Future<void> _loadRoute({
     required LatLng userLocation,
   }) async {
@@ -468,6 +698,15 @@ class _MapPageState extends ConsumerState<MapPage> {
 
     final selectedAlertLocation = ref.watch(
       selectedMapLocationProvider,
+    );
+
+    ref.listen<AsyncValue<List<RoadEvent>>>(
+      roadEventsProvider,
+      (previous, next) {
+        next.whenData(
+          _handleRoadEventChanges,
+        );
+      },
     );
 
     if (!journeyState.isNavigating &&

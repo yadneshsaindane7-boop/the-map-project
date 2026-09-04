@@ -85,3 +85,65 @@ class RealNashikRouter:
             "coordinates": coordinates,
             "total_cost": result["total_cost"],
         }
+
+    def sync_active_events(self, restrictions):
+        """
+        Synchronizes active road restrictions (closures and penalties)
+        into the in-memory NashikRoadGraph.
+
+        restrictions: List of ActiveSegmentRestriction or dicts with keys:
+          - osm_way_id
+          - is_closed
+          - penalty_seconds
+        """
+        if self.graph_manager.graph is None:
+            raise RuntimeError("Graph has not been loaded. Call load() first.")
+
+        # Always start from clean state to avoid accumulating stale restrictions
+        self.graph_manager.clear_dynamic_events()
+
+        blocked_ways = 0
+        penalized_ways = 0
+
+        for item in restrictions:
+            if hasattr(item, "osm_way_id"):
+                osm_way_id = item.osm_way_id
+                is_closed = item.is_closed
+                penalty_seconds = item.penalty_seconds
+            else:
+                osm_way_id = item.get("osm_way_id")
+                is_closed = item.get("is_closed", False)
+                penalty_seconds = float(item.get("penalty_seconds", 0.0))
+
+            if not osm_way_id:
+                continue
+
+            if is_closed:
+                count = self.graph_manager.block_osm_way(osm_way_id)
+                if count > 0:
+                    blocked_ways += 1
+            elif penalty_seconds > 0:
+                count = self.graph_manager.apply_penalty_to_osm_way(
+                    osm_way_id,
+                    penalty_seconds,
+                )
+                if count > 0:
+                    penalized_ways += 1
+
+        return {
+            "total_restrictions_processed": len(restrictions),
+            "blocked_ways_applied": blocked_ways,
+            "penalized_ways_applied": penalized_ways,
+        }
+
+    def find_nearest_osm_way(self, latitude, longitude):
+        """
+        Finds the nearest OSM way in the graph to the specified coordinates.
+        """
+        if self.graph_manager.graph is None:
+            raise RuntimeError("Graph has not been loaded. Call load() first.")
+
+        return self.graph_manager.find_nearest_osm_way(
+            latitude=latitude,
+            longitude=longitude,
+        )

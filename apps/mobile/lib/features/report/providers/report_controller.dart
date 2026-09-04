@@ -5,9 +5,7 @@ import '../repositories/report_repository.dart';
 import 'report_repository_provider.dart';
 
 final reportControllerProvider = Provider<ReportController>((ref) {
-  return ReportController(
-    ref.read(reportRepositoryProvider),
-  );
+  return ReportController(ref.read(reportRepositoryProvider));
 });
 
 class ReportController {
@@ -21,6 +19,7 @@ class ReportController {
     required EventType eventType,
     required double latitude,
     required double longitude,
+    required int osmWayId,
   }) {
     return _repository.submitReport(
       title: title,
@@ -28,6 +27,7 @@ class ReportController {
       eventType: eventType,
       latitude: latitude,
       longitude: longitude,
+      osmWayId: osmWayId,
     );
   }
 }

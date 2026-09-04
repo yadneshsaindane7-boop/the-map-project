@@ -1,0 +1,89 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
+
+import '../../../core/constants/app_constants.dart';
+
+class NearestWayResult {
+  const NearestWayResult({
+    required this.osmWayId,
+    required this.distanceMeters,
+    this.name,
+    this.highway,
+  });
+
+  final int osmWayId;
+  final double distanceMeters;
+  final String? name;
+  final String? highway;
+
+  factory NearestWayResult.fromJson(Map<String, dynamic> json) {
+    final osmWayIdValue = json['osm_way_id'];
+
+    if (osmWayIdValue == null) {
+      throw const FormatException(
+        'Routing backend did not return an OSM way ID.',
+      );
+    }
+
+    final osmWayId = osmWayIdValue is num
+        ? osmWayIdValue.toInt()
+        : int.parse(osmWayIdValue.toString());
+
+    final distanceValue = json['distance_meters'];
+
+    return NearestWayResult(
+      osmWayId: osmWayId,
+      distanceMeters: distanceValue is num
+          ? distanceValue.toDouble()
+          : double.parse(distanceValue.toString()),
+      name: json['name'] as String?,
+      highway: json['highway'] as String?,
+    );
+  }
+}
+
+class NearestWayService {
+  Future<NearestWayResult> resolveNearestWay(LatLng location) async {
+    final uri =
+        Uri.parse(
+          '${AppConstants.routingBackendUrl}/api/routing/nearest-way',
+        ).replace(
+          queryParameters: {
+            'latitude': location.latitude.toString(),
+            'longitude': location.longitude.toString(),
+          },
+        );
+
+    final response = await http
+        .get(uri, headers: const {'Accept': 'application/json'})
+        .timeout(const Duration(seconds: 30));
+
+    if (response.statusCode != 200) {
+      String message = 'Failed to resolve the incident location to a road.';
+
+      try {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+
+        final detail = body['detail'];
+
+        if (detail is String && detail.trim().isNotEmpty) {
+          message = detail;
+        }
+      } catch (_) {
+        // Keep the generic message if the response is not valid JSON.
+      }
+
+      throw Exception('$message (${response.statusCode})');
+    }
+
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (json['success'] != true) {
+      throw Exception('Routing backend could not resolve the selected road.');
+    }
+
+    return NearestWayResult.fromJson(json);
+  }
+}

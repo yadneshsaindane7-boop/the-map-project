@@ -4,3 +4,5 @@ pytest
 osmnx
 networkx
 shapely
+supabase
+python-dotenv
