@@ -12,6 +12,12 @@ class ProfileRepository {
       throw Exception('User not logged in.');
     }
 
+    final userData = await _client
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+
     final totalReports = await _client
         .from('road_events')
         .count(CountOption.exact)
@@ -27,6 +33,7 @@ class ProfileRepository {
       id: user.id,
       email: user.email ?? '',
       fullName: user.userMetadata?['full_name'] as String?,
+      role: userData?['role']?.toString() ?? 'user',
       totalReports: totalReports,
       activeReports: activeReports,
       approvedReports: 0,

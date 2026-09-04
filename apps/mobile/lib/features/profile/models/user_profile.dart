@@ -5,6 +5,7 @@ class UserProfile {
   final String id;
   final String email;
   final String? fullName;
+  final String role;
 
   final int totalReports;
   final int activeReports;
@@ -14,10 +15,13 @@ class UserProfile {
     required this.id,
     required this.email,
     this.fullName,
+    this.role = 'user',
     this.totalReports = 0,
     this.activeReports = 0,
     this.approvedReports = 0,
   });
+
+  bool get isAuthority => role.trim().toLowerCase() == 'authority';
 
   String get displayName {
     if (fullName != null && fullName!.trim().isNotEmpty) {
@@ -41,6 +45,7 @@ class UserProfile {
     String? id,
     String? email,
     String? fullName,
+    String? role,
     int? totalReports,
     int? activeReports,
     int? approvedReports,
@@ -49,6 +54,7 @@ class UserProfile {
       id: id ?? this.id,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
+      role: role ?? this.role,
       totalReports: totalReports ?? this.totalReports,
       activeReports: activeReports ?? this.activeReports,
       approvedReports: approvedReports ?? this.approvedReports,

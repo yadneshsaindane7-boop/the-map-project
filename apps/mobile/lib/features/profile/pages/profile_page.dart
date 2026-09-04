@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../features/moderation/pages/moderation_page.dart';
 import '../../../features/settings/pages/about_page.dart';
 import '../../../features/settings/pages/language_page.dart';
 import '../../../features/settings/pages/notifications_page.dart';
@@ -82,13 +83,50 @@ class ProfilePage extends ConsumerWidget {
 
                 const ProfileAchievements(),
 
+                if (user.isAuthority) ...[
+                  const SizedBox(height: 24),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Authority Tools",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  ProfileMenuTile(
+                    icon: Icons.admin_panel_settings_outlined,
+                    title: "Moderate Incident Reports",
+                    subtitle:
+                        "Review, approve, or reject pending reports",
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const ModerationPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+
                 const SizedBox(height: 24),
 
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Settings",
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                   ),

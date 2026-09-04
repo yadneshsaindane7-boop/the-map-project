@@ -130,11 +130,18 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     final eventTypes = ref.watch(eventTypesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Report Incident"), centerTitle: true),
+      appBar: AppBar(
+        title: const Text("Report Incident"),
+        centerTitle: true,
+      ),
       body: SafeArea(
         child: location.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => Center(child: Text(error.toString())),
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          error: (error, stackTrace) => Center(
+            child: Text(error.toString()),
+          ),
           data: (position) {
             final selectedLocation =
                 reportState.selectedLocation ??
@@ -165,30 +172,27 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                                 ),
                               ],
                             ),
-
                             const SizedBox(height: 16),
-
                             Text(
                               "Latitude : "
                               "${selectedLocation.latitude.toStringAsFixed(5)}",
                             ),
-
                             const SizedBox(height: 6),
-
                             Text(
                               "Longitude : "
                               "${selectedLocation.longitude.toStringAsFixed(5)}",
                             ),
-
                             const SizedBox(height: 16),
-
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton.icon(
                                 icon: const Icon(Icons.map),
                                 label: const Text("Choose on Map"),
                                 onPressed: () => _pickLocation(
-                                  LatLng(position.latitude, position.longitude),
+                                  LatLng(
+                                    position.latitude,
+                                    position.longitude,
+                                  ),
                                 ),
                               ),
                             ),
@@ -196,9 +200,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 20),
-
                     TextFormField(
                       controller: _titleController,
                       decoration: const InputDecoration(
@@ -213,31 +215,23 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         return null;
                       },
                     ),
-
                     const SizedBox(height: 20),
-
                     TextFormField(
                       controller: _descriptionController,
                       minLines: 4,
                       maxLines: 6,
                       decoration: const InputDecoration(
-                        labelText: "Description",
+                        labelText: "Description (Optional)",
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.description),
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return "Enter description";
-                        }
-                        return null;
-                      },
+                      validator: (_) => null,
                     ),
-
                     const SizedBox(height: 20),
-
                     eventTypes.when(
-                      loading: () =>
-                          const Center(child: CircularProgressIndicator()),
+                      loading: () => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
                       error: (error, stackTrace) =>
                           Text("Failed to load event types\n$error"),
                       data: (types) {
@@ -246,7 +240,9 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           decoration: const InputDecoration(
                             labelText: "Incident Type",
                             border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.warning_amber_rounded),
+                            prefixIcon: Icon(
+                              Icons.warning_amber_rounded,
+                            ),
                           ),
                           items: types
                               .map(
@@ -270,9 +266,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         );
                       },
                     ),
-
                     const SizedBox(height: 30),
-
                     SizedBox(
                       width: double.infinity,
                       height: 55,

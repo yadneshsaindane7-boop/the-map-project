@@ -9,7 +9,7 @@ class ModerationRepository {
 
   Future<List<PendingReport>> fetchPendingReports() async {
     final response = await _supabase
-        .from('incident_reports')
+        .from('incident_reports_map_view')
         .select()
         .eq('status', 'pending')
         .order('created_at', ascending: false);
@@ -23,12 +23,17 @@ class ModerationRepository {
     final user = _supabase.auth.currentUser;
 
     if (user == null) {
-      throw Exception('You must be logged in to approve an incident report.');
+      throw Exception(
+        'You must be logged in to approve an incident report.',
+      );
     }
 
     final result = await _supabase.rpc(
       'approve_incident_report',
-      params: {'p_report_id': reportId, 'p_authority_id': user.id},
+      params: {
+        'p_report_id': reportId,
+        'p_authority_id': user.id,
+      },
     );
 
     return Map<String, dynamic>.from(result as Map);
@@ -38,12 +43,17 @@ class ModerationRepository {
     final user = _supabase.auth.currentUser;
 
     if (user == null) {
-      throw Exception('You must be logged in to reject an incident report.');
+      throw Exception(
+        'You must be logged in to reject an incident report.',
+      );
     }
 
     final result = await _supabase.rpc(
       'reject_incident_report',
-      params: {'p_report_id': reportId, 'p_authority_id': user.id},
+      params: {
+        'p_report_id': reportId,
+        'p_authority_id': user.id,
+      },
     );
 
     return Map<String, dynamic>.from(result as Map);
