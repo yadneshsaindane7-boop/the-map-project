@@ -36,24 +36,19 @@ class MapPage extends ConsumerStatefulWidget {
 
 class _MapPageState extends ConsumerState<MapPage> {
   bool _cameraMoved = false;
-
   MapStyle _selectedStyle = MapStyle.streets;
-
   DateTime? _lastRouteFit;
   LatLng? _lastSelectedAlertLocation;
 
   static const double _arrivalThresholdMeters = 30;
   static const double _offRouteThresholdMeters = 50;
-
-  static const Duration _rerouteCooldown =
-      Duration(seconds: 15);
+  static const Duration _rerouteCooldown = Duration(seconds: 15);
 
   bool _arrivalHandled = false;
   bool _rerouteInProgress = false;
-
   DateTime? _lastRerouteTime;
 
-  // Tracks route-relevant active incidents that have already
+  // Tracks route-relevant active/verified incidents that have already
   // been seen by the navigation screen.
   bool _roadEventsInitialized = false;
   Set<String> _knownRoadEventSignatures = {};
@@ -74,7 +69,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                     : null,
                 onTap: () {
                   Navigator.pop(context);
-
                   setState(() {
                     _selectedStyle = style;
                   });
@@ -147,8 +141,7 @@ class _MapPageState extends ConsumerState<MapPage> {
     final now = DateTime.now();
 
     if (_lastRerouteTime != null &&
-        now.difference(_lastRerouteTime!) <
-            _rerouteCooldown) {
+        now.difference(_lastRerouteTime!) < _rerouteCooldown) {
       return;
     }
 
@@ -156,17 +149,14 @@ class _MapPageState extends ConsumerState<MapPage> {
       return;
     }
 
-    final routePoints = List<LatLng>.from(
-      route.points,
-    );
+    final routePoints = List<LatLng>.from(route.points);
 
     final distanceFromRoute = _distanceToRoute(
       userLocation,
       routePoints,
     );
 
-    if (distanceFromRoute <=
-        _offRouteThresholdMeters) {
+    if (distanceFromRoute <= _offRouteThresholdMeters) {
       return;
     }
 
@@ -183,9 +173,7 @@ class _MapPageState extends ConsumerState<MapPage> {
     }
 
     try {
-      await ref
-          .read(routeProvider.notifier)
-          .reroute(
+      await ref.read(routeProvider.notifier).reroute(
             startLatitude: userLocation.latitude,
             startLongitude: userLocation.longitude,
             endLatitude: destination.latitude,
@@ -209,16 +197,14 @@ class _MapPageState extends ConsumerState<MapPage> {
       return;
     }
 
-    final straightLineDistance =
-        Geolocator.distanceBetween(
+    final straightLineDistance = Geolocator.distanceBetween(
       userLocation.latitude,
       userLocation.longitude,
       destination.latitude,
       destination.longitude,
     );
 
-    if (straightLineDistance <=
-        _arrivalThresholdMeters) {
+    if (straightLineDistance <= _arrivalThresholdMeters) {
       if (_arrivalHandled) {
         return;
       }
@@ -239,8 +225,7 @@ class _MapPageState extends ConsumerState<MapPage> {
 
           // Notify the user that the journey has completed.
           unawaited(
-            NotificationService.instance
-                .showJourneyCompleted(),
+            NotificationService.instance.showJourneyCompleted(),
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -257,8 +242,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       return;
     }
 
-    final initialStraightLineDistance =
-        Geolocator.distanceBetween(
+    final initialStraightLineDistance = Geolocator.distanceBetween(
       route.points.first.latitude,
       route.points.first.longitude,
       destination.latitude,
@@ -269,14 +253,10 @@ class _MapPageState extends ConsumerState<MapPage> {
 
     if (initialStraightLineDistance > 0) {
       progressRatio =
-          straightLineDistance /
-              initialStraightLineDistance;
+          straightLineDistance / initialStraightLineDistance;
     }
 
-    progressRatio = progressRatio.clamp(
-      0.0,
-      1.0,
-    );
+    progressRatio = progressRatio.clamp(0.0, 1.0);
 
     final remainingDistance =
         route.distance * progressRatio;
@@ -303,18 +283,14 @@ class _MapPageState extends ConsumerState<MapPage> {
               journeyNavigationProvider.notifier,
             )
             .updateProgress(
-              remainingDistanceMeters:
-                  remainingDistance,
-              remainingDurationMillis:
-                  remainingDuration,
+              remainingDistanceMeters: remainingDistance,
+              remainingDurationMillis: remainingDuration,
             );
       },
     );
   }
 
-  String _roadEventSignature(
-    RoadEvent event,
-  ) {
+  String _roadEventSignature(RoadEvent event) {
     return '${event.id}|'
         '${event.status.trim().toLowerCase()}|'
         '${event.osmWayId}';
@@ -325,10 +301,19 @@ class _MapPageState extends ConsumerState<MapPage> {
   ) {
     return events
         .where(
-          (event) =>
-              event.status.trim().toLowerCase() ==
-                  'active' &&
-              event.osmWayId != null,
+          (event) {
+            final status =
+                event.status.trim().toLowerCase();
+
+            // Approved incident reports appear as "verified"
+            // in incident_reports_map_view.
+            //
+            // "active" is also supported for compatibility
+            // with active road-event data.
+            return (status == 'verified' ||
+                    status == 'active') &&
+                event.osmWayId != null;
+          },
         )
         .map(_roadEventSignature)
         .toSet();
@@ -340,6 +325,16 @@ class _MapPageState extends ConsumerState<MapPage> {
     final currentSignatures =
         _getRouteRelevantEventSignatures(events);
 
+    debugPrint(
+      'Road event provider update received: '
+      '${events.length} total events.',
+    );
+
+    debugPrint(
+      'Route-relevant events currently detected: '
+      '${currentSignatures.length}.',
+    );
+
     // The first provider load establishes the baseline.
     // We do not reroute simply because the app started.
     if (!_roadEventsInitialized) {
@@ -350,14 +345,14 @@ class _MapPageState extends ConsumerState<MapPage> {
 
       debugPrint(
         'Road event baseline initialized: '
-        '${currentSignatures.length} active route-relevant events.',
+        '${currentSignatures.length} '
+        'active/verified route-relevant events.',
       );
 
       return;
     }
 
-    final changed =
-        !_setEquals(
+    final changed = !_setEquals(
       _knownRoadEventSignatures,
       currentSignatures,
     );
@@ -371,12 +366,12 @@ class _MapPageState extends ConsumerState<MapPage> {
     );
 
     debugPrint(
-      'Previous active events: '
+      'Previous route-relevant events: '
       '${_knownRoadEventSignatures.length}',
     );
 
     debugPrint(
-      'Current active events: '
+      'Current route-relevant events: '
       '${currentSignatures.length}',
     );
 
@@ -476,7 +471,8 @@ class _MapPageState extends ConsumerState<MapPage> {
   }) async {
     if (_rerouteInProgress) {
       debugPrint(
-        'Incident reroute skipped: reroute already in progress.',
+        'Incident reroute skipped: '
+        'reroute already in progress.',
       );
 
       return;
@@ -540,7 +536,8 @@ class _MapPageState extends ConsumerState<MapPage> {
         'Incident-aware reroute completed.',
       );
 
-      // Notify the user only after the new route is successfully loaded.
+      // Notify the user only after the new route
+      // has been successfully loaded.
       unawaited(
         NotificationService.instance.showRouteUpdated(),
       );
@@ -569,7 +566,9 @@ class _MapPageState extends ConsumerState<MapPage> {
     _lastRerouteTime = null;
 
     debugPrint('');
-    debugPrint('========== LOADING ROUTE ==========');
+    debugPrint(
+      '========== LOADING ROUTE ==========',
+    );
 
     debugPrint(
       'START: '
@@ -583,20 +582,18 @@ class _MapPageState extends ConsumerState<MapPage> {
       '${destination.longitude}',
     );
 
-    debugPrint('===================================');
+    debugPrint(
+      '===================================',
+    );
 
     try {
       await ref
           .read(routeProvider.notifier)
           .loadRoute(
-            startLatitude:
-                userLocation.latitude,
-            startLongitude:
-                userLocation.longitude,
-            endLatitude:
-                destination.latitude,
-            endLongitude:
-                destination.longitude,
+            startLatitude: userLocation.latitude,
+            startLongitude: userLocation.longitude,
+            endLatitude: destination.latitude,
+            endLongitude: destination.longitude,
           );
 
       if (!mounted) {
@@ -612,7 +609,9 @@ class _MapPageState extends ConsumerState<MapPage> {
         final route = routeState.route!;
 
         debugPrint('');
-        debugPrint('========== ROUTE RESULT ==========');
+        debugPrint(
+          '========== ROUTE RESULT ==========',
+        );
 
         debugPrint(
           'Route points: '
@@ -629,7 +628,9 @@ class _MapPageState extends ConsumerState<MapPage> {
           '${route.distance}',
         );
 
-        debugPrint('==================================');
+        debugPrint(
+          '==================================',
+        );
 
         if (route.points.length >= 2) {
           mapControllerSafeFit(
@@ -936,13 +937,13 @@ class _MapPageState extends ConsumerState<MapPage> {
               ),
               SafeArea(
                 child: Padding(
-                  padding:
-                      const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: SearchPanel(
                     onDestinationSelected:
                         () async {
                       await _loadRoute(
-                        userLocation: userLocation,
+                        userLocation:
+                            userLocation,
                       );
                     },
                   ),
@@ -956,8 +957,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                   child: Center(
                     child: Card(
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
@@ -991,8 +991,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                   child: Center(
                     child: Card(
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
