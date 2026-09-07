@@ -8,11 +8,11 @@ class RoadEventRepository {
 
   Future<List<RoadEvent>> getRoadEvents() async {
     final response = await _client
-        .from('incident_reports_map_view')
+        .from('active_incident_reports_view')
         .select()
         .order('created_at', ascending: false);
 
-    debugPrint('========== INCIDENT REPORTS ==========');
+    debugPrint('========== ACTIVE INCIDENTS ==========');
     debugPrint('Count: ${response.length}');
     debugPrint(response.toString());
     debugPrint('======================================');

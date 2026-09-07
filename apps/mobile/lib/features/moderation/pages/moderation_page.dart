@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/pending_report.dart';
+import '../providers/active_incident_reports_provider.dart';
 import '../providers/moderation_controller.dart';
 import '../providers/pending_reports_provider.dart';
 
@@ -64,6 +65,9 @@ class ModerationPage extends ConsumerWidget {
           content: Text('Incident report approved.'),
         ),
       );
+
+      ref.invalidate(pendingReportsProvider);
+      ref.invalidate(activeIncidentReportsProvider);
     } catch (error) {
       if (!context.mounted) return;
 
@@ -102,12 +106,56 @@ class ModerationPage extends ConsumerWidget {
           content: Text('Incident report rejected.'),
         ),
       );
+
+      ref.invalidate(pendingReportsProvider);
     } catch (error) {
       if (!context.mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Rejection failed: $error'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleResolve(
+    BuildContext context,
+    WidgetRef ref,
+    PendingReport report,
+  ) async {
+    final confirmed = await _showConfirmationDialog(
+      context,
+      title: 'Resolve incident?',
+      message:
+          'Mark "${report.title}" as completed and remove its road restriction from active routing?',
+      confirmLabel: 'Resolve',
+    );
+
+    if (!confirmed || !context.mounted) return;
+
+    try {
+      await ref
+          .read(moderationControllerProvider)
+          .resolveReport(report.id);
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Incident resolved and road restriction removed.',
+          ),
+        ),
+      );
+
+      ref.invalidate(activeIncidentReportsProvider);
+    } catch (error) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Resolution failed: $error'),
         ),
       );
     }
@@ -156,8 +204,9 @@ class ModerationPage extends ConsumerWidget {
   Widget _buildReportCard(
     BuildContext context,
     WidgetRef ref,
-    PendingReport report,
-  ) {
+    PendingReport report, {
+    required bool isActiveIncident,
+  }) {
     return Card(
       margin: const EdgeInsets.symmetric(
         horizontal: 12,
@@ -171,9 +220,11 @@ class ModerationPage extends ConsumerWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.report_problem,
-                  color: Colors.orange,
+                Icon(
+                  isActiveIncident
+                      ? Icons.warning_amber_rounded
+                      : Icons.report_problem,
+                  color: isActiveIncident ? Colors.red : Colors.orange,
                   size: 28,
                 ),
                 const SizedBox(width: 12),
@@ -188,11 +239,13 @@ class ModerationPage extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Text(
-              report.description,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
+            if (report.description.trim().isNotEmpty) ...[
+              Text(
+                report.description,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+            ],
             const Divider(),
             const SizedBox(height: 12),
             Text(
@@ -209,7 +262,7 @@ class ModerationPage extends ConsumerWidget {
             ),
             _buildDetailRow(
               'Event Type',
-              report.eventTypeId,
+              report.eventTypeName,
               icon: Icons.category_outlined,
             ),
             _buildDetailRow(
@@ -240,25 +293,37 @@ class ModerationPage extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                OutlinedButton.icon(
-                  icon: const Icon(Icons.close),
-                  label: const Text('Reject'),
-                  onPressed: () => _handleReject(
-                    context,
-                    ref,
-                    report,
+                if (!isActiveIncident) ...[
+                  OutlinedButton.icon(
+                    icon: const Icon(Icons.close),
+                    label: const Text('Reject'),
+                    onPressed: () => _handleReject(
+                      context,
+                      ref,
+                      report,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                FilledButton.icon(
-                  icon: const Icon(Icons.check),
-                  label: const Text('Approve'),
-                  onPressed: () => _handleApprove(
-                    context,
-                    ref,
-                    report,
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
+                    icon: const Icon(Icons.check),
+                    label: const Text('Approve'),
+                    onPressed: () => _handleApprove(
+                      context,
+                      ref,
+                      report,
+                    ),
                   ),
-                ),
+                ],
+                if (isActiveIncident)
+                  FilledButton.icon(
+                    icon: const Icon(Icons.check_circle_outline),
+                    label: const Text('Resolve Incident'),
+                    onPressed: () => _handleResolve(
+                      context,
+                      ref,
+                      report,
+                    ),
+                  ),
               ],
             ),
           ],
@@ -267,65 +332,181 @@ class ModerationPage extends ConsumerWidget {
     );
   }
 
+  Widget _buildSectionHeader(
+    BuildContext context, {
+    required String title,
+    required int count,
+    required IconData icon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+      child: Row(
+        children: [
+          Icon(icon),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ),
+          CircleAvatar(
+            radius: 14,
+            child: Text(
+              count.toString(),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingSection(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<List<PendingReport>> pendingReports,
+  ) {
+    return pendingReports.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(24),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, _) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          'Failed to load pending reports:\n$error',
+        ),
+      ),
+      data: (reports) {
+        if (reports.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Text('No pending reports.'),
+          );
+        }
+
+        return Column(
+          children: [
+            for (final report in reports)
+              _buildReportCard(
+                context,
+                ref,
+                report,
+                isActiveIncident: false,
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildActiveSection(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<List<PendingReport>> activeReports,
+  ) {
+    return activeReports.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(24),
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, _) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          'Failed to load active incidents:\n$error',
+        ),
+      ),
+      data: (reports) {
+        if (reports.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Text('No active incidents.'),
+          );
+        }
+
+        return Column(
+          children: [
+            for (final report in reports)
+              _buildReportCard(
+                context,
+                ref,
+                report,
+                isActiveIncident: true,
+              ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pendingReports = ref.watch(pendingReportsProvider);
+    final activeReports = ref.watch(activeIncidentReportsProvider);
+
+    final pendingCount = pendingReports.maybeWhen(
+      data: (reports) => reports.length,
+      orElse: () => 0,
+    );
+
+    final activeCount = activeReports.maybeWhen(
+      data: (reports) => reports.length,
+      orElse: () => 0,
+    );
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pending Reports'),
+        title: const Text('Incident Moderation'),
       ),
-      body: pendingReports.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              error.toString(),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ),
-        data: (reports) {
-          if (reports.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                ref.invalidate(pendingReportsProvider);
-                await ref.read(pendingReportsProvider.future);
-              },
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  SizedBox(height: 220),
-                  Center(
-                    child: Text('No pending reports'),
-                  ),
-                ],
-              ),
-            );
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(pendingReportsProvider);
+          ref.invalidate(activeIncidentReportsProvider);
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(pendingReportsProvider);
-              await ref.read(pendingReportsProvider.future);
-            },
-            child: ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: reports.length,
-              itemBuilder: (context, index) {
-                return _buildReportCard(
-                  context,
-                  ref,
-                  reports[index],
-                );
-              },
-            ),
-          );
+          await Future.wait([
+            ref.read(pendingReportsProvider.future),
+            ref.read(activeIncidentReportsProvider.future),
+          ]);
         },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 24),
+          children: [
+            _buildSectionHeader(
+              context,
+              title: 'Pending Reports',
+              count: pendingCount,
+              icon: Icons.pending_actions,
+            ),
+            _buildPendingSection(
+              context,
+              ref,
+              pendingReports,
+            ),
+            const Divider(height: 32),
+            _buildSectionHeader(
+              context,
+              title: 'Active Incidents',
+              count: activeCount,
+              icon: Icons.warning_amber_rounded,
+            ),
+            _buildActiveSection(
+              context,
+              ref,
+              activeReports,
+            ),
+          ],
+        ),
       ),
     );
   }

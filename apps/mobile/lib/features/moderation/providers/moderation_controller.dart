@@ -39,4 +39,18 @@ class ModerationController {
 
     _ref.invalidate(pendingReportsProvider);
   }
+
+  Future<void> resolveReport(String reportId) async {
+    final repository = _ref.read(moderationRepositoryProvider);
+
+    final result = await repository.resolveReport(reportId);
+
+    if (result['success'] != true) {
+      throw Exception(
+        result['message'] ?? 'Failed to resolve the incident report.',
+      );
+    }
+
+    _ref.invalidate(pendingReportsProvider);
+  }
 }

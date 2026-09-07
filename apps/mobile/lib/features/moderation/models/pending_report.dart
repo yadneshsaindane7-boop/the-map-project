@@ -9,6 +9,7 @@ class PendingReport {
     required this.createdAt,
     required this.userId,
     required this.eventTypeId,
+    required this.eventTypeName,
     required this.osmWayId,
   });
 
@@ -21,26 +22,33 @@ class PendingReport {
   final DateTime createdAt;
   final String? userId;
   final String eventTypeId;
+  final String eventTypeName;
   final int? osmWayId;
 
   factory PendingReport.fromMap(Map<String, dynamic> map) {
     final osmWayIdValue = map['osm_way_id'];
 
+    final eventTypeId = map['event_type_id'] as String;
+
+    final eventTypeName =
+        (map['event_type'] as String?) ?? eventTypeId;
+
     return PendingReport(
       id: map['id'] as String,
       title: map['title'] as String,
-      description: map['description'] as String,
+      description: map['description'] as String? ?? '',
       status: map['status'] as String,
       latitude: (map['latitude'] as num).toDouble(),
       longitude: (map['longitude'] as num).toDouble(),
       createdAt: DateTime.parse(map['created_at'] as String),
-      userId: map['user_id'] as String?,
-      eventTypeId: map['event_type_id'] as String,
+      userId: (map['user_id'] ?? map['reported_by']) as String?,
+      eventTypeId: eventTypeId,
+      eventTypeName: eventTypeName,
       osmWayId: osmWayIdValue == null
           ? null
           : osmWayIdValue is num
-          ? osmWayIdValue.toInt()
-          : int.parse(osmWayIdValue.toString()),
+              ? osmWayIdValue.toInt()
+              : int.parse(osmWayIdValue.toString()),
     );
   }
 
@@ -55,6 +63,7 @@ class PendingReport {
       'created_at': createdAt.toIso8601String(),
       'user_id': userId,
       'event_type_id': eventTypeId,
+      'event_type': eventTypeName,
       'osm_way_id': osmWayId,
     };
   }
@@ -69,6 +78,7 @@ class PendingReport {
     DateTime? createdAt,
     String? userId,
     String? eventTypeId,
+    String? eventTypeName,
     int? osmWayId,
   }) {
     return PendingReport(
@@ -81,6 +91,7 @@ class PendingReport {
       createdAt: createdAt ?? this.createdAt,
       userId: userId ?? this.userId,
       eventTypeId: eventTypeId ?? this.eventTypeId,
+      eventTypeName: eventTypeName ?? this.eventTypeName,
       osmWayId: osmWayId ?? this.osmWayId,
     );
   }

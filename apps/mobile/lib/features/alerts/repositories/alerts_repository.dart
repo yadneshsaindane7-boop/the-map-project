@@ -7,7 +7,7 @@ class AlertsRepository {
 
   Future<List<TrafficAlert>> getAlerts() async {
     final response = await _client
-        .from('incident_reports_map_view')
+        .from('active_incident_reports_view')
         .select()
         .order(
           'created_at',
