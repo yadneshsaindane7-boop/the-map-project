@@ -4,8 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
-  static const String appVersion = "1.0.0";
-  static const String buildNumber = "1";
+  static const String appVersion = "2.0.0";
+  static const String buildNumber = "2";
 
   Future<void> _contactDeveloper(BuildContext context) async {
     final Uri email = Uri(
@@ -66,10 +66,9 @@ class AboutPage extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Text(
           title,
-          style:
-              Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ),
     );
@@ -86,10 +85,8 @@ class AboutPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-
             ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(28),
               child: Image.asset(
                 "assets/images/app_icon.png",
                 width: 120,
@@ -101,10 +98,7 @@ class AboutPage extends StatelessWidget {
 
             Text(
               "The Map Project",
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineMedium
-                  ?.copyWith(
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -113,9 +107,7 @@ class AboutPage extends StatelessWidget {
 
             Text(
               "Community Powered Smart Navigation",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
 
             const SizedBox(height: 16),
@@ -131,21 +123,17 @@ class AboutPage extends StatelessWidget {
 
             Card(
               child: Padding(
-                padding:
-                    const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Text(
                       "Published by",
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
                           ?.copyWith(
-                            fontWeight:
-                                FontWeight.bold,
+                            fontWeight: FontWeight.bold,
                           ),
                     ),
 
@@ -155,8 +143,7 @@ class AboutPage extends StatelessWidget {
                       "HLP - Hibro Lab Productions",
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -164,8 +151,7 @@ class AboutPage extends StatelessWidget {
 
                     const Text(
                       "The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.",
-                      textAlign:
-                          TextAlign.justify,
+                      textAlign: TextAlign.justify,
                     ),
                   ],
                 ),
@@ -182,10 +168,24 @@ class AboutPage extends StatelessWidget {
             Card(
               child: Column(
                 children: const [
+                  ListTile(
+                    leading: Icon(
+                      Icons.school,
+                    ),
+                    title: Text(
+                      "Prof - R. V. Daund",
+                    ),
+                    subtitle: Text(
+                      "Project Guide",
+                    ),
+                  ),
+
+                  Divider(height: 1),
 
                   ListTile(
-                    leading:
-                        Icon(Icons.code),
+                    leading: Icon(
+                      Icons.code,
+                    ),
                     title: Text(
                       "Yadnesh Saindane",
                     ),
@@ -198,13 +198,13 @@ class AboutPage extends StatelessWidget {
 
                   ListTile(
                     leading: Icon(
-                      Icons.science,
+                      Icons.description,
                     ),
                     title: Text(
                       "Namrata Wagh",
                     ),
                     subtitle: Text(
-                      "Research & Field Validation",
+                      "Project Documentation",
                     ),
                   ),
 
@@ -224,7 +224,8 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-                        const SizedBox(height: 24),
+
+            const SizedBox(height: 24),
 
             sectionTitle(
               context,
@@ -234,7 +235,6 @@ class AboutPage extends StatelessWidget {
             Card(
               child: Column(
                 children: const [
-
                   ListTile(
                     leading: Icon(Icons.flutter_dash),
                     title: Text("Framework"),
@@ -290,7 +290,6 @@ class AboutPage extends StatelessWidget {
                 padding: const EdgeInsets.all(18),
                 child: Column(
                   children: const [
-
                     ListTile(
                       leading: Icon(
                         Icons.check_circle,
@@ -365,7 +364,6 @@ class AboutPage extends StatelessWidget {
             Card(
               child: Column(
                 children: const [
-
                   ListTile(
                     leading: Icon(Icons.public),
                     title: Text("Status"),
@@ -431,14 +429,14 @@ class AboutPage extends StatelessWidget {
                 },
               ),
             ),
-                        const SizedBox(height: 24),
+
+            const SizedBox(height: 24),
 
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-
                     const Icon(
                       Icons.corporate_fare,
                       size: 42,
@@ -453,8 +451,7 @@ class AboutPage extends StatelessWidget {
                           .textTheme
                           .titleLarge
                           ?.copyWith(
-                            fontWeight:
-                                FontWeight.bold,
+                            fontWeight: FontWeight.bold,
                           ),
                     ),
 
@@ -497,10 +494,8 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 30),
 
             Text(
-              "© 2026 HLP - Hibro Lab Productions",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall,
+              "Â© 2026 HLP - Hibro Lab Productions",
+              style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
 
@@ -509,9 +504,7 @@ class AboutPage extends StatelessWidget {
             Text(
               "The Map Project\nVersion $appVersion ($buildNumber)",
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
 
             const SizedBox(height: 6),
@@ -519,9 +512,7 @@ class AboutPage extends StatelessWidget {
             Text(
               "All Rights Reserved.",
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall,
+              style: Theme.of(context).textTheme.bodySmall,
             ),
 
             const SizedBox(height: 30),

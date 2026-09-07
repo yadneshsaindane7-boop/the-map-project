@@ -165,7 +165,7 @@ class ProfilePage extends ConsumerWidget {
                 ProfileMenuTile(
                   icon: Icons.info_outline,
                   title: "About",
-                  subtitle: "The Map Project v1.0",
+                  subtitle: "The Map Project v2.0",
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
