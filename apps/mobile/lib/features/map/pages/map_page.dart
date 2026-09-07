@@ -1,3 +1,5 @@
+﻿import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,22 +9,19 @@ import 'package:latlong2/latlong.dart';
 import '../../../core/map/camera_fit_service.dart';
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
-
+import '../../../core/services/notification_service.dart';
 import '../../navigation/providers/live_location_provider.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
 import '../../navigation/widgets/route_polyline.dart';
-
 import '../../search/providers/destination_provider.dart';
 import '../../search/widgets/destination_marker.dart';
 import '../../search/widgets/search_panel.dart';
-
 import '../models/road_event.dart';
 import '../providers/location_provider.dart';
 import '../providers/map_controller_provider.dart';
 import '../providers/road_event_provider.dart';
 import '../providers/selected_map_location_provider.dart';
-
 import '../widgets/map_floating_controls.dart';
 import '../widgets/road_event_markers.dart';
 import '../widgets/route_info_card.dart';
@@ -238,6 +237,12 @@ class _MapPageState extends ConsumerState<MapPage> {
               )
               .arrive();
 
+          // Notify the user that the journey has completed.
+          unawaited(
+            NotificationService.instance
+                .showJourneyCompleted(),
+          );
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
@@ -340,6 +345,7 @@ class _MapPageState extends ConsumerState<MapPage> {
     if (!_roadEventsInitialized) {
       _knownRoadEventSignatures =
           currentSignatures;
+
       _roadEventsInitialized = true;
 
       debugPrint(
@@ -363,10 +369,12 @@ class _MapPageState extends ConsumerState<MapPage> {
     debugPrint(
       'Route-relevant road events changed.',
     );
+
     debugPrint(
       'Previous active events: '
       '${_knownRoadEventSignatures.length}',
     );
+
     debugPrint(
       'Current active events: '
       '${currentSignatures.length}',
@@ -400,6 +408,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         'Incident change detected, but navigation '
         'is not active. No reroute.',
       );
+
       return;
     }
 
@@ -409,6 +418,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         'Incident change detected, but there is '
         'no active route. No reroute.',
       );
+
       return;
     }
 
@@ -417,6 +427,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         'Incident change detected, but live '
         'location is unavailable. No reroute.',
       );
+
       return;
     }
 
@@ -425,6 +436,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         'Incident change detected, but destination '
         'is unavailable. No reroute.',
       );
+
       return;
     }
 
@@ -466,6 +478,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       debugPrint(
         'Incident reroute skipped: reroute already in progress.',
       );
+
       return;
     }
 
@@ -477,6 +490,7 @@ class _MapPageState extends ConsumerState<MapPage> {
       debugPrint(
         'Incident reroute skipped: cooldown active.',
       );
+
       return;
     }
 
@@ -495,18 +509,21 @@ class _MapPageState extends ConsumerState<MapPage> {
     }
 
     debugPrint(
-      '========== INCIDENT-AWARE REROUTE =========='
+      '========== INCIDENT-AWARE REROUTE ==========',
     );
+
     debugPrint(
       'START: $latitude, $longitude',
     );
+
     debugPrint(
       'DESTINATION: '
       '${destination.latitude}, '
       '${destination.longitude}',
     );
+
     debugPrint(
-      '============================================'
+      '============================================',
     );
 
     try {
@@ -521,6 +538,11 @@ class _MapPageState extends ConsumerState<MapPage> {
 
       debugPrint(
         'Incident-aware reroute completed.',
+      );
+
+      // Notify the user only after the new route is successfully loaded.
+      unawaited(
+        NotificationService.instance.showRouteUpdated(),
       );
     } catch (error) {
       debugPrint(
@@ -548,16 +570,19 @@ class _MapPageState extends ConsumerState<MapPage> {
 
     debugPrint('');
     debugPrint('========== LOADING ROUTE ==========');
+
     debugPrint(
       'START: '
       '${userLocation.latitude}, '
       '${userLocation.longitude}',
     );
+
     debugPrint(
       'DESTINATION: '
       '${destination.latitude}, '
       '${destination.longitude}',
     );
+
     debugPrint('===================================');
 
     try {
@@ -588,18 +613,22 @@ class _MapPageState extends ConsumerState<MapPage> {
 
         debugPrint('');
         debugPrint('========== ROUTE RESULT ==========');
+
         debugPrint(
           'Route points: '
           '${route.points.length}',
         );
+
         debugPrint(
           'Route time: '
           '${route.time}',
         );
+
         debugPrint(
           'Route distance: '
           '${route.distance}',
         );
+
         debugPrint('==================================');
 
         if (route.points.length >= 2) {
@@ -806,7 +835,8 @@ class _MapPageState extends ConsumerState<MapPage> {
               routeState.route != null &&
               routeState.route!.points.length >= 2 &&
               routeState.lastUpdated != null &&
-              routeState.lastUpdated != _lastRouteFit) {
+              routeState.lastUpdated !=
+                  _lastRouteFit) {
             _lastRouteFit =
                 routeState.lastUpdated;
 
@@ -872,9 +902,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                     userAgentPackageName:
                         'com.themapproject.mobile',
                   ),
-
                   const RoutePolyline(),
-
                   if (destination != null)
                     DestinationMarker(
                       position: LatLng(
@@ -882,7 +910,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                         destination.longitude,
                       ),
                     ),
-
                   roadEvents.when(
                     loading: () =>
                         const MarkerLayer(
@@ -902,13 +929,11 @@ class _MapPageState extends ConsumerState<MapPage> {
                           userLocation,
                     ),
                   ),
-
                   UserLocationMarker(
                     position: userLocation,
                   ),
                 ],
               ),
-
               SafeArea(
                 child: Padding(
                   padding:
@@ -923,7 +948,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                   ),
                 ),
               ),
-
               if (routeState.isLoading)
                 const Positioned(
                   top: 90,
@@ -959,7 +983,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                     ),
                   ),
                 ),
-
               if (routeState.isRerouting)
                 const Positioned(
                   top: 90,
@@ -995,7 +1018,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                     ),
                   ),
                 ),
-
               if (routeState.error != null)
                 Positioned(
                   top: 150,
@@ -1026,7 +1048,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                     ),
                   ),
                 ),
-
               Positioned(
                 right: 16,
                 bottom: 200,
@@ -1055,7 +1076,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                   ),
                 ),
               ),
-
               Positioned(
                 right: 16,
                 bottom: 120,
@@ -1070,7 +1090,6 @@ class _MapPageState extends ConsumerState<MapPage> {
                   },
                 ),
               ),
-
               const Positioned(
                 left: 0,
                 right: 0,

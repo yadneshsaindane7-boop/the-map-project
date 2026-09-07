@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/constants/app_constants.dart';
+import 'core/services/notification_service.dart';
 import 'core/services/supabase_service.dart';
 
 import 'features/auth/pages/login_page.dart';
@@ -14,6 +15,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await SupabaseService.initialize();
+  await NotificationService.instance.initialize();
 
   runApp(
     const ProviderScope(

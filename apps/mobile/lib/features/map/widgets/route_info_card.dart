@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/services/notification_service.dart';
 import '../../navigation/models/route_model.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
@@ -62,6 +65,11 @@ class RouteInfoCard extends ConsumerWidget {
                           initialDurationMillis:
                               route.time,
                         );
+
+                    unawaited(
+                      NotificationService.instance
+                          .showJourneyStarted(),
+                    );
                   },
                 ),
         ),

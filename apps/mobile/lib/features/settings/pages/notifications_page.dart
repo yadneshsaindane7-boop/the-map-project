@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/services/notification_service.dart';
+
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
@@ -14,6 +16,34 @@ class _NotificationsPageState
   bool nearbyAlerts = true;
   bool routeUpdates = true;
   bool communityReports = true;
+
+  Future<void> _sendTestNotification() async {
+    if (!pushNotifications) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Push Notifications are turned off.',
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    await NotificationService.instance.showTestNotification();
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Test notification sent.',
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +111,26 @@ class _NotificationsPageState
                 communityReports = value;
               });
             },
+          ),
+          const Divider(
+            height: 32,
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.notifications_active_outlined,
+            ),
+            title: const Text(
+              'Test Notifications',
+            ),
+            subtitle: const Text(
+              'Send a test notification to this device.',
+            ),
+            trailing: FilledButton(
+              onPressed: _sendTestNotification,
+              child: const Text(
+                'Test',
+              ),
+            ),
           ),
         ],
       ),
