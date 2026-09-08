@@ -5,24 +5,35 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/traffic_alert.dart';
 import 'alerts_repository_provider.dart';
 
-class AlertsNotifier extends AsyncNotifier<List<TrafficAlert>> {
+class AlertsNotifier
+    extends AsyncNotifier<List<TrafficAlert>> {
   RealtimeChannel? _channel;
 
   @override
   Future<List<TrafficAlert>> build() async {
-    debugPrint('========== BUILD ALERTS ==========');
+    debugPrint(
+      '========== BUILD ALERTS ==========',
+    );
 
-    final alerts = await _loadAlerts();
+    final alerts =
+        await _loadAlerts();
 
-    debugPrint('Initial Alerts Loaded: ${alerts.length}');
+    debugPrint(
+      'Initial Alerts Loaded: ${alerts.length}',
+    );
 
     _subscribeToRealtime();
 
     ref.onDispose(() async {
-      debugPrint('Removing alerts realtime channel...');
+      debugPrint(
+        'Removing alerts realtime channel...',
+      );
 
       if (_channel != null) {
-        await Supabase.instance.client.removeChannel(_channel!);
+        await Supabase.instance.client
+            .removeChannel(
+          _channel!,
+        );
       }
     });
 
@@ -40,19 +51,66 @@ class AlertsNotifier extends AsyncNotifier<List<TrafficAlert>> {
       return;
     }
 
-    debugPrint('Creating alerts realtime channel...');
+    debugPrint(
+      'Creating alerts realtime channel...',
+    );
 
     _channel = Supabase.instance.client
-        .channel('incident_reports_alerts_realtime')
+        .channel(
+          'incident_reports_alerts_realtime',
+        )
+        // -----------------------------------------
+        // Incident report changes
+        // -----------------------------------------
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
           schema: 'public',
           table: 'incident_reports',
           callback: (payload) async {
             debugPrint('');
-            debugPrint('========== ALERT REALTIME EVENT ==========');
-            debugPrint(payload.toString());
-            debugPrint('==========================================');
+
+            debugPrint(
+              '========== ALERT INCIDENT REALTIME ==========',
+            );
+
+            debugPrint(
+              payload.toString(),
+            );
+
+            debugPrint(
+              '=============================================',
+            );
+
+            await refresh();
+          },
+        )
+        // -----------------------------------------
+        // Road event changes
+        //
+        // Resolving an incident changes the road
+        // event from active -> completed.
+        //
+        // The active alerts view therefore changes
+        // even though incident_reports does not.
+        // -----------------------------------------
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'road_events',
+          callback: (payload) async {
+            debugPrint('');
+
+            debugPrint(
+              '========== ALERT ROAD EVENT REALTIME ==========',
+            );
+
+            debugPrint(
+              payload.toString(),
+            );
+
+            debugPrint(
+              '===============================================',
+            );
 
             await refresh();
           },
@@ -61,20 +119,32 @@ class AlertsNotifier extends AsyncNotifier<List<TrafficAlert>> {
     _channel!.subscribe(
       (status, error) {
         debugPrint('');
-        debugPrint('========== ALERT CHANNEL STATUS ==========');
-        debugPrint(status.toString());
+
+        debugPrint(
+          '========== ALERT CHANNEL STATUS ==========',
+        );
+
+        debugPrint(
+          status.toString(),
+        );
 
         if (error != null) {
-          debugPrint('Channel Error: ${error.toString()}');
+          debugPrint(
+            'Channel Error: ${error.toString()}',
+          );
         }
 
-        debugPrint('==========================================');
+        debugPrint(
+          '==========================================',
+        );
       },
     );
   }
 
   Future<void> refresh() async {
-    debugPrint('========== ALERT REFRESH START ==========');
+    debugPrint(
+      '========== ALERT REFRESH START ==========',
+    );
 
     state = const AsyncLoading();
 
@@ -82,11 +152,15 @@ class AlertsNotifier extends AsyncNotifier<List<TrafficAlert>> {
       _loadAlerts,
     );
 
-    debugPrint('========== ALERT REFRESH END ==========');
+    debugPrint(
+      '========== ALERT REFRESH END ==========',
+    );
   }
 }
 
 final alertsProvider =
-    AsyncNotifierProvider<AlertsNotifier, List<TrafficAlert>>(
+    AsyncNotifierProvider<
+        AlertsNotifier,
+        List<TrafficAlert>>(
   AlertsNotifier.new,
 );

@@ -10,32 +10,39 @@ final roadEventRepositoryProvider =
   return RoadEventRepository();
 });
 
-class RoadEventsNotifier extends AsyncNotifier<List<RoadEvent>> {
+class RoadEventsNotifier
+    extends AsyncNotifier<List<RoadEvent>> {
   late final RoadEventRepository _repository;
 
   RealtimeChannel? _channel;
 
   @override
   Future<List<RoadEvent>> build() async {
-    debugPrint("========== BUILD ROAD EVENTS ==========");
+    debugPrint(
+      '========== BUILD ROAD EVENTS ==========',
+    );
 
     _repository = ref.read(
       roadEventRepositoryProvider,
     );
 
-    final events = await _repository.getRoadEvents();
+    final events =
+        await _repository.getRoadEvents();
 
     debugPrint(
-      "Initial Road Events Loaded : ${events.length}",
+      'Initial Road Events Loaded : ${events.length}',
     );
 
     _subscribeToRealtime();
 
     ref.onDispose(() async {
-      debugPrint("Removing realtime channel...");
+      debugPrint(
+        'Removing road events realtime channel...',
+      );
 
       if (_channel != null) {
-        await Supabase.instance.client.removeChannel(
+        await Supabase.instance.client
+            .removeChannel(
           _channel!,
         );
       }
@@ -49,21 +56,62 @@ class RoadEventsNotifier extends AsyncNotifier<List<RoadEvent>> {
       return;
     }
 
-    debugPrint("Creating realtime channel...");
+    debugPrint(
+      'Creating road events realtime channel...',
+    );
 
     _channel = Supabase.instance.client
-        .channel("road_events_realtime")
+        .channel('road_events_realtime')
+        // -----------------------------------------
+        // Incident report changes
+        // -----------------------------------------
         .onPostgresChanges(
           event: PostgresChangeEvent.all,
-          schema: "public",
-          table: "incident_reports",
+          schema: 'public',
+          table: 'incident_reports',
           callback: (payload) async {
-            debugPrint("");
+            debugPrint('');
+
             debugPrint(
-                "============= REALTIME EVENT =============");
-            debugPrint(payload.toString());
+              '============= INCIDENT REPORT REALTIME =============',
+            );
+
             debugPrint(
-                "==========================================");
+              payload.toString(),
+            );
+
+            debugPrint(
+              '====================================================',
+            );
+
+            await refresh();
+          },
+        )
+        // -----------------------------------------
+        // Road event changes
+        //
+        // IMPORTANT:
+        // Resolving an incident changes road_events,
+        // not incident_reports.
+        // -----------------------------------------
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'road_events',
+          callback: (payload) async {
+            debugPrint('');
+
+            debugPrint(
+              '=============== ROAD EVENT REALTIME ===============',
+            );
+
+            debugPrint(
+              payload.toString(),
+            );
+
+            debugPrint(
+              '===================================================',
+            );
 
             await refresh();
           },
@@ -71,25 +119,35 @@ class RoadEventsNotifier extends AsyncNotifier<List<RoadEvent>> {
 
     _channel!.subscribe(
       (status, error) {
-        debugPrint("");
-        debugPrint(
-            "============= CHANNEL STATUS =============");
-        debugPrint(status.toString());
-
-if (error != null) {
-  debugPrint("Channel Error: ${error.toString()}");
-}
+        debugPrint('');
 
         debugPrint(
-            "==========================================");
+          '============= ROAD EVENT CHANNEL STATUS =============',
+        );
+
+        debugPrint(
+          status.toString(),
+        );
+
+        if (error != null) {
+          debugPrint(
+            'Channel Error: ${error.toString()}',
+          );
+        }
+
+        debugPrint(
+          '======================================================',
+        );
       },
     );
   }
 
   Future<void> refresh() async {
-    debugPrint("");
+    debugPrint('');
+
     debugPrint(
-        "============= REFRESH START =============");
+      '============= ROAD EVENTS REFRESH START =============',
+    );
 
     state = const AsyncLoading();
 
@@ -98,8 +156,10 @@ if (error != null) {
     );
 
     debugPrint(
-        "============= REFRESH END ===============");
-    debugPrint("");
+      '============= ROAD EVENTS REFRESH END ===============',
+    );
+
+    debugPrint('');
   }
 }
 

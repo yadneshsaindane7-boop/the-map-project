@@ -393,85 +393,242 @@ class NashikRoadGraph:
         max_candidates=15,
     ):
         """
-        Resolve the nearest road edge / OSM way to a geographic coordinate (lat, lon).
-        Calculates perpendicular distance to candidate edge line segments.
-        Returns a dict containing osm_way_id, distance_meters, name, highway, etc.
+        Resolve the nearest road edge / OSM way to
+        a geographic coordinate (lat, lon).
+
+        Calculates the perpendicular distance to candidate
+        edge line segments and returns the exact point on
+        the nearest segment where the incident should be
+        anchored.
+
+        Returns a dict containing:
+            osm_way_id
+            distance_meters
+            snapped_latitude
+            snapped_longitude
+            name
+            highway
+            source_node
+            target_node
+            speed_limit
         """
+
         if self.graph is None:
-            raise RuntimeError("Graph has not been loaded.")
+            raise RuntimeError(
+                "Graph has not been loaded."
+            )
 
         lat = float(latitude)
         lon = float(longitude)
 
-        # Collect candidate nearest nodes
+        # Collect candidate nearest nodes.
         node_dists = []
+
         for nid, data in self.graph.nodes(data=True):
             try:
                 nlat = float(data["latitude"])
                 nlon = float(data["longitude"])
-            except (KeyError, TypeError, ValueError):
+            except (
+                KeyError,
+                TypeError,
+                ValueError,
+            ):
                 continue
-            d_sq = (nlat - lat) ** 2 + (nlon - lon) ** 2
-            node_dists.append((d_sq, nid))
 
-        node_dists.sort(key=lambda item: item[0])
+            d_sq = (
+                (nlat - lat) ** 2
+                + (nlon - lon) ** 2
+            )
+
+            node_dists.append(
+                (d_sq, nid)
+            )
+
+        node_dists.sort(
+            key=lambda item: item[0]
+        )
+
         candidates = node_dists[:max_candidates]
 
-        cos_lat = math.cos(math.radians(20.0))
+        cos_lat = math.cos(
+            math.radians(lat)
+        )
+
         best_edge = None
         min_dist = float("inf")
         checked_edges = set()
 
         for _, nid in candidates:
-            incident_edges = list(
-                self.graph.out_edges(nid, keys=True, data=True)
-            ) + list(self.graph.in_edges(nid, keys=True, data=True))
+            incident_edges = (
+                list(
+                    self.graph.out_edges(
+                        nid,
+                        keys=True,
+                        data=True,
+                    )
+                )
+                + list(
+                    self.graph.in_edges(
+                        nid,
+                        keys=True,
+                        data=True,
+                    )
+                )
+            )
 
             for u, v, k, d in incident_edges:
-                edge_key = (str(u), str(v), str(k))
+                edge_key = (
+                    str(u),
+                    str(v),
+                    str(k),
+                )
+
                 if edge_key in checked_edges:
                     continue
+
                 checked_edges.add(edge_key)
 
                 osmid = d.get("osmid")
+
                 if not osmid:
                     continue
 
                 try:
                     u_data = self.graph.nodes[u]
                     v_data = self.graph.nodes[v]
-                    u_lat = float(u_data["latitude"])
-                    u_lon = float(u_data["longitude"])
-                    v_lat = float(v_data["latitude"])
-                    v_lon = float(v_data["longitude"])
-                except (KeyError, TypeError, ValueError):
+
+                    u_lat = float(
+                        u_data["latitude"]
+                    )
+                    u_lon = float(
+                        u_data["longitude"]
+                    )
+
+                    v_lat = float(
+                        v_data["latitude"]
+                    )
+                    v_lon = float(
+                        v_data["longitude"]
+                    )
+                except (
+                    KeyError,
+                    TypeError,
+                    ValueError,
+                ):
                     continue
 
-                # Project point to segment in approximate local meters
-                px_m = (lon - u_lon) * 111320.0 * cos_lat
-                py_m = (lat - u_lat) * 110540.0
-                vx_m = (v_lon - u_lon) * 111320.0 * cos_lat
-                vy_m = (v_lat - u_lat) * 110540.0
+                # Convert the segment into an approximate
+                # local Cartesian coordinate system in metres.
+                px_m = (
+                    (lon - u_lon)
+                    * 111320.0
+                    * cos_lat
+                )
 
-                seg_len_sq = vx_m * vx_m + vy_m * vy_m
+                py_m = (
+                    (lat - u_lat)
+                    * 110540.0
+                )
+
+                vx_m = (
+                    (v_lon - u_lon)
+                    * 111320.0
+                    * cos_lat
+                )
+
+                vy_m = (
+                    (v_lat - u_lat)
+                    * 110540.0
+                )
+
+                seg_len_sq = (
+                    vx_m * vx_m
+                    + vy_m * vy_m
+                )
+
                 if seg_len_sq == 0:
-                    dist = math.sqrt(px_m * px_m + py_m * py_m)
+                    t = 0.0
+
+                    dist_x = px_m
+                    dist_y = py_m
+
+                    dist = math.sqrt(
+                        dist_x * dist_x
+                        + dist_y * dist_y
+                    )
                 else:
-                    t = max(0.0, min(1.0, (px_m * vx_m + py_m * vy_m) / seg_len_sq))
-                    dist_x = px_m - (vx_m * t)
-                    dist_y = py_m - (vy_m * t)
-                    dist = math.sqrt(dist_x * dist_x + dist_y * dist_y)
+                    t = max(
+                        0.0,
+                        min(
+                            1.0,
+                            (
+                                px_m * vx_m
+                                + py_m * vy_m
+                            )
+                            / seg_len_sq,
+                        ),
+                    )
+
+                    dist_x = (
+                        px_m
+                        - (vx_m * t)
+                    )
+
+                    dist_y = (
+                        py_m
+                        - (vy_m * t)
+                    )
+
+                    dist = math.sqrt(
+                        dist_x * dist_x
+                        + dist_y * dist_y
+                    )
+
+                # Convert the projected point back from the
+                # local Cartesian representation to latitude
+                # and longitude.
+                snapped_latitude = (
+                    u_lat
+                    + (
+                        (v_lat - u_lat)
+                        * t
+                    )
+                )
+
+                snapped_longitude = (
+                    u_lon
+                    + (
+                        (v_lon - u_lon)
+                        * t
+                    )
+                )
 
                 if dist < min_dist:
                     min_dist = dist
+
                     best_edge = {
                         "osm_way_id": int(osmid),
-                        "distance_meters": round(dist, 2),
-                        "name": str(d.get("name") or ""),
-                        "highway": str(d.get("highway") or ""),
+                        "distance_meters": round(
+                            dist,
+                            2,
+                        ),
+                        "snapped_latitude": (
+                            snapped_latitude
+                        ),
+                        "snapped_longitude": (
+                            snapped_longitude
+                        ),
+                        "name": str(
+                            d.get("name") or ""
+                        ),
+                        "highway": str(
+                            d.get("highway") or ""
+                        ),
                         "source_node": str(u),
                         "target_node": str(v),
-                        "speed_limit": d.get("maxspeed"),
+                        "speed_limit": d.get(
+                            "maxspeed"
+                        ),
                     }
 
-        return best_edge
+        return best_edge
