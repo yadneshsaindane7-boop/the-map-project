@@ -4,8 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
-  static const String appVersion = "2.0.0";
-  static const String buildNumber = "2";
+  static const String appVersion = '2.0.0';
+  static const String buildNumber = '2';
 
   Future<void> _contactDeveloper(BuildContext context) async {
     final Uri email = Uri(
@@ -35,17 +35,17 @@ class AboutPage extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Report a Bug"),
+          title: const Text('Report a Bug'),
           content: const Text(
-            "Bug reporting portal will be available in a future update.\n\n"
-            "For now, you can report bugs directly to the developer using the Contact Developer option.",
+            'Bug reporting portal will be available in a future update.\n\n'
+            'For now, you can report bugs directly to the developer using the Contact Developer option.',
           ),
           actions: [
             FilledButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("OK"),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -78,7 +78,7 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("About"),
+        title: const Text('About'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -88,7 +88,7 @@ class AboutPage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(28),
               child: Image.asset(
-                "assets/images/app_icon.png",
+                'assets/images/app_icon.png',
                 width: 120,
                 height: 120,
               ),
@@ -97,7 +97,7 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 20),
 
             Text(
-              "The Map Project",
+              'The Map Project',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -106,7 +106,7 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              "Community Powered Smart Navigation",
+              'Community Powered Smart Navigation',
               style: Theme.of(context).textTheme.titleMedium,
             ),
 
@@ -115,7 +115,7 @@ class AboutPage extends StatelessWidget {
             Chip(
               avatar: const Icon(Icons.verified),
               label: Text(
-                "Version $appVersion ($buildNumber)",
+                'Version $appVersion ($buildNumber)',
               ),
             ),
 
@@ -128,7 +128,7 @@ class AboutPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Published by",
+                      'Published by',
                       style: Theme.of(context)
                           .textTheme
                           .titleMedium
@@ -140,7 +140,7 @@ class AboutPage extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     const Text(
-                      "HLP - Hibro Lab Productions",
+                      'HLP - Hibro Lab Productions',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -150,7 +150,7 @@ class AboutPage extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     const Text(
-                      "The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.",
+                      'The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.',
                       textAlign: TextAlign.justify,
                     ),
                   ],
@@ -162,7 +162,7 @@ class AboutPage extends StatelessWidget {
 
             sectionTitle(
               context,
-              "Development Team",
+              'Development Team',
             ),
 
             Card(
@@ -173,10 +173,10 @@ class AboutPage extends StatelessWidget {
                       Icons.school,
                     ),
                     title: Text(
-                      "Prof - R. V. Daund",
+                      'Prof - R. V. Daund',
                     ),
                     subtitle: Text(
-                      "Project Guide",
+                      'Project Guide',
                     ),
                   ),
 
@@ -187,10 +187,10 @@ class AboutPage extends StatelessWidget {
                       Icons.code,
                     ),
                     title: Text(
-                      "Yadnesh Saindane",
+                      'Yadnesh Saindane',
                     ),
                     subtitle: Text(
-                      "Lead Developer",
+                      'Lead Developer',
                     ),
                   ),
 
@@ -201,10 +201,10 @@ class AboutPage extends StatelessWidget {
                       Icons.description,
                     ),
                     title: Text(
-                      "Namrata Wagh",
+                      'Namrata Wagh',
                     ),
                     subtitle: Text(
-                      "Project Documentation",
+                      'Project Documentation',
                     ),
                   ),
 
@@ -215,10 +215,10 @@ class AboutPage extends StatelessWidget {
                       Icons.science,
                     ),
                     title: Text(
-                      "Umesh Suryawanshi",
+                      'Umesh Suryawanshi',
                     ),
                     subtitle: Text(
-                      "Research & Field Validation",
+                      'Research & Field Validation',
                     ),
                   ),
                 ],
@@ -229,7 +229,7 @@ class AboutPage extends StatelessWidget {
 
             sectionTitle(
               context,
-              "Technology Stack",
+              'Technology Stack',
             ),
 
             Card(
@@ -237,25 +237,25 @@ class AboutPage extends StatelessWidget {
                 children: const [
                   ListTile(
                     leading: Icon(Icons.flutter_dash),
-                    title: Text("Framework"),
-                    subtitle: Text("Flutter"),
+                    title: Text('Framework'),
+                    subtitle: Text('Flutter'),
                   ),
 
                   Divider(height: 1),
 
                   ListTile(
                     leading: Icon(Icons.storage),
-                    title: Text("Backend"),
-                    subtitle: Text("Supabase"),
+                    title: Text('Backend'),
+                    subtitle: Text('Supabase'),
                   ),
 
                   Divider(height: 1),
 
                   ListTile(
                     leading: Icon(Icons.map),
-                    title: Text("Maps"),
+                    title: Text('Maps'),
                     subtitle: Text(
-                      "Flutter Map + OpenStreetMap",
+                      'Flutter Map + OpenStreetMap',
                     ),
                   ),
 
@@ -263,16 +263,18 @@ class AboutPage extends StatelessWidget {
 
                   ListTile(
                     leading: Icon(Icons.route),
-                    title: Text("Routing"),
-                    subtitle: Text("GraphHopper API"),
+                    title: Text('Routing'),
+                    subtitle: Text(
+                      'Custom FastAPI + A* Nashik Road Graph',
+                    ),
                   ),
 
                   Divider(height: 1),
 
                   ListTile(
                     leading: Icon(Icons.code),
-                    title: Text("Programming Language"),
-                    subtitle: Text("Dart"),
+                    title: Text('Programming Language'),
+                    subtitle: Text('Dart'),
                   ),
                 ],
               ),
@@ -282,7 +284,7 @@ class AboutPage extends StatelessWidget {
 
             sectionTitle(
               context,
-              "Core Features",
+              'Core Features',
             ),
 
             Card(
@@ -296,7 +298,7 @@ class AboutPage extends StatelessWidget {
                         color: Colors.green,
                       ),
                       title: Text(
-                        "Community Incident Reporting",
+                        'Community Incident Reporting',
                       ),
                     ),
 
@@ -306,7 +308,7 @@ class AboutPage extends StatelessWidget {
                         color: Colors.green,
                       ),
                       title: Text(
-                        "Real-Time Traffic Alerts",
+                        'Real-Time Traffic Alerts',
                       ),
                     ),
 
@@ -316,7 +318,7 @@ class AboutPage extends StatelessWidget {
                         color: Colors.green,
                       ),
                       title: Text(
-                        "Road Closure Detection",
+                        'Road Closure Detection',
                       ),
                     ),
 
@@ -326,7 +328,7 @@ class AboutPage extends StatelessWidget {
                         color: Colors.green,
                       ),
                       title: Text(
-                        "Smart Route Navigation",
+                        'Smart Route Navigation',
                       ),
                     ),
 
@@ -336,7 +338,7 @@ class AboutPage extends StatelessWidget {
                         color: Colors.green,
                       ),
                       title: Text(
-                        "Community Verification",
+                        'Community Verification',
                       ),
                     ),
 
@@ -346,7 +348,7 @@ class AboutPage extends StatelessWidget {
                         color: Colors.green,
                       ),
                       title: Text(
-                        "User Profiles & Statistics",
+                        'User Profiles & Statistics',
                       ),
                     ),
                   ],
@@ -358,7 +360,7 @@ class AboutPage extends StatelessWidget {
 
             sectionTitle(
               context,
-              "Project Information",
+              'Project Information',
             ),
 
             Card(
@@ -366,9 +368,9 @@ class AboutPage extends StatelessWidget {
                 children: const [
                   ListTile(
                     leading: Icon(Icons.public),
-                    title: Text("Status"),
+                    title: Text('Status'),
                     subtitle: Text(
-                      "Active Development",
+                      'Active Development',
                     ),
                   ),
 
@@ -376,9 +378,9 @@ class AboutPage extends StatelessWidget {
 
                   ListTile(
                     leading: Icon(Icons.business),
-                    title: Text("Publisher"),
+                    title: Text('Publisher'),
                     subtitle: Text(
-                      "HLP - Hibro Lab Productions",
+                      'HLP - Hibro Lab Productions',
                     ),
                   ),
 
@@ -386,9 +388,9 @@ class AboutPage extends StatelessWidget {
 
                   ListTile(
                     leading: Icon(Icons.workspace_premium),
-                    title: Text("License"),
+                    title: Text('License'),
                     subtitle: Text(
-                      "Educational & Research Project",
+                      'Educational & Research Project',
                     ),
                   ),
                 ],
@@ -399,7 +401,7 @@ class AboutPage extends StatelessWidget {
 
             sectionTitle(
               context,
-              "Support",
+              'Support',
             ),
 
             SizedBox(
@@ -407,7 +409,7 @@ class AboutPage extends StatelessWidget {
               child: FilledButton.icon(
                 icon: const Icon(Icons.bug_report),
                 label: const Text(
-                  "Report a Bug",
+                  'Report a Bug',
                 ),
                 onPressed: () {
                   _reportBug(context);
@@ -422,7 +424,7 @@ class AboutPage extends StatelessWidget {
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.email),
                 label: const Text(
-                  "Contact Developer",
+                  'Contact Developer',
                 ),
                 onPressed: () {
                   _contactDeveloper(context);
@@ -446,7 +448,7 @@ class AboutPage extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     Text(
-                      "HLP - Hibro Lab Productions",
+                      'HLP - Hibro Lab Productions',
                       style: Theme.of(context)
                           .textTheme
                           .titleLarge
@@ -458,7 +460,7 @@ class AboutPage extends StatelessWidget {
                     const SizedBox(height: 8),
 
                     const Text(
-                      "The Map Project is a product developed and maintained by HLP - Hibro Lab Productions.",
+                      'The Map Project is a product developed and maintained by HLP - Hibro Lab Productions.',
                       textAlign: TextAlign.center,
                     ),
 
@@ -469,7 +471,7 @@ class AboutPage extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     const Text(
-                      "Developer Contact",
+                      'Developer Contact',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -478,7 +480,7 @@ class AboutPage extends StatelessWidget {
                     const SizedBox(height: 6),
 
                     SelectableText(
-                      "yadneshsaindane7@gmail.com",
+                      'yadneshsaindane7@gmail.com',
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
@@ -494,7 +496,7 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 30),
 
             Text(
-              "Â© 2026 HLP - Hibro Lab Productions",
+              '© 2026 HLP - Hibro Lab Productions',
               style: Theme.of(context).textTheme.bodySmall,
               textAlign: TextAlign.center,
             ),
@@ -502,17 +504,16 @@ class AboutPage extends StatelessWidget {
             const SizedBox(height: 6),
 
             Text(
-              "The Map Project\nVersion $appVersion ($buildNumber)",
+              'The Map Project\nVersion $appVersion ($buildNumber)',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodySmall,
             ),
 
             const SizedBox(height: 6),
 
-            Text(
-              "All Rights Reserved.",
+            const Text(
+              'All Rights Reserved.',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
             ),
 
             const SizedBox(height: 30),
