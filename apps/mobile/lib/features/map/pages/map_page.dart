@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -86,6 +86,9 @@ class _MapPageState extends ConsumerState<MapPage> {
     List<RoadEvent> events,
   ) {
     if (events.isEmpty) {
+      debugPrint(
+        'Zoom to reports skipped: no road events available.',
+      );
       return;
     }
 
@@ -96,7 +99,49 @@ class _MapPageState extends ConsumerState<MapPage> {
             event.longitude,
           ),
         )
+        .where(
+          (point) =>
+              point.latitude.isFinite &&
+              point.longitude.isFinite,
+        )
         .toList();
+
+    if (points.isEmpty) {
+      debugPrint(
+        'Zoom to reports skipped: no valid event coordinates.',
+      );
+      return;
+    }
+
+    // flutter_map cannot calculate a finite fit-camera zoom
+    // from a zero-area bounds. When there is only one point,
+    // move directly to that location instead.
+    if (points.length == 1) {
+      controller.move(
+        points.first,
+        16,
+      );
+      return;
+    }
+
+    // If multiple reports have exactly the same coordinates,
+    // their bounds still have zero width and height. In that
+    // situation, move directly to the shared location.
+    final firstPoint = points.first;
+
+    final hasDistinctPoint = points.skip(1).any(
+          (point) =>
+              point.latitude != firstPoint.latitude ||
+              point.longitude != firstPoint.longitude,
+        );
+
+    if (!hasDistinctPoint) {
+      controller.move(
+        firstPoint,
+        16,
+      );
+      return;
+    }
 
     controller.fitCamera(
       CameraFitService.fitPoints(points),
@@ -1049,7 +1094,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                 ),
               Positioned(
                 right: 16,
-                bottom: 200,
+                bottom: 250,
                 child: roadEvents.when(
                   loading: () =>
                       const SizedBox.shrink(),

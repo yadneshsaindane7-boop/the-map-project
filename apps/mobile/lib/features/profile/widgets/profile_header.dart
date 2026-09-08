@@ -12,48 +12,126 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
-      elevation: 2,
+      margin: EdgeInsets.zero,
+      elevation: 3,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.circular(22),
+      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 24,
-          horizontal: 20,
-        ),
-        child: Column(
+        padding: const EdgeInsets.all(20),
+        child: Row(
           children: [
-            CircleAvatar(
-              radius: 42,
-              backgroundColor: Theme.of(context)
-                  .colorScheme
-                  .primaryContainer,
-              child: Text(
-                profile.initials,
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
+            Container(
+              width: 78,
+              height: 78,
+              decoration: BoxDecoration(
+                color: theme
+                    .colorScheme
+                    .primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  profile.initials,
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: theme
+                        .colorScheme
+                        .onPrimaryContainer,
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(width: 16),
 
-            Text(
-              profile.displayName,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall,
-            ),
-
-            const SizedBox(height: 4),
-
-            Text(
-              profile.email,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(
-                    color: Colors.grey,
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    profile.displayName,
+                    maxLines: 2,
+                    overflow:
+                        TextOverflow.ellipsis,
+                    style: theme
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    profile.email,
+                    maxLines: 2,
+                    overflow:
+                        TextOverflow.ellipsis,
+                    style: theme
+                        .textTheme
+                        .bodySmall
+                        ?.copyWith(
+                      color: theme
+                          .colorScheme
+                          .onSurfaceVariant,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme
+                          .colorScheme
+                          .secondaryContainer,
+                      borderRadius:
+                          BorderRadius.circular(9),
+                    ),
+                    child: Row(
+                      mainAxisSize:
+                          MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons
+                              .verified_user_outlined,
+                          size: 15,
+                          color: theme
+                              .colorScheme
+                              .onSecondaryContainer,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          profile.isAuthority
+                              ? 'Authority account'
+                              : 'Community member',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight:
+                                FontWeight.w600,
+                            color: theme
+                                .colorScheme
+                                .onSecondaryContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

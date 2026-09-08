@@ -8,7 +8,10 @@ import '../providers/destination_provider.dart';
 import '../providers/search_provider.dart';
 
 class SearchPanel extends ConsumerStatefulWidget {
-  const SearchPanel({super.key, this.onDestinationSelected});
+  const SearchPanel({
+    super.key,
+    this.onDestinationSelected,
+  });
 
   final VoidCallback? onDestinationSelected;
 
@@ -17,7 +20,8 @@ class SearchPanel extends ConsumerStatefulWidget {
 }
 
 class _SearchPanelState extends ConsumerState<SearchPanel> {
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _controller =
+      TextEditingController();
 
   Timer? _debounce;
 
@@ -31,19 +35,48 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
   void _onChanged(String value) {
     _debounce?.cancel();
 
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(searchProvider.notifier).search(value);
-    });
+    _debounce = Timer(
+      const Duration(milliseconds: 500),
+      () {
+        ref
+            .read(searchProvider.notifier)
+            .search(value);
+      },
+    );
+
+    setState(() {});
   }
 
   void _clearSearch() {
     _controller.clear();
 
-    ref.read(searchProvider.notifier).clearResults();
+    ref
+        .read(searchProvider.notifier)
+        .clearResults();
 
-    ref.read(destinationProvider.notifier).clearDestination();
+    ref
+        .read(destinationProvider.notifier)
+        .clearDestination();
 
-    ref.read(routeProvider.notifier).clearRoute();
+    ref
+        .read(routeProvider.notifier)
+        .clearRoute();
+
+    setState(() {});
+  }
+
+  void _selectResult(dynamic result) {
+    ref
+        .read(destinationProvider.notifier)
+        .setDestination(result);
+
+    ref
+        .read(searchProvider.notifier)
+        .clearResults();
+
+    _controller.text = result.displayName;
+
+    widget.onDestinationSelected?.call();
 
     setState(() {});
   }
@@ -51,14 +84,22 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchProvider);
+    final theme = Theme.of(context);
+
+    final hasText =
+        _controller.text.trim().isNotEmpty;
+    final hasResults =
+        searchState.results.isNotEmpty;
 
     return Material(
       elevation: 8,
-      borderRadius: BorderRadius.circular(14),
+      shadowColor: Colors.black26,
+      borderRadius: BorderRadius.circular(18),
+      clipBehavior: Clip.antiAlias,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -66,57 +107,118 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
             TextField(
               controller: _controller,
               onChanged: _onChanged,
+              textInputAction: TextInputAction.search,
+              maxLines: 1,
               decoration: InputDecoration(
                 hintText: 'Search destination...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: TextStyle(
+                  color: theme
+                      .colorScheme
+                      .onSurfaceVariant,
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: theme.colorScheme.primary,
+                ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                suffixIcon: searchState.isLoading
-                    ? const Padding(
-                        padding: EdgeInsets.all(14),
-                        child: SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : (_controller.text.isEmpty
-                          ? null
-                          : IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: _clearSearch,
-                            )),
+                contentPadding:
+                    const EdgeInsets.symmetric(
+                  vertical: 17,
+                  horizontal: 4,
+                ),
+                suffixIcon:
+                    searchState.isLoading
+                        ? const Padding(
+                            padding:
+                                EdgeInsets.all(14),
+                            child: SizedBox(
+                              width: 18,
+                              height: 18,
+                              child:
+                                  CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          )
+                        : hasText
+                            ? IconButton(
+                                tooltip:
+                                    'Clear search',
+                                icon: const Icon(
+                                  Icons.clear,
+                                ),
+                                onPressed:
+                                    _clearSearch,
+                              )
+                            : null,
               ),
             ),
-            if (searchState.results.isNotEmpty) ...[
-              const Divider(height: 1),
+            if (hasResults) ...[
+              Divider(
+                height: 1,
+                color: theme.dividerColor,
+              ),
               ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 300),
-                child: ListView.builder(
+                constraints:
+                    const BoxConstraints(
+                  maxHeight: 280,
+                ),
+                child: ListView.separated(
                   shrinkWrap: true,
-                  itemCount: searchState.results.length,
-                  itemBuilder: (context, index) {
-                    final result = searchState.results[index];
+                  padding:
+                      const EdgeInsets.symmetric(
+                    vertical: 4,
+                  ),
+                  itemCount:
+                      searchState.results.length,
+                  separatorBuilder: (
+                    BuildContext context,
+                    int index,
+                  ) {
+                    return Divider(
+                      height: 1,
+                      indent: 56,
+                      color: theme.dividerColor,
+                    );
+                  },
+                  itemBuilder: (
+                    BuildContext context,
+                    int index,
+                  ) {
+                    final result =
+                        searchState.results[index];
 
                     return ListTile(
-                      leading: const Icon(Icons.location_on),
+                      dense: true,
+                      minVerticalPadding: 10,
+                      leading: CircleAvatar(
+                        radius: 18,
+                        backgroundColor: theme
+                            .colorScheme
+                            .primaryContainer,
+                        child: Icon(
+                          Icons.location_on,
+                          size: 20,
+                          color: theme
+                              .colorScheme
+                              .onPrimaryContainer,
+                        ),
+                      ),
                       title: Text(
                         result.displayName,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        overflow:
+                            TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight:
+                              FontWeight.w500,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
                       ),
                       onTap: () {
-                        ref
-                            .read(destinationProvider.notifier)
-                            .setDestination(result);
-
-                        ref.read(searchProvider.notifier).clearResults();
-
-                        _controller.text = result.displayName;
-
-                        widget.onDestinationSelected?.call();
-
-                        setState(() {});
+                        _selectResult(result);
                       },
                     );
                   },

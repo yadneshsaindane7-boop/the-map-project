@@ -1,12 +1,11 @@
 name: mobile
-description: "The Map Project"
+description: "The Map Project - Real-time Road Intelligence"
+publish_to: 'none'
 
-publish_to: "none"
-
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
-  sdk: ^3.10.3
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -14,27 +13,14 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
-  # Backend
   supabase_flutter: ^2.16.0
-
-  # Maps
   flutter_map: ^8.3.1
   latlong2: ^0.10.1
   geolocator: ^14.0.3
-
-  # Environment Variables
   flutter_dotenv: ^6.0.0
-
-  # Networking
   http: ^1.6.0
-
-  # State Management
   flutter_riverpod: ^3.0.3
-
-  # Routing
   go_router: ^17.0.0
-
-  # URL Launcher
   url_launcher: ^6.3.2
   flutter_local_notifications: ^22.3.0
 
@@ -43,7 +29,6 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
-
   flutter_launcher_icons: ^0.14.4
 
 flutter:
@@ -56,10 +41,4 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-
   image_path: "assets/images/app_icon.png"
-
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/images/app_icon.png"
-
-  remove_alpha_ios: true

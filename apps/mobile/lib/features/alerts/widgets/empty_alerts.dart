@@ -7,26 +7,107 @@ class EmptyAlerts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment:
-            MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.notifications_off,
-            size: 80,
-            color: Colors.grey,
-          ),
+    final theme = Theme.of(context);
 
-          SizedBox(height: 16),
-
-          Text(
-            "No active alerts",
-            style: TextStyle(
-              fontSize: 18,
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: theme
+                    .colorScheme
+                    .primaryContainer,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons
+                    .notifications_none_rounded,
+                size: 48,
+                color: theme
+                    .colorScheme
+                    .onPrimaryContainer,
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 22),
+
+            Text(
+              'No active alerts',
+              textAlign: TextAlign.center,
+              style: theme
+                  .textTheme
+                  .headlineSmall
+                  ?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              'There are no verified traffic incidents '
+              'affecting the road network right now.',
+              textAlign: TextAlign.center,
+              style: theme
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(
+                color: theme
+                    .colorScheme
+                    .onSurfaceVariant,
+                height: 1.45,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 10,
+              ),
+              decoration: BoxDecoration(
+                color: theme
+                    .colorScheme
+                    .surfaceContainerHighest,
+                borderRadius:
+                    BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize:
+                    MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons
+                        .check_circle_outline_rounded,
+                    size: 18,
+                    color: theme
+                        .colorScheme
+                        .primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'You are all clear',
+                    style: theme
+                        .textTheme
+                        .labelLarge
+                        ?.copyWith(
+                      fontWeight:
+                          FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

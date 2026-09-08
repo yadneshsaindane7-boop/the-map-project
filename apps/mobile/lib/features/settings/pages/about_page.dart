@@ -38,7 +38,8 @@ class AboutPage extends StatelessWidget {
           title: const Text('Report a Bug'),
           content: const Text(
             'Bug reporting portal will be available in a future update.\n\n'
-            'For now, you can report bugs directly to the developer using the Contact Developer option.',
+            'For now, you can report bugs directly to the developer '
+            'using the Contact Developer option.',
           ),
           actions: [
             FilledButton(
@@ -53,470 +54,601 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  Widget sectionTitle(
+  Widget _sectionHeader(
     BuildContext context,
     String title,
+    IconData icon,
   ) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(
+        top: 18,
         bottom: 10,
-        top: 8,
       ),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 21,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 9),
+          Text(
+            title,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _infoTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    bool showDivider = true,
+  }) {
+    final theme = Theme.of(context);
+
+    return Column(
+      children: [
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 3,
+          ),
+          leading: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: theme.colorScheme.onPrimaryContainer,
+            ),
+          ),
+          title: Text(
+            title,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              subtitle,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
+            ),
+          ),
         ),
+        if (showDivider)
+          Divider(
+            height: 1,
+            indent: 70,
+            color: theme.dividerColor,
+          ),
+      ],
+    );
+  }
+
+  Widget _featureTile(
+    BuildContext context,
+    String title,
+    IconData icon,
+  ) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 10,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              title,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Icon(
+            Icons.check_circle_rounded,
+            size: 19,
+            color: theme.colorScheme.primary,
+          ),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('About'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          14,
+          16,
+          28,
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Image.asset(
-                'assets/images/app_icon.png',
-                width: 120,
-                height: 120,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Text(
-              'The Map Project',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+            // App identity
+            Center(
+              child: Column(
+                children: [
+                  Container(
+                    width: 96,
+                    height: 96,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(26),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colorScheme.primary.withValues(
+                            alpha: 0.12,
+                          ),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(19),
+                      child: Image.asset(
+                        'assets/images/app_icon.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Text(
-              'Community Powered Smart Navigation',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-
-            const SizedBox(height: 16),
-
-            Chip(
-              avatar: const Icon(Icons.verified),
-              label: Text(
-                'Version $appVersion ($buildNumber)',
+                  const SizedBox(height: 14),
+                  Text(
+                    'The Map Project',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'Community Powered Smart Navigation',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.verified_rounded,
+                          size: 17,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Version $appVersion • Build $buildNumber',
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 18),
 
+            // About the project
             Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(17),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Published by',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
+                    Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(12),
                           ),
+                          child: Icon(
+                            Icons.map_rounded,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'About the Project',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-
-                    const SizedBox(height: 8),
-
-                    const Text(
+                    const SizedBox(height: 12),
+                    Text(
                       'HLP - Hibro Lab Productions',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-
-                    const SizedBox(height: 12),
-
-                    const Text(
-                      'The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.',
-                      textAlign: TextAlign.justify,
+                    const SizedBox(height: 7),
+                    Text(
+                      'The Map Project is a community-powered navigation '
+                      'platform designed to provide real-time road '
+                      'conditions, road closures, traffic incidents and '
+                      'intelligent route guidance using community reports '
+                      'and modern mapping technologies.',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.5,
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 24),
-
-            sectionTitle(
+            _sectionHeader(
               context,
               'Development Team',
+              Icons.groups_rounded,
             ),
 
             Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
               child: Column(
-                children: const [
-                  ListTile(
-                    leading: Icon(
-                      Icons.school,
-                    ),
-                    title: Text(
-                      'Prof - R. V. Daund',
-                    ),
-                    subtitle: Text(
-                      'Project Guide',
-                    ),
+                children: [
+                  _infoTile(
+                    context,
+                    icon: Icons.school_rounded,
+                    title: 'Prof - R. V. Daund',
+                    subtitle: 'Project Guide',
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(
-                      Icons.code,
-                    ),
-                    title: Text(
-                      'Yadnesh Saindane',
-                    ),
-                    subtitle: Text(
-                      'Lead Developer',
-                    ),
+                  _infoTile(
+                    context,
+                    icon: Icons.code_rounded,
+                    title: 'Yadnesh Saindane',
+                    subtitle: 'Lead Developer',
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(
-                      Icons.description,
-                    ),
-                    title: Text(
-                      'Namrata Wagh',
-                    ),
-                    subtitle: Text(
-                      'Project Documentation',
-                    ),
+                  _infoTile(
+                    context,
+                    icon: Icons.description_rounded,
+                    title: 'Namrata Wagh',
+                    subtitle: 'Project Documentation',
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(
-                      Icons.science,
-                    ),
-                    title: Text(
-                      'Umesh Suryawanshi',
-                    ),
-                    subtitle: Text(
-                      'Research & Field Validation',
-                    ),
+                  _infoTile(
+                    context,
+                    icon: Icons.science_rounded,
+                    title: 'Umesh Suryawanshi',
+                    subtitle: 'Research & Field Validation',
+                    showDivider: false,
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 24),
-
-            sectionTitle(
+            _sectionHeader(
               context,
               'Technology Stack',
+              Icons.layers_rounded,
             ),
 
             Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
               child: Column(
-                children: const [
-                  ListTile(
-                    leading: Icon(Icons.flutter_dash),
-                    title: Text('Framework'),
-                    subtitle: Text('Flutter'),
+                children: [
+                  _infoTile(
+                    context,
+                    icon: Icons.flutter_dash,
+                    title: 'Framework',
+                    subtitle: 'Flutter',
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(Icons.storage),
-                    title: Text('Backend'),
-                    subtitle: Text('Supabase'),
+                  _infoTile(
+                    context,
+                    icon: Icons.storage_rounded,
+                    title: 'Backend',
+                    subtitle: 'Supabase',
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(Icons.map),
-                    title: Text('Maps'),
-                    subtitle: Text(
-                      'Flutter Map + OpenStreetMap',
-                    ),
+                  _infoTile(
+                    context,
+                    icon: Icons.map_rounded,
+                    title: 'Maps',
+                    subtitle: 'Flutter Map + OpenStreetMap',
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(Icons.route),
-                    title: Text('Routing'),
-                    subtitle: Text(
-                      'Custom FastAPI + A* Nashik Road Graph',
-                    ),
+                  _infoTile(
+                    context,
+                    icon: Icons.route_rounded,
+                    title: 'Routing',
+                    subtitle: 'Custom FastAPI + A* Nashik Road Graph',
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(Icons.code),
-                    title: Text('Programming Language'),
-                    subtitle: Text('Dart'),
+                  _infoTile(
+                    context,
+                    icon: Icons.code_rounded,
+                    title: 'Programming Language',
+                    subtitle: 'Dart',
+                    showDivider: false,
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 24),
-
-            sectionTitle(
+            _sectionHeader(
               context,
               'Core Features',
+              Icons.auto_awesome_rounded,
             ),
 
             Card(
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  children: const [
-                    ListTile(
-                      leading: Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        'Community Incident Reporting',
-                      ),
-                    ),
-
-                    ListTile(
-                      leading: Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        'Real-Time Traffic Alerts',
-                      ),
-                    ),
-
-                    ListTile(
-                      leading: Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        'Road Closure Detection',
-                      ),
-                    ),
-
-                    ListTile(
-                      leading: Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        'Smart Route Navigation',
-                      ),
-                    ),
-
-                    ListTile(
-                      leading: Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        'Community Verification',
-                      ),
-                    ),
-
-                    ListTile(
-                      leading: Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                      title: Text(
-                        'User Profiles & Statistics',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            sectionTitle(
-              context,
-              'Project Information',
-            ),
-
-            Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
               child: Column(
-                children: const [
-                  ListTile(
-                    leading: Icon(Icons.public),
-                    title: Text('Status'),
-                    subtitle: Text(
-                      'Active Development',
-                    ),
+                children: [
+                  _featureTile(
+                    context,
+                    'Community Incident Reporting',
+                    Icons.report_problem_outlined,
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(Icons.business),
-                    title: Text('Publisher'),
-                    subtitle: Text(
-                      'HLP - Hibro Lab Productions',
-                    ),
+                  _featureTile(
+                    context,
+                    'Real-Time Traffic Alerts',
+                    Icons.traffic_outlined,
                   ),
-
-                  Divider(height: 1),
-
-                  ListTile(
-                    leading: Icon(Icons.workspace_premium),
-                    title: Text('License'),
-                    subtitle: Text(
-                      'Educational & Research Project',
-                    ),
+                  _featureTile(
+                    context,
+                    'Road Closure Detection',
+                    Icons.block_rounded,
+                  ),
+                  _featureTile(
+                    context,
+                    'Smart Route Navigation',
+                    Icons.alt_route_rounded,
+                  ),
+                  _featureTile(
+                    context,
+                    'Community Verification',
+                    Icons.verified_user_outlined,
+                  ),
+                  _featureTile(
+                    context,
+                    'User Profiles & Statistics',
+                    Icons.person_outline_rounded,
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 24),
-
-            sectionTitle(
+            _sectionHeader(
               context,
-              'Support',
+              'Project Information',
+              Icons.info_outline_rounded,
             ),
-
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                icon: const Icon(Icons.bug_report),
-                label: const Text(
-                  'Report a Bug',
-                ),
-                onPressed: () {
-                  _reportBug(context);
-                },
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.email),
-                label: const Text(
-                  'Contact Developer',
-                ),
-                onPressed: () {
-                  _contactDeveloper(context);
-                },
-              ),
-            ),
-
-            const SizedBox(height: 24),
 
             Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
+              child: Column(
+                children: [
+                  _infoTile(
+                    context,
+                    icon: Icons.public_rounded,
+                    title: 'Status',
+                    subtitle: 'Active Development',
+                  ),
+                  _infoTile(
+                    context,
+                    icon: Icons.business_rounded,
+                    title: 'Publisher',
+                    subtitle: 'HLP - Hibro Lab Productions',
+                  ),
+                  _infoTile(
+                    context,
+                    icon: Icons.workspace_premium_rounded,
+                    title: 'License',
+                    subtitle: 'Educational & Research Project',
+                    showDivider: false,
+                  ),
+                ],
+              ),
+            ),
+
+            _sectionHeader(
+              context,
+              'Support',
+              Icons.support_agent_rounded,
+            ),
+
+            Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(14),
                 child: Column(
                   children: [
-                    const Icon(
-                      Icons.corporate_fare,
-                      size: 42,
-                      color: Colors.blue,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Text(
-                      'HLP - Hibro Lab Productions',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    const Text(
-                      'The Map Project is a product developed and maintained by HLP - Hibro Lab Productions.',
-                      textAlign: TextAlign.center,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    const Divider(),
-
-                    const SizedBox(height: 12),
-
-                    const Text(
-                      'Developer Contact',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: FilledButton.icon(
+                        icon: const Icon(
+                          Icons.bug_report_outlined,
+                        ),
+                        label: const Text('Report a Bug'),
+                        onPressed: () {
+                          _reportBug(context);
+                        },
                       ),
                     ),
-
-                    const SizedBox(height: 6),
-
-                    SelectableText(
-                      'yadneshsaindane7@gmail.com',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(
-                            color: Colors.blue,
-                          ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton.icon(
+                        icon: const Icon(
+                          Icons.email_outlined,
+                        ),
+                        label: const Text('Contact Developer'),
+                        onPressed: () {
+                          _contactDeveloper(context);
+                        },
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 18),
 
-            Text(
-              '© 2026 HLP - Hibro Lab Productions',
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
+            // HLP
+            Card(
+              margin: EdgeInsets.zero,
+              elevation: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(17),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.corporate_fare_rounded,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 11),
+                    Text(
+                      'HLP - Hibro Lab Productions',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      'The Map Project is a product developed and '
+                      'maintained by HLP - Hibro Lab Productions.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        height: 1.45,
+                      ),
+                    ),
+                    const SizedBox(height: 13),
+                    Divider(
+                      color: theme.dividerColor,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Developer Contact',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    SelectableText(
+                      'yadneshsaindane7@gmail.com',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 22),
 
-            Text(
-              'The Map Project\nVersion $appVersion ($buildNumber)',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    '© 2026 HLP - Hibro Lab Productions',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'The Map Project • Version $appVersion ($buildNumber)',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    'All Rights Reserved.',
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
             ),
-
-            const SizedBox(height: 6),
-
-            const Text(
-              'All Rights Reserved.',
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 30),
           ],
         ),
       ),

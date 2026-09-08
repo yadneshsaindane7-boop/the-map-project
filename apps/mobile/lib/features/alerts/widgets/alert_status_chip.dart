@@ -10,29 +10,88 @@ class AlertStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color color;
+    final theme = Theme.of(context);
 
-    switch (status.toLowerCase()) {
+    final normalized =
+        status.toLowerCase();
+
+    late final Color backgroundColor;
+    late final Color foregroundColor;
+    late final IconData icon;
+    late final String label;
+
+    switch (normalized) {
       case 'active':
-        color = Colors.red;
+        backgroundColor =
+            theme.colorScheme.errorContainer;
+        foregroundColor =
+            theme.colorScheme.onErrorContainer;
+        icon = Icons.circle;
+        label = 'ACTIVE';
+        break;
+
+      case 'verified':
+        backgroundColor =
+            theme.colorScheme.tertiaryContainer;
+        foregroundColor =
+            theme
+                .colorScheme
+                .onTertiaryContainer;
+        icon = Icons.verified_rounded;
+        label = 'VERIFIED';
         break;
 
       case 'resolved':
-        color = Colors.green;
+      case 'completed':
+        backgroundColor =
+            theme.colorScheme.secondaryContainer;
+        foregroundColor =
+            theme
+                .colorScheme
+                .onSecondaryContainer;
+        icon = Icons.check_circle_rounded;
+        label = 'RESOLVED';
         break;
 
       default:
-        color = Colors.orange;
+        backgroundColor =
+            theme.colorScheme.surfaceContainerHighest;
+        foregroundColor =
+            theme.colorScheme.onSurfaceVariant;
+        icon = Icons.info_outline_rounded;
+        label = status.toUpperCase();
     }
 
-    return Chip(
-      avatar: Icon(
-        Icons.circle,
-        size: 12,
-        color: color,
+    return Container(
+      padding:
+          const EdgeInsets.symmetric(
+        horizontal: 9,
+        vertical: 6,
       ),
-      label: Text(
-        status.toUpperCase(),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius:
+            BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 13,
+            color: foregroundColor,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(
+              color: foregroundColor,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.4,
+            ),
+          ),
+        ],
       ),
     );
   }

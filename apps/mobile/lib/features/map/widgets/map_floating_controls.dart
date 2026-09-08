@@ -12,21 +12,35 @@ class MapFloatingControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FloatingActionButton.small(
-          heroTag: 'layers',
-          onPressed: onLayersPressed,
-          child: const Icon(Icons.layers),
-        ),
-        const SizedBox(height: 12),
-        FloatingActionButton.small(
-          heroTag: 'location',
-          onPressed: onMyLocationPressed,
-          child: const Icon(Icons.my_location),
-        ),
-      ],
+    final theme = Theme.of(context);
+
+    return Material(
+      elevation: 6,
+      shadowColor: Colors.black26,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      color: theme.colorScheme.surface,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            tooltip: 'Map layers',
+            onPressed: onLayersPressed,
+            icon: const Icon(Icons.layers_outlined),
+          ),
+          Divider(
+            height: 1,
+            indent: 8,
+            endIndent: 8,
+            color: theme.dividerColor,
+          ),
+          IconButton(
+            tooltip: 'My location',
+            onPressed: onMyLocationPressed,
+            icon: const Icon(Icons.my_location),
+          ),
+        ],
+      ),
     );
   }
 }
