@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
+import '../../../l10n/app_localizations.dart';
 
 class LocationPickerPage extends StatefulWidget {
   const LocationPickerPage({
@@ -52,6 +53,7 @@ class _LocationPickerPageState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -114,7 +116,7 @@ class _LocationPickerPageState
                   child: Row(
                     children: [
                       IconButton(
-                        tooltip: 'Back',
+                        tooltip: l10n.back,
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -124,7 +126,7 @@ class _LocationPickerPageState
                       ),
                       Expanded(
                         child: Text(
-                          'Choose Incident Location',
+                          l10n.chooseIncidentLocation,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleMedium?.copyWith(
@@ -133,7 +135,7 @@ class _LocationPickerPageState
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Reset location',
+                        tooltip: l10n.resetLocation,
                         onPressed: _resetLocation,
                         icon: const Icon(
                           Icons.my_location_rounded,
@@ -174,7 +176,7 @@ class _LocationPickerPageState
                           const SizedBox(width: 8),
                           Flexible(
                             child: Text(
-                              'Tap the map to select the incident location',
+                              l10n.tapMapToSelectLocation,
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 fontWeight: FontWeight.w500,
@@ -232,14 +234,14 @@ class _LocationPickerPageState
                                   CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Incident location',
+                                  l10n.incidentLocation,
                                   style: theme.textTheme.titleSmall?.copyWith(
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
                                 const SizedBox(height: 3),
                                 Text(
-                                  'The selected point will be attached to your report.',
+                                  l10n.selectedPointAttached,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
@@ -263,8 +265,8 @@ class _LocationPickerPageState
                           icon: const Icon(
                             Icons.check_rounded,
                           ),
-                          label: const Text(
-                            'Use This Location',
+                          label: Text(
+                            l10n.useThisLocation,
                           ),
                         ),
                       ),

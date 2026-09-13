@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/localization/locale_provider.dart';
 import '../../../features/moderation/pages/moderation_page.dart';
 import '../../../features/settings/pages/about_page.dart';
 import '../../../features/settings/pages/language_page.dart';
 import '../../../features/settings/pages/notifications_page.dart';
+import '../../../l10n/app_localizations.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/logout_button.dart';
 import '../widgets/profile_achievements.dart';
@@ -20,8 +22,24 @@ class ProfilePage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final profile = ref.watch(profileProvider);
     final theme = Theme.of(context);
+    final currentLocale = ref.watch(localeProvider);
+
+    String currentLanguageName;
+    switch (currentLocale.languageCode) {
+      case 'hi':
+        currentLanguageName = 'हिन्दी';
+        break;
+      case 'mr':
+        currentLanguageName = 'मराठी';
+        break;
+      case 'en':
+      default:
+        currentLanguageName = 'English';
+        break;
+    }
 
     return Scaffold(
       appBar: PreferredSize(
@@ -60,7 +78,7 @@ class ProfilePage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Profile',
+                          l10n.profileTitle,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleLarge?.copyWith(
@@ -69,7 +87,7 @@ class ProfilePage extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Your community activity',
+                          l10n.profileCommunityActivity,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -114,11 +132,10 @@ class ProfilePage extends ConsumerWidget {
 
                 const SizedBox(height: 18),
 
-                const _SectionHeading(
+                _SectionHeading(
                   icon: Icons.insights_rounded,
-                  title: 'Your Activity',
-                  subtitle:
-                      'Your contribution to the community',
+                  title: l10n.yourActivity,
+                  subtitle: l10n.yourContribution,
                 ),
 
                 const SizedBox(height: 10),
@@ -126,32 +143,31 @@ class ProfilePage extends ConsumerWidget {
                 GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,
-                  physics:
-                      const NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
                   childAspectRatio: 1.65,
                   children: [
                     ProfileStatsCard(
-                      title: 'Reports',
+                      title: l10n.statReports,
                       value: user.totalReports.toString(),
                       icon: Icons.description_outlined,
                       iconColor: theme.colorScheme.primary,
                     ),
                     ProfileStatsCard(
-                      title: 'Active',
+                      title: l10n.statActive,
                       value: user.activeReports.toString(),
                       icon: Icons.warning_amber_rounded,
                       iconColor: theme.colorScheme.tertiary,
                     ),
-                    const ProfileStatsCard(
-                      title: 'Reputation',
+                    ProfileStatsCard(
+                      title: l10n.statReputation,
                       value: '95%',
                       icon: Icons.star_rounded,
                       iconColor: Colors.amber,
                     ),
-                    const ProfileStatsCard(
-                      title: 'Achievements',
+                    ProfileStatsCard(
+                      title: l10n.statAchievements,
                       value: '3',
                       icon: Icons.emoji_events_rounded,
                       iconColor: Colors.green,
@@ -166,23 +182,18 @@ class ProfilePage extends ConsumerWidget {
                 if (user.isAuthority) ...[
                   const SizedBox(height: 24),
 
-                  const _SectionHeading(
-                    icon:
-                        Icons.admin_panel_settings_outlined,
-                    title: 'Authority Tools',
-                    subtitle:
-                        'Tools available to authorized users',
+                  _SectionHeading(
+                    icon: Icons.admin_panel_settings_outlined,
+                    title: l10n.authorityTools,
+                    subtitle: l10n.authorityToolsSubtitle,
                   ),
 
                   const SizedBox(height: 10),
 
                   ProfileMenuTile(
-                    icon:
-                        Icons.admin_panel_settings_outlined,
-                    title:
-                        'Moderate Incident Reports',
-                    subtitle:
-                        'Review, approve, or reject pending reports',
+                    icon: Icons.admin_panel_settings_outlined,
+                    title: l10n.moderateIncidentReports,
+                    subtitle: l10n.moderateReportsSubtitle,
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -196,20 +207,18 @@ class ProfilePage extends ConsumerWidget {
 
                 const SizedBox(height: 24),
 
-                const _SectionHeading(
+                _SectionHeading(
                   icon: Icons.settings_outlined,
-                  title: 'Settings',
-                  subtitle:
-                      'Manage your app preferences',
+                  title: l10n.settings,
+                  subtitle: l10n.manageAppPreferences,
                 ),
 
                 const SizedBox(height: 10),
 
                 ProfileMenuTile(
                   icon: Icons.notifications_outlined,
-                  title: 'Notifications',
-                  subtitle:
-                      'Manage notification preferences',
+                  title: l10n.notifications,
+                  subtitle: l10n.manageNotificationPreferences,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -222,8 +231,8 @@ class ProfilePage extends ConsumerWidget {
 
                 ProfileMenuTile(
                   icon: Icons.language_rounded,
-                  title: 'Language',
-                  subtitle: 'English',
+                  title: l10n.language,
+                  subtitle: currentLanguageName,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -236,9 +245,8 @@ class ProfilePage extends ConsumerWidget {
 
                 ProfileMenuTile(
                   icon: Icons.info_outline_rounded,
-                  title: 'About',
-                  subtitle:
-                      'The Map Project v2.0',
+                  title: l10n.about,
+                  subtitle: 'The Map Project v2.0',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -256,11 +264,10 @@ class ProfilePage extends ConsumerWidget {
                 const SizedBox(height: 12),
 
                 Text(
-                  'The Map Project • Nashik',
+                  l10n.appTitleWithCity,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color:
-                        theme.colorScheme.onSurfaceVariant,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -288,8 +295,7 @@ class _SectionHeading extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Row(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(
           icon,
@@ -299,8 +305,7 @@ class _SectionHeading extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
@@ -312,8 +317,7 @@ class _SectionHeading extends StatelessWidget {
               Text(
                 subtitle,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color:
-                      theme.colorScheme.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -335,6 +339,7 @@ class _ProfileError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Center(
@@ -347,34 +352,29 @@ class _ProfileError extends StatelessWidget {
               width: 76,
               height: 76,
               decoration: BoxDecoration(
-                color:
-                    theme.colorScheme.errorContainer,
+                color: theme.colorScheme.errorContainer,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.person_off_outlined,
                 size: 38,
-                color:
-                    theme.colorScheme.onErrorContainer,
+                color: theme.colorScheme.onErrorContainer,
               ),
             ),
             const SizedBox(height: 18),
             Text(
-              'Unable to load profile',
+              l10n.unableToLoadProfile,
               textAlign: TextAlign.center,
-              style:
-                  theme.textTheme.titleLarge?.copyWith(
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'We could not load your profile information.',
+              l10n.couldNotLoadProfileInfo,
               textAlign: TextAlign.center,
-              style:
-                  theme.textTheme.bodyMedium?.copyWith(
-                color:
-                    theme.colorScheme.onSurfaceVariant,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 18),
@@ -383,7 +383,7 @@ class _ProfileError extends StatelessWidget {
               icon: const Icon(
                 Icons.refresh_rounded,
               ),
-              label: const Text('Try Again'),
+              label: Text(l10n.retry),
             ),
           ],
         ),

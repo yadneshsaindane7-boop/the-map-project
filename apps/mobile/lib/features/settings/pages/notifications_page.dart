@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
@@ -26,6 +28,7 @@ class _NotificationsPageState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -36,13 +39,13 @@ class _NotificationsPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Stay informed',
+              l10n.stayInformed,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
             ),
             Text(
-              'Notification settings',
+              l10n.notificationSettings,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
@@ -80,7 +83,7 @@ class _NotificationsPageState
                 ),
               ),
               title: Text(
-                'Push Notifications',
+                l10n.pushNotifications,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -88,7 +91,7 @@ class _NotificationsPageState
               subtitle: Padding(
                 padding: const EdgeInsets.only(top: 3),
                 child: Text(
-                  'Receive important notifications from The Map Project.',
+                  l10n.pushNotifications,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -102,7 +105,7 @@ class _NotificationsPageState
           const SizedBox(height: 18),
 
           Text(
-            'Notification Types',
+            l10n.notificationTypes,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
@@ -117,9 +120,8 @@ class _NotificationsPageState
               children: [
                 _NotificationSettingTile(
                   icon: Icons.traffic_outlined,
-                  title: 'Nearby Road Alerts',
-                  description:
-                      'Get alerts about incidents and road conditions near you.',
+                  title: l10n.nearbyRoadAlerts,
+                  description: l10n.nearbyRoadAlertsDescription,
                   value: nearbyAlerts,
                   enabled: pushNotifications,
                   onChanged: (value) {
@@ -131,9 +133,8 @@ class _NotificationsPageState
                 const _SettingDivider(),
                 _NotificationSettingTile(
                   icon: Icons.alt_route_rounded,
-                  title: 'Route Updates',
-                  description:
-                      'Be notified when your active route needs to change.',
+                  title: l10n.routeUpdates,
+                  description: l10n.routeUpdatesDescription,
                   value: routeUpdates,
                   enabled: pushNotifications,
                   onChanged: (value) {
@@ -145,9 +146,8 @@ class _NotificationsPageState
                 const _SettingDivider(),
                 _NotificationSettingTile(
                   icon: Icons.groups_outlined,
-                  title: 'Community Reports',
-                  description:
-                      'Receive updates related to community-reported incidents.',
+                  title: l10n.communityReportsNotification,
+                  description: l10n.communityReportsNotificationDescription,
                   value: communityReports,
                   enabled: pushNotifications,
                   onChanged: (value) {
@@ -184,9 +184,7 @@ class _NotificationsPageState
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Notification preferences currently apply to this '
-                    'session. Persistent notification preferences will '
-                    'be added in a future update.',
+                    l10n.notificationPreferencesFootnote,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                       height: 1.4,
@@ -201,7 +199,7 @@ class _NotificationsPageState
 
           Center(
             child: Text(
-              'The Map Project • Notification Settings',
+              l10n.notificationSettingsSummary,
               textAlign: TextAlign.center,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,

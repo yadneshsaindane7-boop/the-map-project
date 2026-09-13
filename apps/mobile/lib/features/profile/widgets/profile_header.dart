@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../models/user_profile.dart';
 
 class ProfileHeader extends StatelessWidget {
@@ -12,6 +13,7 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Card(
@@ -116,15 +118,15 @@ class ProfileHeader extends StatelessWidget {
                         const SizedBox(width: 5),
                         Text(
                           profile.isAuthority
-                              ? 'Authority account'
-                              : 'Community member',
+                              ? l10n.authorityAccount
+                              : l10n.communityMember,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight:
                                 FontWeight.w600,
                             color: theme
-                                .colorScheme
-                                .onSecondaryContainer,
+                              .colorScheme
+                              .onSecondaryContainer,
                           ),
                         ),
                       ],

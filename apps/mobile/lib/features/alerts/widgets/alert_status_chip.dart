@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_localizations_helpers.dart';
+
 class AlertStatusChip extends StatelessWidget {
   const AlertStatusChip({
     super.key,
@@ -18,7 +20,6 @@ class AlertStatusChip extends StatelessWidget {
     late final Color backgroundColor;
     late final Color foregroundColor;
     late final IconData icon;
-    late final String label;
 
     switch (normalized) {
       case 'active':
@@ -27,7 +28,6 @@ class AlertStatusChip extends StatelessWidget {
         foregroundColor =
             theme.colorScheme.onErrorContainer;
         icon = Icons.circle;
-        label = 'ACTIVE';
         break;
 
       case 'verified':
@@ -38,7 +38,6 @@ class AlertStatusChip extends StatelessWidget {
                 .colorScheme
                 .onTertiaryContainer;
         icon = Icons.verified_rounded;
-        label = 'VERIFIED';
         break;
 
       case 'resolved':
@@ -50,7 +49,6 @@ class AlertStatusChip extends StatelessWidget {
                 .colorScheme
                 .onSecondaryContainer;
         icon = Icons.check_circle_rounded;
-        label = 'RESOLVED';
         break;
 
       default:
@@ -59,8 +57,9 @@ class AlertStatusChip extends StatelessWidget {
         foregroundColor =
             theme.colorScheme.onSurfaceVariant;
         icon = Icons.info_outline_rounded;
-        label = status.toUpperCase();
     }
+
+    final label = getLocalizedAlertStatus(context, status);
 
     return Container(
       padding:

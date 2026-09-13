@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../providers/alerts_provider.dart';
 import '../widgets/alert_card.dart';
 import '../widgets/empty_alerts.dart';
@@ -13,6 +14,7 @@ class AlertsPage extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final alerts = ref.watch(alertsProvider);
     final theme = Theme.of(context);
 
@@ -60,7 +62,7 @@ class AlertsPage extends ConsumerWidget {
                           CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Traffic Alerts',
+                          l10n.trafficAlertsTitle,
                           maxLines: 1,
                           overflow:
                               TextOverflow.ellipsis,
@@ -74,7 +76,7 @@ class AlertsPage extends ConsumerWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Stay informed about incidents nearby',
+                          l10n.stayInformed,
                           maxLines: 1,
                           overflow:
                               TextOverflow.ellipsis,
@@ -92,7 +94,7 @@ class AlertsPage extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   IconButton.filledTonal(
-                    tooltip: 'Refresh alerts',
+                    tooltip: l10n.refreshAlertsTooltip,
                     onPressed: () {
                       ref.invalidate(
                         alertsProvider,
@@ -174,12 +176,12 @@ class _AlertsSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    final text =
-        count == 1
-            ? '1 active alert'
-            : '$count active alerts';
+    final text = count == 1
+        ? l10n.singleActiveAlert
+        : l10n.multipleActiveAlerts(count);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -213,7 +215,7 @@ class _AlertsSummary extends StatelessWidget {
             ),
           ),
           Text(
-            'Updated live',
+            l10n.updatedLive,
             style: theme
                 .textTheme
                 .labelMedium
@@ -235,6 +237,7 @@ class _AlertsLoading
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Center(
@@ -246,7 +249,7 @@ class _AlertsLoading
           ),
           const SizedBox(height: 16),
           Text(
-            'Loading traffic alerts...',
+            l10n.loadingTrafficAlerts,
             style: theme
                 .textTheme
                 .bodyMedium
@@ -274,6 +277,7 @@ class _AlertsError
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Center(
@@ -302,7 +306,7 @@ class _AlertsError
             ),
             const SizedBox(height: 18),
             Text(
-              'Unable to load alerts',
+              l10n.unableToLoadAlerts,
               textAlign: TextAlign.center,
               style: theme
                   .textTheme
@@ -313,8 +317,7 @@ class _AlertsError
             ),
             const SizedBox(height: 8),
             Text(
-              'Something went wrong while loading '
-              'the latest traffic alerts.',
+              l10n.somethingWentWrongAlerts,
               textAlign: TextAlign.center,
               style: theme
                   .textTheme
@@ -347,7 +350,7 @@ class _AlertsError
               icon: const Icon(
                 Icons.refresh_rounded,
               ),
-              label: const Text('Try Again'),
+              label: Text(l10n.retry),
             ),
           ],
         ),

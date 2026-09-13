@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../navigation/providers/route_provider.dart';
 import '../providers/destination_provider.dart';
 import '../providers/search_provider.dart';
@@ -83,6 +84,7 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final searchState = ref.watch(searchProvider);
     final theme = Theme.of(context);
 
@@ -110,7 +112,7 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
               textInputAction: TextInputAction.search,
               maxLines: 1,
               decoration: InputDecoration(
-                hintText: 'Search destination...',
+                hintText: l10n.searchDestinationHint,
                 hintStyle: TextStyle(
                   color: theme
                       .colorScheme
@@ -142,8 +144,7 @@ class _SearchPanelState extends ConsumerState<SearchPanel> {
                           )
                         : hasText
                             ? IconButton(
-                                tooltip:
-                                    'Clear search',
+                                tooltip: l10n.clearSearch,
                                 icon: const Icon(
                                   Icons.clear,
                                 ),

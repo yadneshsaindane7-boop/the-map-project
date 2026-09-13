@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class EmptyAlerts extends StatelessWidget {
   const EmptyAlerts({
     super.key,
@@ -7,6 +9,7 @@ class EmptyAlerts extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Center(
@@ -38,7 +41,7 @@ class EmptyAlerts extends StatelessWidget {
             const SizedBox(height: 22),
 
             Text(
-              'No active alerts',
+              l10n.noActiveAlerts,
               textAlign: TextAlign.center,
               style: theme
                   .textTheme
@@ -51,8 +54,7 @@ class EmptyAlerts extends StatelessWidget {
             const SizedBox(height: 8),
 
             Text(
-              'There are no verified traffic incidents '
-              'affecting the road network right now.',
+              l10n.noActiveAlertsDescription,
               textAlign: TextAlign.center,
               style: theme
                   .textTheme
@@ -94,7 +96,7 @@ class EmptyAlerts extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'You are all clear',
+                    l10n.youAreAllClear,
                     style: theme
                         .textTheme
                         .labelLarge

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LanguagePage extends StatefulWidget {
+import '../../../core/localization/locale_provider.dart';
+import '../../../l10n/app_localizations.dart';
+
+class LanguagePage extends ConsumerStatefulWidget {
   const LanguagePage({super.key});
 
   @override
-  State<LanguagePage> createState() =>
-      _LanguagePageState();
+  ConsumerState<LanguagePage> createState() => _LanguagePageState();
 }
 
-class _LanguagePageState extends State<LanguagePage> {
-  String _selectedLanguageCode = 'en';
+class _LanguagePageState extends ConsumerState<LanguagePage> {
+  late String _selectedLanguageCode;
 
   final List<_LanguageOption> _languages = const [
     _LanguageOption(
@@ -27,42 +30,13 @@ class _LanguagePageState extends State<LanguagePage> {
       name: 'Marathi',
       nativeName: 'मराठी',
     ),
-    _LanguageOption(
-      code: 'gu',
-      name: 'Gujarati',
-      nativeName: 'ગુજરાતી',
-    ),
-    _LanguageOption(
-      code: 'bn',
-      name: 'Bengali',
-      nativeName: 'বাংলা',
-    ),
-    _LanguageOption(
-      code: 'ta',
-      name: 'Tamil',
-      nativeName: 'தமிழ்',
-    ),
-    _LanguageOption(
-      code: 'te',
-      name: 'Telugu',
-      nativeName: 'తెలుగు',
-    ),
-    _LanguageOption(
-      code: 'kn',
-      name: 'Kannada',
-      nativeName: 'ಕನ್ನಡ',
-    ),
-    _LanguageOption(
-      code: 'ml',
-      name: 'Malayalam',
-      nativeName: 'മലയാളം',
-    ),
-    _LanguageOption(
-      code: 'pa',
-      name: 'Punjabi',
-      nativeName: 'ਪੰਜਾਬੀ',
-    ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedLanguageCode = ref.read(localeProvider).languageCode;
+  }
 
   void _selectLanguage(String code) {
     setState(() {
@@ -70,17 +44,20 @@ class _LanguagePageState extends State<LanguagePage> {
     });
   }
 
-  void _saveLanguage() {
+  Future<void> _saveLanguage() async {
+    final l10n = AppLocalizations.of(context)!;
     final selected = _languages.firstWhere(
-      (language) =>
-          language.code == _selectedLanguageCode,
+      (language) => language.code == _selectedLanguageCode,
+      orElse: () => _languages.first,
     );
+
+    await ref.read(localeProvider.notifier).setLocale(_selectedLanguageCode);
+
+    if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          '${selected.nativeName} selected.',
-        ),
+        content: Text(l10n.languageChangedSnackbar(selected.nativeName)),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -88,12 +65,13 @@ class _LanguagePageState extends State<LanguagePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     final selectedLanguage = _languages.firstWhere(
-      (language) =>
-          language.code == _selectedLanguageCode,
+      (language) => language.code == _selectedLanguageCode,
+      orElse: () => _languages.first,
     );
 
     return Scaffold(
@@ -103,13 +81,13 @@ class _LanguagePageState extends State<LanguagePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Language',
+              l10n.language,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
             ),
             Text(
-              'Choose your preferred language',
+              l10n.choosePreferredLanguage,
               style: theme.textTheme.labelSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
@@ -142,37 +120,26 @@ class _LanguagePageState extends State<LanguagePage> {
                     ),
                     child: Icon(
                       Icons.translate_rounded,
-                      color:
-                          colorScheme.onPrimaryContainer,
+                      color: colorScheme.onPrimaryContainer,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Current Language',
-                          style: theme
-                              .textTheme
-                              .labelMedium
-                              ?.copyWith(
-                            color: colorScheme
-                                .onSurfaceVariant,
-                            fontWeight:
-                                FontWeight.w600,
+                          l10n.currentLanguage,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 3),
                         Text(
                           selectedLanguage.nativeName,
-                          style: theme
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(
-                            fontWeight:
-                                FontWeight.w800,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
@@ -182,18 +149,14 @@ class _LanguagePageState extends State<LanguagePage> {
               ),
             ),
           ),
-
           const SizedBox(height: 20),
-
           Text(
-            'Available Languages',
+            l10n.availableLanguages,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w800,
             ),
           ),
-
           const SizedBox(height: 8),
-
           Card(
             margin: EdgeInsets.zero,
             elevation: 2,
@@ -203,14 +166,11 @@ class _LanguagePageState extends State<LanguagePage> {
                 if (value == null) {
                   return;
                 }
-
                 _selectLanguage(value);
               },
               child: Column(
                 children: [
-                  for (int index = 0;
-                      index < _languages.length;
-                      index++) ...[
+                  for (int index = 0; index < _languages.length; index++) ...[
                     _LanguageTile(
                       language: _languages[index],
                     ),
@@ -221,23 +181,19 @@ class _LanguagePageState extends State<LanguagePage> {
               ),
             ),
           ),
-
           const SizedBox(height: 18),
-
           FilledButton.icon(
             onPressed: _saveLanguage,
             icon: const Icon(
               Icons.check_rounded,
             ),
             label: Text(
-              'Save ${selectedLanguage.nativeName}',
+              l10n.saveLanguageButton(selectedLanguage.nativeName),
             ),
           ),
-
           const SizedBox(height: 12),
-
           Text(
-            'Language selection will be applied to the app in a future update.',
+            l10n.languageAppliesInstantly,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
@@ -269,9 +225,7 @@ class _LanguageTile extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: theme
-              .colorScheme
-              .surfaceContainerHighest,
+          color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(11),
         ),
         child: Icon(

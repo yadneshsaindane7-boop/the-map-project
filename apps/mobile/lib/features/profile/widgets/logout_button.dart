@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class LogoutButton extends StatelessWidget {
   const LogoutButton({
     super.key,
   });
 
   Future<void> _logout(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       await Supabase.instance.client.auth.signOut();
 
@@ -26,7 +29,7 @@ class LogoutButton extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Logout failed\n$e',
+            '${l10n.logoutFailed}\n$e',
           ),
         ),
       );
@@ -35,6 +38,8 @@ class LogoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return FilledButton.icon(
       onPressed: () => _logout(context),
       style: FilledButton.styleFrom(
@@ -45,8 +50,8 @@ class LogoutButton extends StatelessWidget {
         backgroundColor: Colors.red,
       ),
       icon: const Icon(Icons.logout),
-      label: const Text(
-        'Logout',
+      label: Text(
+        l10n.logout,
       ),
     );
   }

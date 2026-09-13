@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/localization/app_localizations_helpers.dart';
+import '../../../l10n/app_localizations.dart';
 import '../models/road_event.dart';
 
 class RoadEventBottomSheet extends StatelessWidget {
@@ -12,9 +14,9 @@ class RoadEventBottomSheet extends StatelessWidget {
     required this.distanceKm,
   });
 
-  String get formattedDate {
+  String formattedDate(BuildContext context) {
     if (event.createdAt == null) {
-      return "Unknown";
+      return AppLocalizations.of(context)!.unknownDate;
     }
 
     return event.createdAt!
@@ -25,6 +27,8 @@ class RoadEventBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -45,13 +49,13 @@ class RoadEventBottomSheet extends StatelessWidget {
 
             ListTile(
               leading: const Icon(Icons.warning_amber_rounded),
-              title: const Text("Status"),
-              subtitle: Text(event.status),
+              title: Text(l10n.statusLabel),
+              subtitle: Text(getLocalizedAlertStatus(context, event.status)),
             ),
 
             ListTile(
               leading: const Icon(Icons.place),
-              title: const Text("Distance"),
+              title: Text(l10n.distance),
               subtitle: Text(
                 "${distanceKm.toStringAsFixed(2)} km",
               ),
@@ -59,16 +63,16 @@ class RoadEventBottomSheet extends StatelessWidget {
 
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text("Reporter"),
+              title: Text(l10n.reporter),
               subtitle: Text(
-                event.reportedBy ?? "Community",
+                event.reportedBy ?? l10n.communityReporterFallback,
               ),
             ),
 
             ListTile(
               leading: const Icon(Icons.access_time),
-              title: const Text("Reported"),
-              subtitle: Text(formattedDate),
+              title: Text(l10n.reported),
+              subtitle: Text(formattedDate(context)),
             ),
 
             const SizedBox(height: 12),
@@ -100,15 +104,15 @@ class RoadEventBottomSheet extends StatelessWidget {
                   child: FilledButton.icon(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            "Navigation will be available in v0.5.0",
+                            l10n.navigationAvailableSoon,
                           ),
                         ),
                       );
                     },
                     icon: const Icon(Icons.navigation),
-                    label: const Text("Navigate"),
+                    label: Text(l10n.navigateButton),
                   ),
                 ),
 
@@ -118,15 +122,15 @@ class RoadEventBottomSheet extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text(
-                            "Thanks for confirming this incident.",
+                            l10n.thanksForConfirming,
                           ),
                         ),
                       );
                     },
                     icon: const Icon(Icons.check_circle),
-                    label: const Text("Confirm"),
+                    label: Text(l10n.confirmButton),
                   ),
                 ),
               ],

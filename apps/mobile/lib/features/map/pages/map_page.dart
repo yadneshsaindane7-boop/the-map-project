@@ -6,10 +6,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../core/localization/app_localizations_helpers.dart';
 import '../../../core/map/camera_fit_service.dart';
 import '../../../core/map/map_styles.dart';
 import '../../../core/map/map_tile_provider.dart';
 import '../../../core/services/notification_service.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../navigation/providers/live_location_provider.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
@@ -63,7 +65,7 @@ class _MapPageState extends ConsumerState<MapPage> {
             children: MapStyle.values.map((style) {
               return ListTile(
                 leading: const Icon(Icons.map),
-                title: Text(style.displayName),
+                title: Text(style.localizedDisplayName(context)),
                 trailing: style == _selectedStyle
                     ? const Icon(Icons.check)
                     : null,
@@ -209,10 +211,11 @@ class _MapPageState extends ConsumerState<MapPage> {
     _lastRerouteTime = now;
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Rerouting...'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(l10n.rerouting),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -262,6 +265,7 @@ class _MapPageState extends ConsumerState<MapPage> {
             return;
           }
 
+          final l10n = AppLocalizations.of(context)!;
           ref
               .read(
                 journeyNavigationProvider.notifier,
@@ -274,11 +278,11 @@ class _MapPageState extends ConsumerState<MapPage> {
           );
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'You have arrived at your destination.',
+                l10n.arrivedAtDestinationSnackbar,
               ),
-              duration: Duration(seconds: 4),
+              duration: const Duration(seconds: 4),
             ),
           );
         },
@@ -539,12 +543,13 @@ class _MapPageState extends ConsumerState<MapPage> {
     _lastRerouteTime = now;
 
     if (mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Road incident detected. Rerouting...',
+            l10n.rerouting,
           ),
-          duration: Duration(seconds: 3),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -645,6 +650,7 @@ class _MapPageState extends ConsumerState<MapPage> {
         return;
       }
 
+      final l10n = AppLocalizations.of(context)!;
       final routeState = ref.read(
         routeProvider,
       );
@@ -683,9 +689,9 @@ class _MapPageState extends ConsumerState<MapPage> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Route was returned but contains too few points.',
+                l10n.routePointsTooFew,
               ),
             ),
           );
@@ -695,7 +701,7 @@ class _MapPageState extends ConsumerState<MapPage> {
           SnackBar(
             content: Text(
               routeState.error ??
-                  'Unable to find a route.',
+                  l10n.unableToFindRoute,
             ),
           ),
         );
@@ -706,10 +712,11 @@ class _MapPageState extends ConsumerState<MapPage> {
       );
 
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Failed to load route: $error',
+              '${l10n.failedToLoadRoute}: $error',
             ),
           ),
         );
@@ -995,14 +1002,14 @@ class _MapPageState extends ConsumerState<MapPage> {
                 ),
               ),
               if (routeState.isLoading)
-                const Positioned(
+                Positioned(
                   top: 90,
                   left: 0,
                   right: 0,
                   child: Center(
                     child: Card(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
@@ -1010,7 +1017,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                           mainAxisSize:
                               MainAxisSize.min,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 18,
                               height: 18,
                               child:
@@ -1018,9 +1025,9 @@ class _MapPageState extends ConsumerState<MapPage> {
                                 strokeWidth: 2,
                               ),
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Text(
-                              'Finding route...',
+                              AppLocalizations.of(context)!.findingRoute,
                             ),
                           ],
                         ),
@@ -1029,14 +1036,14 @@ class _MapPageState extends ConsumerState<MapPage> {
                   ),
                 ),
               if (routeState.isRerouting)
-                const Positioned(
+                Positioned(
                   top: 90,
                   left: 0,
                   right: 0,
                   child: Center(
                     child: Card(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
@@ -1044,7 +1051,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                           mainAxisSize:
                               MainAxisSize.min,
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 18,
                               height: 18,
                               child:
@@ -1052,9 +1059,9 @@ class _MapPageState extends ConsumerState<MapPage> {
                                 strokeWidth: 2,
                               ),
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Text(
-                              'Rerouting...',
+                              AppLocalizations.of(context)!.rerouting,
                             ),
                           ],
                         ),
@@ -1106,7 +1113,7 @@ class _MapPageState extends ConsumerState<MapPage> {
                   data: (events) =>
                       FloatingActionButton.small(
                     heroTag: 'zoom_reports',
-                    tooltip: 'Zoom to Reports',
+                    tooltip: AppLocalizations.of(context)!.zoomToReports,
                     backgroundColor: Colors.red,
                     onPressed: () {
                       _zoomToReports(

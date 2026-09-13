@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class MapFloatingControls extends StatelessWidget {
   const MapFloatingControls({
     super.key,
@@ -12,6 +14,7 @@ class MapFloatingControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Material(
@@ -24,7 +27,7 @@ class MapFloatingControls extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: 'Map layers',
+            tooltip: l10n.mapLayers,
             onPressed: onLayersPressed,
             icon: const Icon(Icons.layers_outlined),
           ),
@@ -35,7 +38,7 @@ class MapFloatingControls extends StatelessWidget {
             color: theme.dividerColor,
           ),
           IconButton(
-            tooltip: 'My location',
+            tooltip: l10n.myLocation,
             onPressed: onMyLocationPressed,
             icon: const Icon(Icons.my_location),
           ),

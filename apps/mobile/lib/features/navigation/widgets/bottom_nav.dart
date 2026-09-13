@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../providers/navigation_provider.dart';
 
 class BottomNav extends ConsumerWidget {
@@ -8,6 +9,7 @@ class BottomNav extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final selectedIndex = ref.watch(navigationProvider);
@@ -75,28 +77,28 @@ class BottomNav extends ConsumerWidget {
                 .read(navigationProvider.notifier)
                 .changeTab(index);
           },
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.map_outlined),
-              selectedIcon: Icon(Icons.map_rounded),
-              label: 'Map',
+              icon: const Icon(Icons.map_outlined),
+              selectedIcon: const Icon(Icons.map_rounded),
+              label: l10n.navMap,
             ),
             NavigationDestination(
-              icon: Icon(Icons.add_location_alt_outlined),
+              icon: const Icon(Icons.add_location_alt_outlined),
               selectedIcon:
-                  Icon(Icons.add_location_alt_rounded),
-              label: 'Report',
+                  const Icon(Icons.add_location_alt_rounded),
+              label: l10n.navReport,
             ),
             NavigationDestination(
-              icon: Icon(Icons.notifications_none_rounded),
+              icon: const Icon(Icons.notifications_none_rounded),
               selectedIcon:
-                  Icon(Icons.notifications_rounded),
-              label: 'Alerts',
+                  const Icon(Icons.notifications_rounded),
+              label: l10n.navAlerts,
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded),
-              label: 'Profile',
+              icon: const Icon(Icons.person_outline_rounded),
+              selectedIcon: const Icon(Icons.person_rounded),
+              label: l10n.navProfile,
             ),
           ],
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/localization/app_localizations_helpers.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../map/providers/selected_map_location_provider.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../models/traffic_alert.dart';
@@ -14,36 +16,12 @@ class AlertCard extends ConsumerWidget {
 
   final TrafficAlert alert;
 
-  String get timeAgo {
-    final difference =
-        DateTime.now().difference(
-      alert.createdAt,
-    );
-
-    if (difference.inSeconds < 60) {
-      return 'Just now';
-    }
-
-    if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} min ago';
-    }
-
-    if (difference.inHours < 24) {
-      return '${difference.inHours} hr ago';
-    }
-
-    if (difference.inDays == 1) {
-      return '1 day ago';
-    }
-
-    return '${difference.inDays} days ago';
-  }
-
   @override
   Widget build(
     BuildContext context,
     WidgetRef ref,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final status =
@@ -218,7 +196,7 @@ class AlertCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  timeAgo,
+                  formatTimeAgo(context, alert.createdAt),
                   style: theme
                       .textTheme
                       .bodySmall
@@ -241,7 +219,7 @@ class AlertCard extends ConsumerWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  'Community verified',
+                  l10n.communityVerified,
                   style: theme
                       .textTheme
                       .labelSmall
@@ -285,8 +263,8 @@ class AlertCard extends ConsumerWidget {
                 icon: const Icon(
                   Icons.map_outlined,
                 ),
-                label: const Text(
-                  'View on Map',
+                label: Text(
+                  l10n.viewOnMap,
                 ),
                 style:
                     FilledButton.styleFrom(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class MapSearchBar extends StatelessWidget {
   const MapSearchBar({
     super.key,
@@ -10,6 +12,8 @@ class MapSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Material(
       elevation: 8,
       borderRadius: BorderRadius.circular(30),
@@ -23,20 +27,20 @@ class MapSearchBar extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(30),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.search),
-              SizedBox(width: 12),
+              const Icon(Icons.search),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Search destination...',
-                  style: TextStyle(
+                  l10n.searchDestinationHint,
+                  style: const TextStyle(
                     color: Colors.black54,
                     fontSize: 16,
                   ),
                 ),
               ),
-              Icon(Icons.mic_none),
+              const Icon(Icons.mic_none),
             ],
           ),
         ),

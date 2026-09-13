@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../map/providers/location_provider.dart';
 import '../models/event_type.dart';
 import '../providers/event_types_provider.dart';
@@ -20,15 +21,11 @@ class ReportPage extends ConsumerStatefulWidget {
       _ReportPageState();
 }
 
-class _ReportPageState
-    extends ConsumerState<ReportPage> {
+class _ReportPageState extends ConsumerState<ReportPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _titleController =
-      TextEditingController();
-
-  final _descriptionController =
-      TextEditingController();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
   final NearestWayService _nearestWayService =
       NearestWayService();
@@ -56,28 +53,22 @@ class _ReportPageState
       return;
     }
 
-    ref
-        .read(reportProvider.notifier)
-        .setSelectedLocation(result);
+    ref.read(reportProvider.notifier).setSelectedLocation(result);
   }
 
   Future<void> _submitReport() async {
+    final l10n = AppLocalizations.of(context)!;
     final reportState = ref.read(reportProvider);
-
-    final reportNotifier =
-        ref.read(reportProvider.notifier);
-
-    final controller =
-        ref.read(reportControllerProvider);
+    final reportNotifier = ref.read(reportProvider.notifier);
+    final controller = ref.read(reportControllerProvider);
 
     if (reportState.selectedEventType == null) {
       return;
     }
 
-    final position =
-        await ref.read(
-          currentLocationProvider.future,
-        );
+    final position = await ref.read(
+      currentLocationProvider.future,
+    );
 
     final latitude =
         reportState.selectedLocation?.latitude ??
@@ -102,13 +93,8 @@ class _ReportPageState
         '========== INCIDENT ROAD SNAP ==========',
       );
 
-      debugPrint(
-        'Original latitude: $latitude',
-      );
-
-      debugPrint(
-        'Original longitude: $longitude',
-      );
+      debugPrint('Original latitude: $latitude');
+      debugPrint('Original longitude: $longitude');
 
       debugPrint(
         'Snapped latitude: '
@@ -136,12 +122,10 @@ class _ReportPageState
 
       await controller.submitReport(
         title: _titleController.text.trim(),
-        description:
-            _descriptionController.text.trim(),
+        description: _descriptionController.text.trim(),
         latitude: nearestWay.snappedLatitude,
         longitude: nearestWay.snappedLongitude,
-        eventType:
-            reportState.selectedEventType!,
+        eventType: reportState.selectedEventType!,
         osmWayId: nearestWay.osmWayId,
       );
 
@@ -156,20 +140,18 @@ class _ReportPageState
           backgroundColor:
               Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(14),
           ),
-          content: const Row(
+          content: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.check_circle_outline,
                 color: Colors.white,
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Incident submitted successfully.\n'
-                  'Your report has been sent for review.',
+                  l10n.reportSuccessMessage,
                 ),
               ),
             ],
@@ -195,12 +177,10 @@ class _ReportPageState
           backgroundColor:
               Theme.of(context).colorScheme.error,
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(14),
           ),
           content: Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 Icons.error_outline,
@@ -211,7 +191,9 @@ class _ReportPageState
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Unable to submit the incident.\n$error',
+                  l10n.reportErrorMessage(
+                    error.toString(),
+                  ),
                 ),
               ),
             ],
@@ -230,6 +212,7 @@ class _ReportPageState
     required List<EventType> types,
     required EventType? selectedType,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return showModalBottomSheet<EventType>(
@@ -260,7 +243,6 @@ class _ReportPageState
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(height: 10),
-
                 Container(
                   width: 42,
                   height: 4,
@@ -273,9 +255,7 @@ class _ReportPageState
                         BorderRadius.circular(20),
                   ),
                 ),
-
                 const SizedBox(height: 18),
-
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(
@@ -291,28 +271,23 @@ class _ReportPageState
                               .colorScheme
                               .primaryContainer,
                           borderRadius:
-                              BorderRadius.circular(
-                            14,
-                          ),
+                              BorderRadius.circular(14),
                         ),
                         child: Icon(
-                          Icons
-                              .warning_amber_rounded,
+                          Icons.warning_amber_rounded,
                           color: theme
                               .colorScheme
                               .onPrimaryContainer,
                         ),
                       ),
-
                       const SizedBox(width: 12),
-
                       Expanded(
                         child: Column(
                           crossAxisAlignment:
                               CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Incident Type',
+                              l10n.incidentType,
                               style: theme
                                   .textTheme
                                   .titleLarge
@@ -323,7 +298,7 @@ class _ReportPageState
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              'What is happening on the road?',
+                              l10n.whatIsHappening,
                               style: theme
                                   .textTheme
                                   .bodySmall
@@ -336,9 +311,8 @@ class _ReportPageState
                           ],
                         ),
                       ),
-
                       IconButton(
-                        tooltip: 'Close',
+                        tooltip: l10n.close,
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -349,14 +323,11 @@ class _ReportPageState
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 14),
-
                 Divider(
                   height: 1,
                   color: theme.dividerColor,
                 ),
-
                 Flexible(
                   child: ListView.separated(
                     shrinkWrap: true,
@@ -379,8 +350,7 @@ class _ReportPageState
                       final type = types[index];
 
                       final isSelected =
-                          selectedType?.id ==
-                              type.id;
+                          selectedType?.id == type.id;
 
                       return _EventTypeOption(
                         type: type,
@@ -421,38 +391,32 @@ class _ReportPageState
       filled: true,
       fillColor: theme.colorScheme.surface,
       border: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
           color: theme.dividerColor,
         ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
           color: theme.dividerColor,
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
           color: theme.colorScheme.primary,
           width: 1.5,
         ),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
           color: theme.colorScheme.error,
         ),
       ),
-      focusedErrorBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(14),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide(
           color: theme.colorScheme.error,
           width: 1.5,
@@ -468,40 +432,28 @@ class _ReportPageState
 
   @override
   Widget build(BuildContext context) {
-    final reportState =
-        ref.watch(reportProvider);
-
-    final reportNotifier =
-        ref.read(reportProvider.notifier);
-
-    final location =
-        ref.watch(currentLocationProvider);
-
-    final eventTypes =
-        ref.watch(eventTypesProvider);
-
+    final l10n = AppLocalizations.of(context)!;
+    final reportState = ref.watch(reportProvider);
+    final reportNotifier = ref.read(reportProvider.notifier);
+    final location = ref.watch(currentLocationProvider);
+    final eventTypes = ref.watch(eventTypesProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(78),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(78),
         child: _ReportAppBar(),
       ),
-
       body: SafeArea(
         child: location.when(
           loading: () => const Center(
             child: CircularProgressIndicator(),
           ),
-
-          error: (error, stackTrace) =>
-              _LocationError(
+          error: (error, stackTrace) => _LocationError(
             error: error,
           ),
-
           data: (position) {
-            final currentLocation =
-                LatLng(
+            final currentLocation = LatLng(
               position.latitude,
               position.longitude,
             );
@@ -511,8 +463,7 @@ class _ReportPageState
                     currentLocation;
 
             final hasSelectedLocation =
-                reportState.selectedLocation !=
-                    null;
+                reportState.selectedLocation != null;
 
             return SingleChildScrollView(
               keyboardDismissBehavior:
@@ -534,11 +485,9 @@ class _ReportPageState
                     _SectionLabel(
                       icon:
                           Icons.location_on_outlined,
-                      title: 'Incident Location',
+                      title: l10n.incidentLocation,
                     ),
-
                     const SizedBox(height: 10),
-
                     Card(
                       margin: EdgeInsets.zero,
                       elevation: 2,
@@ -546,19 +495,14 @@ class _ReportPageState
                       shape:
                           RoundedRectangleBorder(
                         borderRadius:
-                            BorderRadius.circular(
-                          18,
-                        ),
+                            BorderRadius.circular(18),
                       ),
                       child: Padding(
                         padding:
-                            const EdgeInsets.all(
-                          16,
-                        ),
+                            const EdgeInsets.all(16),
                         child: Column(
                           crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .start,
+                              CrossAxisAlignment.start,
                           children: [
                             Container(
                               padding:
@@ -577,19 +521,14 @@ class _ReportPageState
                                         .colorScheme
                                         .surfaceContainerHighest,
                                 borderRadius:
-                                    BorderRadius
-                                        .circular(
-                                  12,
-                                ),
+                                    BorderRadius.circular(12),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
                                     hasSelectedLocation
-                                        ? Icons
-                                            .location_on
-                                        : Icons
-                                            .my_location,
+                                        ? Icons.location_on
+                                        : Icons.my_location,
                                     size: 20,
                                     color: hasSelectedLocation
                                         ? theme
@@ -599,14 +538,12 @@ class _ReportPageState
                                             .colorScheme
                                             .primary,
                                   ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
+                                  const SizedBox(width: 10),
                                   Expanded(
                                     child: Text(
                                       hasSelectedLocation
-                                          ? 'Location selected on map'
-                                          : 'Using your current location',
+                                          ? l10n.locationSelectedOnMap
+                                          : l10n.usingCurrentLocation,
                                       style: TextStyle(
                                         color: hasSelectedLocation
                                             ? theme
@@ -616,15 +553,13 @@ class _ReportPageState
                                                 .colorScheme
                                                 .onSurface,
                                         fontWeight:
-                                            FontWeight
-                                                .w600,
+                                            FontWeight.w600,
                                       ),
                                     ),
                                   ),
                                   if (hasSelectedLocation)
                                     Icon(
-                                      Icons
-                                          .check_circle_rounded,
+                                      Icons.check_circle_rounded,
                                       size: 20,
                                       color: theme
                                           .colorScheme
@@ -633,72 +568,51 @@ class _ReportPageState
                                 ],
                               ),
                             ),
-
-                            const SizedBox(
-                              height: 16,
-                            ),
-
+                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 Expanded(
-                                  child:
-                                      _CoordinateTile(
-                                    label: 'Latitude',
+                                  child: _CoordinateTile(
+                                    label: l10n.latitude,
                                     value:
                                         selectedLocation
                                             .latitude
-                                            .toStringAsFixed(
-                                      5,
-                                    ),
+                                            .toStringAsFixed(5),
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 10,
-                                ),
+                                const SizedBox(width: 10),
                                 Expanded(
-                                  child:
-                                      _CoordinateTile(
-                                    label: 'Longitude',
+                                  child: _CoordinateTile(
+                                    label: l10n.longitude,
                                     value:
                                         selectedLocation
                                             .longitude
-                                            .toStringAsFixed(
-                                      5,
-                                    ),
+                                            .toStringAsFixed(5),
                                   ),
                                 ),
                               ],
                             ),
-
-                            const SizedBox(
-                              height: 16,
-                            ),
-
+                            const SizedBox(height: 16),
                             SizedBox(
-                              width:
-                                  double.infinity,
+                              width: double.infinity,
                               child:
                                   OutlinedButton.icon(
                                 onPressed:
-                                    reportState
-                                            .isSubmitting
+                                    reportState.isSubmitting
                                         ? null
-                                        : () =>
-                                            _pickLocation(
+                                        : () => _pickLocation(
                                               selectedLocation,
                                             ),
                                 icon: const Icon(
-                                  Icons
-                                      .map_outlined,
+                                  Icons.map_outlined,
                                 ),
                                 label: Text(
                                   hasSelectedLocation
-                                      ? 'Change Location'
-                                      : 'Choose on Map',
+                                      ? l10n.changeLocation
+                                      : l10n.chooseOnMap,
                                 ),
                                 style:
-                                    OutlinedButton
-                                        .styleFrom(
+                                    OutlinedButton.styleFrom(
                                   minimumSize:
                                       const Size(
                                     double.infinity,
@@ -707,10 +621,7 @@ class _ReportPageState
                                   shape:
                                       RoundedRectangleBorder(
                                     borderRadius:
-                                        BorderRadius
-                                            .circular(
-                                      14,
-                                    ),
+                                        BorderRadius.circular(14),
                                   ),
                                 ),
                               ),
@@ -719,52 +630,44 @@ class _ReportPageState
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 24),
-
                     _SectionLabel(
                       icon: Icons.edit_note,
-                      title: 'Incident Details',
+                      title: l10n.incidentDetails,
                     ),
-
                     const SizedBox(height: 10),
-
                     TextFormField(
-                      controller:
-                          _titleController,
+                      controller: _titleController,
                       textInputAction:
                           TextInputAction.next,
                       maxLength: 80,
                       decoration:
                           _fieldDecoration(
                         context: context,
-                        label:
-                            'Incident Title',
+                        label: l10n.incidentTitle,
                         icon: Icons.title,
-                        hint:
-                            'e.g. Accident near bridge',
+                        hint: l10n.incidentTitleHint,
                       ).copyWith(
                         counterText: '',
                       ),
                       validator: (value) {
                         if (value == null ||
                             value.trim().isEmpty) {
-                          return 'Enter an incident title';
+                          return l10n
+                              .incidentTitleEmptyError;
                         }
 
                         if (value.trim().length < 3) {
-                          return 'Title must be at least 3 characters';
+                          return l10n
+                              .incidentTitleMinError;
                         }
 
                         return null;
                       },
                     ),
-
                     const SizedBox(height: 16),
-
                     TextFormField(
-                      controller:
-                          _descriptionController,
+                      controller: _descriptionController,
                       textInputAction:
                           TextInputAction.newline,
                       minLines: 4,
@@ -774,24 +677,19 @@ class _ReportPageState
                           _fieldDecoration(
                         context: context,
                         label:
-                            'Description (Optional)',
-                        icon: Icons
-                            .description_outlined,
+                            l10n.incidentDescriptionOptional,
+                        icon: Icons.description_outlined,
                         hint:
-                            'Add useful details for other drivers...',
+                            l10n.incidentDescriptionHint,
                       ),
                     ),
-
                     const SizedBox(height: 16),
-
                     _SectionLabel(
-                      icon: Icons
-                          .warning_amber_rounded,
-                      title: 'Incident Type',
+                      icon:
+                          Icons.warning_amber_rounded,
+                      title: l10n.incidentType,
                     ),
-
                     const SizedBox(height: 10),
-
                     eventTypes.when(
                       loading: () => Card(
                         margin: EdgeInsets.zero,
@@ -799,20 +697,16 @@ class _ReportPageState
                         shape:
                             RoundedRectangleBorder(
                           borderRadius:
-                              BorderRadius.circular(
-                            14,
-                          ),
+                              BorderRadius.circular(14),
                         ),
                         child: const Padding(
-                          padding:
-                              EdgeInsets.all(20),
+                          padding: EdgeInsets.all(20),
                           child: Center(
                             child:
                                 CircularProgressIndicator(),
                           ),
                         ),
                       ),
-
                       error: (
                         error,
                         stackTrace,
@@ -820,14 +714,14 @@ class _ReportPageState
                           _EventTypeError(
                         error: error,
                       ),
-
                       data: (types) {
                         return FormField<EventType>(
                           initialValue: reportState
                               .selectedEventType,
                           validator: (value) {
                             if (value == null) {
-                              return 'Please select an incident type';
+                              return l10n
+                                  .selectIncidentTypeError;
                             }
 
                             return null;
@@ -841,26 +735,22 @@ class _ReportPageState
                                   selectedType,
                               errorText:
                                   field.errorText,
-                              enabled: !reportState
-                                  .isSubmitting,
+                              enabled:
+                                  !reportState.isSubmitting,
                               onTap: () async {
                                 final selected =
                                     await _showEventTypePicker(
-                                  context:
-                                      context,
+                                  context: context,
                                   types: types,
                                   selectedType:
                                       selectedType,
                                 );
 
-                                if (selected ==
-                                    null) {
+                                if (selected == null) {
                                   return;
                                 }
 
-                                field.didChange(
-                                  selected,
-                                );
+                                field.didChange(selected);
 
                                 reportNotifier
                                     .setSelectedEventType(
@@ -872,16 +762,13 @@ class _ReportPageState
                         );
                       },
                     ),
-
                     const SizedBox(height: 28),
-
                     SizedBox(
                       width: double.infinity,
                       height: 54,
                       child: FilledButton.icon(
                         onPressed:
-                            reportState
-                                    .isSubmitting
+                            reportState.isSubmitting
                                 ? null
                                 : () async {
                                     final valid =
@@ -896,8 +783,7 @@ class _ReportPageState
 
                                     await _submitReport();
                                   },
-                        icon: reportState
-                                .isSubmitting
+                        icon: reportState.isSubmitting
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
@@ -911,8 +797,8 @@ class _ReportPageState
                               ),
                         label: Text(
                           reportState.isSubmitting
-                              ? 'Resolving Road & Submitting...'
-                              : 'Submit Incident',
+                              ? l10n.resolvingRoadAndSubmitting
+                              : l10n.submitIncident,
                         ),
                         style:
                             FilledButton.styleFrom(
@@ -924,9 +810,7 @@ class _ReportPageState
                           shape:
                               RoundedRectangleBorder(
                             borderRadius:
-                                BorderRadius.circular(
-                              15,
-                            ),
+                                BorderRadius.circular(15),
                           ),
                           textStyle:
                               const TextStyle(
@@ -937,12 +821,9 @@ class _ReportPageState
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 12),
-
                     Text(
-                      'Reports are reviewed before becoming '
-                      'active traffic alerts.',
+                      l10n.reportReviewDisclaimer,
                       textAlign: TextAlign.center,
                       style: theme
                           .textTheme
@@ -965,10 +846,9 @@ class _ReportPageState
 }
 
 class _ReportAppBar extends StatelessWidget {
-  const _ReportAppBar();
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Material(
@@ -997,17 +877,14 @@ class _ReportAppBar extends StatelessWidget {
                       BorderRadius.circular(16),
                 ),
                 child: Icon(
-                  Icons
-                      .health_and_safety_rounded,
+                  Icons.health_and_safety_rounded,
                   size: 29,
                   color: theme
                       .colorScheme
                       .onPrimaryContainer,
                 ),
               ),
-
               const SizedBox(width: 13),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment:
@@ -1016,7 +893,7 @@ class _ReportAppBar extends StatelessWidget {
                       MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Report Incident',
+                      l10n.reportIncidentTitle,
                       maxLines: 1,
                       overflow:
                           TextOverflow.ellipsis,
@@ -1030,7 +907,7 @@ class _ReportAppBar extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Help keep Nashik roads safer',
+                      l10n.reportIncidentSubtitle,
                       maxLines: 1,
                       overflow:
                           TextOverflow.ellipsis,
@@ -1046,9 +923,7 @@ class _ReportAppBar extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Container(
                 padding:
                     const EdgeInsets.symmetric(
@@ -1078,8 +953,7 @@ class _ReportAppBar extends StatelessWidget {
   }
 }
 
-class _IncidentTypeSelector
-    extends StatelessWidget {
+class _IncidentTypeSelector extends StatelessWidget {
   const _IncidentTypeSelector({
     required this.selectedType,
     required this.errorText,
@@ -1094,6 +968,7 @@ class _IncidentTypeSelector
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final borderColor = errorText != null
@@ -1136,15 +1011,12 @@ class _IncidentTypeSelector
               child: Row(
                 children: [
                   Icon(
-                    Icons
-                        .warning_amber_rounded,
+                    Icons.warning_amber_rounded,
                     color:
                         theme.colorScheme.primary,
                     size: 22,
                   ),
-
                   const SizedBox(width: 12),
-
                   Expanded(
                     child: Column(
                       crossAxisAlignment:
@@ -1153,7 +1025,7 @@ class _IncidentTypeSelector
                           MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Incident Type',
+                          l10n.incidentType,
                           style: theme
                               .textTheme
                               .labelMedium
@@ -1165,12 +1037,10 @@ class _IncidentTypeSelector
                                 FontWeight.w500,
                           ),
                         ),
-
                         const SizedBox(height: 3),
-
                         if (selectedType == null)
                           Text(
-                            'Select incident type',
+                            l10n.selectIncidentType,
                             style: theme
                                 .textTheme
                                 .bodyLarge
@@ -1187,16 +1057,16 @@ class _IncidentTypeSelector
                                 type: selectedType!,
                                 size: 19,
                               ),
-                              const SizedBox(
-                                width: 8,
-                              ),
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  selectedType!.name,
+                                  _localizedEventTypeName(
+                                    context,
+                                    selectedType!,
+                                  ),
                                   maxLines: 1,
                                   overflow:
-                                      TextOverflow
-                                          .ellipsis,
+                                      TextOverflow.ellipsis,
                                   style: theme
                                       .textTheme
                                       .bodyLarge
@@ -1211,12 +1081,9 @@ class _IncidentTypeSelector
                       ],
                     ),
                   ),
-
                   const SizedBox(width: 8),
-
                   Icon(
-                    Icons
-                        .keyboard_arrow_down_rounded,
+                    Icons.keyboard_arrow_down_rounded,
                     color: theme
                         .colorScheme
                         .onSurfaceVariant,
@@ -1226,7 +1093,6 @@ class _IncidentTypeSelector
             ),
           ),
         ),
-
         if (errorText != null)
           Padding(
             padding:
@@ -1247,8 +1113,7 @@ class _IncidentTypeSelector
   }
 }
 
-class _EventTypeOption
-    extends StatelessWidget {
+class _EventTypeOption extends StatelessWidget {
   const _EventTypeOption({
     required this.type,
     required this.isSelected,
@@ -1306,13 +1171,14 @@ class _EventTypeOption
                   size: 23,
                 ),
               ),
-
               const SizedBox(width: 14),
-
               Expanded(
                 child: Text(
-                  type.name,
-                  style: theme
+                  _localizedEventTypeName(
+                    context,
+                    type,
+                  ),
+                  style: Theme.of(context)
                       .textTheme
                       .bodyLarge
                       ?.copyWith(
@@ -1323,7 +1189,6 @@ class _EventTypeOption
                   ),
                 ),
               ),
-
               if (isSelected)
                 Icon(
                   Icons.check_circle_rounded,
@@ -1345,8 +1210,57 @@ class _EventTypeOption
   }
 }
 
-class _EventTypeIcon
-    extends StatelessWidget {
+String _localizedEventTypeName(
+  BuildContext context,
+  EventType type,
+) {
+  final l10n = AppLocalizations.of(context)!;
+  final value =
+      '${type.id} ${type.name}'.toLowerCase();
+
+  if (value.contains('closure') ||
+      value.contains('closed')) {
+    return l10n.incidentRoadClosed;
+  }
+
+  if (value.contains('accident')) {
+    return l10n.incidentAccident;
+  }
+
+  if (value.contains('construction')) {
+    return l10n.incidentConstruction;
+  }
+
+  if (value.contains('flood')) {
+    return l10n.incidentFlooding;
+  }
+
+  if (value.contains('traffic') ||
+      value.contains('jam')) {
+    return l10n.incidentTrafficJam;
+  }
+
+  if (value.contains('pothole')) {
+    return l10n.incidentPothole;
+  }
+
+  if (value.contains('public') ||
+      value.contains('event')) {
+    return l10n.incidentPublicEvent;
+  }
+
+  if (value.contains('diversion')) {
+    return l10n.incidentDiversion;
+  }
+
+  if (value.contains('other')) {
+    return l10n.incidentOther;
+  }
+
+  return type.name;
+}
+
+class _EventTypeIcon extends StatelessWidget {
   const _EventTypeIcon({
     required this.type,
     this.size = 22,
@@ -1399,8 +1313,7 @@ class _EventTypeIcon
   }
 }
 
-class _SectionLabel
-    extends StatelessWidget {
+class _SectionLabel extends StatelessWidget {
   const _SectionLabel({
     required this.icon,
     required this.title,
@@ -1423,8 +1336,7 @@ class _SectionLabel
         const SizedBox(width: 8),
         Text(
           title,
-          style: theme.textTheme.titleMedium
-              ?.copyWith(
+          style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -1433,8 +1345,7 @@ class _SectionLabel
   }
 }
 
-class _CoordinateTile
-    extends StatelessWidget {
+class _CoordinateTile extends StatelessWidget {
   const _CoordinateTile({
     required this.label,
     required this.value,
@@ -1450,9 +1361,8 @@ class _CoordinateTile
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme
-            .colorScheme
-            .surfaceContainerHighest,
+        color:
+            theme.colorScheme.surfaceContainerHighest,
         borderRadius:
             BorderRadius.circular(12),
       ),
@@ -1462,11 +1372,9 @@ class _CoordinateTile
         children: [
           Text(
             label,
-            style: theme.textTheme.labelMedium
-                ?.copyWith(
-              color: theme
-                  .colorScheme
-                  .onSurfaceVariant,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color:
+                  theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 4),
@@ -1474,8 +1382,7 @@ class _CoordinateTile
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1485,8 +1392,7 @@ class _CoordinateTile
   }
 }
 
-class _LocationError
-    extends StatelessWidget {
+class _LocationError extends StatelessWidget {
   const _LocationError({
     required this.error,
   });
@@ -1495,6 +1401,7 @@ class _LocationError
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Center(
@@ -1510,7 +1417,7 @@ class _LocationError
             ),
             const SizedBox(height: 16),
             Text(
-              'Unable to get your location',
+              l10n.unableToGetLocation,
               textAlign: TextAlign.center,
               style: theme
                   .textTheme
@@ -1527,9 +1434,8 @@ class _LocationError
                   .textTheme
                   .bodyMedium
                   ?.copyWith(
-                color: theme
-                    .colorScheme
-                    .onSurfaceVariant,
+                color:
+                    theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -1539,8 +1445,7 @@ class _LocationError
   }
 }
 
-class _EventTypeError
-    extends StatelessWidget {
+class _EventTypeError extends StatelessWidget {
   const _EventTypeError({
     required this.error,
   });
@@ -1549,13 +1454,13 @@ class _EventTypeError
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color:
-            theme.colorScheme.errorContainer,
+        color: theme.colorScheme.errorContainer,
         borderRadius:
             BorderRadius.circular(14),
       ),
@@ -1565,19 +1470,18 @@ class _EventTypeError
         children: [
           Icon(
             Icons.error_outline,
-            color: theme
-                .colorScheme
-                .onErrorContainer,
+            color:
+                theme.colorScheme.onErrorContainer,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Unable to load incident types.\n'
-              '$error',
+              l10n.unableToLoadIncidentTypes(
+                error.toString(),
+              ),
               style: TextStyle(
-                color: theme
-                    .colorScheme
-                    .onErrorContainer,
+                color:
+                    theme.colorScheme.onErrorContainer,
               ),
             ),
           ),

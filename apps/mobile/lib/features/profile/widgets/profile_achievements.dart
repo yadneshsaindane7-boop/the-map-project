@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class ProfileAchievements extends StatelessWidget {
   const ProfileAchievements({
     super.key,
@@ -7,6 +9,7 @@ class ProfileAchievements extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Card(
@@ -51,7 +54,7 @@ class ProfileAchievements extends StatelessWidget {
                         CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Achievements',
+                        l10n.achievementsLabel,
                         style: theme
                             .textTheme
                             .titleMedium
@@ -62,7 +65,7 @@ class ProfileAchievements extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Your community milestones',
+                        l10n.communityMilestones,
                         style: theme
                             .textTheme
                             .bodySmall
@@ -83,23 +86,23 @@ class ProfileAchievements extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: const [
+              children: [
                 _AchievementChip(
                   icon:
                       Icons.emoji_events_rounded,
                   color: Colors.amber,
-                  label: 'First Report',
+                  label: l10n.achievementFirstReport,
                 ),
                 _AchievementChip(
                   icon:
                       Icons.shield_rounded,
                   color: Colors.green,
-                  label: 'Road Guardian',
+                  label: l10n.achievementRoadGuardian,
                 ),
                 _AchievementChip(
                   icon: Icons.groups_rounded,
                   color: Colors.blue,
-                  label: 'Community Helper',
+                  label: l10n.achievementCommunityHelper,
                 ),
               ],
             ),

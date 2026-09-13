@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
@@ -8,6 +10,7 @@ class AboutPage extends StatelessWidget {
   static const String buildNumber = '2';
 
   Future<void> _contactDeveloper(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final Uri email = Uri(
       scheme: 'mailto',
       path: 'yadneshsaindane7@gmail.com',
@@ -20,9 +23,9 @@ class AboutPage extends StatelessWidget {
     } else {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Unable to open email application.',
+              l10n.unableToOpenEmail,
             ),
           ),
         );
@@ -31,22 +34,21 @@ class AboutPage extends StatelessWidget {
   }
 
   void _reportBug(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Report a Bug'),
-          content: const Text(
-            'Bug reporting portal will be available in a future update.\n\n'
-            'For now, you can report bugs directly to the developer '
-            'using the Contact Developer option.',
+          title: Text(l10n.reportBug),
+          content: Text(
+            l10n.reportBugContent,
           ),
           actions: [
             FilledButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('OK'),
+              child: Text(l10n.ok),
             ),
           ],
         );
@@ -188,12 +190,13 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: Text(l10n.about),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -237,7 +240,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'The Map Project',
+                    l10n.appTitle,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w800,
@@ -245,7 +248,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'Community Powered Smart Navigation',
+                    l10n.appTagline,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
@@ -271,7 +274,7 @@ class AboutPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Version $appVersion • Build $buildNumber',
+                          l10n.appVersionBuild(appVersion, buildNumber),
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.w700,
@@ -312,7 +315,7 @@ class AboutPage extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'About the Project',
+                            l10n.aboutTheProject,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w800,
                             ),
@@ -329,11 +332,7 @@ class AboutPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 7),
                     Text(
-                      'The Map Project is a community-powered navigation '
-                      'platform designed to provide real-time road '
-                      'conditions, road closures, traffic incidents and '
-                      'intelligent route guidance using community reports '
-                      'and modern mapping technologies.',
+                      l10n.aboutProjectDescription,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         height: 1.5,
@@ -346,7 +345,7 @@ class AboutPage extends StatelessWidget {
 
             _sectionHeader(
               context,
-              'Development Team',
+              l10n.developmentTeam,
               Icons.groups_rounded,
             ),
 
@@ -359,25 +358,25 @@ class AboutPage extends StatelessWidget {
                     context,
                     icon: Icons.school_rounded,
                     title: 'Prof - R. V. Daund',
-                    subtitle: 'Project Guide',
+                    subtitle: l10n.roleProjectGuide,
                   ),
                   _infoTile(
                     context,
                     icon: Icons.code_rounded,
                     title: 'Yadnesh Saindane',
-                    subtitle: 'Lead Developer',
+                    subtitle: l10n.roleLeadDeveloper,
                   ),
                   _infoTile(
                     context,
                     icon: Icons.description_rounded,
                     title: 'Namrata Wagh',
-                    subtitle: 'Project Documentation',
+                    subtitle: l10n.roleDocumentation,
                   ),
                   _infoTile(
                     context,
                     icon: Icons.science_rounded,
                     title: 'Umesh Suryawanshi',
-                    subtitle: 'Research & Field Validation',
+                    subtitle: l10n.roleResearchValidation,
                     showDivider: false,
                   ),
                 ],
@@ -386,7 +385,7 @@ class AboutPage extends StatelessWidget {
 
             _sectionHeader(
               context,
-              'Technology Stack',
+              l10n.technologyStack,
               Icons.layers_rounded,
             ),
 
@@ -398,31 +397,31 @@ class AboutPage extends StatelessWidget {
                   _infoTile(
                     context,
                     icon: Icons.flutter_dash,
-                    title: 'Framework',
+                    title: l10n.techFramework,
                     subtitle: 'Flutter',
                   ),
                   _infoTile(
                     context,
                     icon: Icons.storage_rounded,
-                    title: 'Backend',
+                    title: l10n.techBackend,
                     subtitle: 'Supabase',
                   ),
                   _infoTile(
                     context,
                     icon: Icons.map_rounded,
-                    title: 'Maps',
+                    title: l10n.techMaps,
                     subtitle: 'Flutter Map + OpenStreetMap',
                   ),
                   _infoTile(
                     context,
                     icon: Icons.route_rounded,
-                    title: 'Routing',
+                    title: l10n.techRouting,
                     subtitle: 'Custom FastAPI + A* Nashik Road Graph',
                   ),
                   _infoTile(
                     context,
                     icon: Icons.code_rounded,
-                    title: 'Programming Language',
+                    title: l10n.techLanguage,
                     subtitle: 'Dart',
                     showDivider: false,
                   ),
@@ -432,7 +431,7 @@ class AboutPage extends StatelessWidget {
 
             _sectionHeader(
               context,
-              'Core Features',
+              l10n.coreFeatures,
               Icons.auto_awesome_rounded,
             ),
 
@@ -443,32 +442,32 @@ class AboutPage extends StatelessWidget {
                 children: [
                   _featureTile(
                     context,
-                    'Community Incident Reporting',
+                    l10n.featureIncidentReporting,
                     Icons.report_problem_outlined,
                   ),
                   _featureTile(
                     context,
-                    'Real-Time Traffic Alerts',
+                    l10n.featureTrafficAlerts,
                     Icons.traffic_outlined,
                   ),
                   _featureTile(
                     context,
-                    'Road Closure Detection',
+                    l10n.featureRoadClosure,
                     Icons.block_rounded,
                   ),
                   _featureTile(
                     context,
-                    'Smart Route Navigation',
+                    l10n.featureSmartNavigation,
                     Icons.alt_route_rounded,
                   ),
                   _featureTile(
                     context,
-                    'Community Verification',
+                    l10n.featureCommunityVerification,
                     Icons.verified_user_outlined,
                   ),
                   _featureTile(
                     context,
-                    'User Profiles & Statistics',
+                    l10n.featureUserProfiles,
                     Icons.person_outline_rounded,
                   ),
                 ],
@@ -477,7 +476,7 @@ class AboutPage extends StatelessWidget {
 
             _sectionHeader(
               context,
-              'Project Information',
+              l10n.projectInformation,
               Icons.info_outline_rounded,
             ),
 
@@ -489,20 +488,20 @@ class AboutPage extends StatelessWidget {
                   _infoTile(
                     context,
                     icon: Icons.public_rounded,
-                    title: 'Status',
-                    subtitle: 'Active Development',
+                    title: l10n.statusLabel,
+                    subtitle: l10n.statusActiveDevelopment,
                   ),
                   _infoTile(
                     context,
                     icon: Icons.business_rounded,
-                    title: 'Publisher',
+                    title: l10n.publisherLabel,
                     subtitle: 'HLP - Hibro Lab Productions',
                   ),
                   _infoTile(
                     context,
                     icon: Icons.workspace_premium_rounded,
-                    title: 'License',
-                    subtitle: 'Educational & Research Project',
+                    title: l10n.licenseLabel,
+                    subtitle: l10n.licenseEducational,
                     showDivider: false,
                   ),
                 ],
@@ -511,7 +510,7 @@ class AboutPage extends StatelessWidget {
 
             _sectionHeader(
               context,
-              'Support',
+              l10n.support,
               Icons.support_agent_rounded,
             ),
 
@@ -529,7 +528,7 @@ class AboutPage extends StatelessWidget {
                         icon: const Icon(
                           Icons.bug_report_outlined,
                         ),
-                        label: const Text('Report a Bug'),
+                        label: Text(l10n.reportBug),
                         onPressed: () {
                           _reportBug(context);
                         },
@@ -543,7 +542,7 @@ class AboutPage extends StatelessWidget {
                         icon: const Icon(
                           Icons.email_outlined,
                         ),
-                        label: const Text('Contact Developer'),
+                        label: Text(l10n.contactDeveloper),
                         onPressed: () {
                           _contactDeveloper(context);
                         },
@@ -586,8 +585,7 @@ class AboutPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 7),
                     Text(
-                      'The Map Project is a product developed and '
-                      'maintained by HLP - Hibro Lab Productions.',
+                      l10n.hlpDescription,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
@@ -600,7 +598,7 @@ class AboutPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Developer Contact',
+                      l10n.developerContact,
                       style: theme.textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -632,7 +630,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'The Map Project • Version $appVersion ($buildNumber)',
+                    l10n.versionBuildSummary(appVersion, buildNumber),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
@@ -640,7 +638,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'All Rights Reserved.',
+                    l10n.allRightsReserved,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,

@@ -1,0 +1,1161 @@
+{
+  "@@locale": "en",
+  "appTitle": "The Map Project",
+  "@appTitle": {
+    "description": "Name of the application"
+  },
+  "appTagline": "Real-time Road Intelligence",
+  "@appTagline": {
+    "description": "App subtitle / tagline"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "Generic OK button"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic Cancel button"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic Save button"
+  },
+  "retry": "Try Again",
+  "@retry": {
+    "description": "Generic Retry button"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Generic Close button"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Generic Back button"
+  },
+  "status": "Status",
+  "@status": {
+    "description": "Status label"
+  },
+  "distance": "Distance",
+  "@distance": {
+    "description": "Distance label"
+  },
+  "reporter": "Reporter",
+  "@reporter": {
+    "description": "Reporter label"
+  },
+  "reported": "Reported",
+  "@reported": {
+    "description": "Reported time label"
+  },
+  "location": "Location",
+  "@location": {
+    "description": "Location label"
+  },
+  "latitude": "Latitude",
+  "@latitude": {
+    "description": "Latitude coordinate label"
+  },
+  "longitude": "Longitude",
+  "@longitude": {
+    "description": "Longitude coordinate label"
+  },
+  "community": "Community",
+  "@community": {
+    "description": "Community label"
+  },
+  "nashik": "Nashik",
+  "@nashik": {
+    "description": "City name Nashik"
+  },
+  "navMap": "Map",
+  "@navMap": {
+    "description": "Bottom navigation label for Map"
+  },
+  "navReport": "Report",
+  "@navReport": {
+    "description": "Bottom navigation label for Report"
+  },
+  "navAlerts": "Alerts",
+  "@navAlerts": {
+    "description": "Bottom navigation label for Alerts"
+  },
+  "navProfile": "Profile",
+  "@navProfile": {
+    "description": "Bottom navigation label for Profile"
+  },
+  "searchDestinationHint": "Search destination...",
+  "@searchDestinationHint": {
+    "description": "Search destination input hint"
+  },
+  "clearSearch": "Clear search",
+  "@clearSearch": {
+    "description": "Tooltip for clear search button"
+  },
+  "mapLayers": "Map layers",
+  "@mapLayers": {
+    "description": "Tooltip for map layers button"
+  },
+  "myLocation": "My location",
+  "@myLocation": {
+    "description": "Tooltip for my location button"
+  },
+  "zoomToReports": "Zoom to Reports",
+  "@zoomToReports": {
+    "description": "Tooltip for zoom to reports button"
+  },
+  "findingRoute": "Finding route...",
+  "@findingRoute": {
+    "description": "Loading indicator when finding route"
+  },
+  "rerouting": "Rerouting...",
+  "@rerouting": {
+    "description": "Loading indicator when recalculating route"
+  },
+  "routePointsTooFew": "Route was returned but contains too few points.",
+  "@routePointsTooFew": {
+    "description": "Error message when route has insufficient points"
+  },
+  "unableToFindRoute": "Unable to find a route.",
+  "@unableToFindRoute": {
+    "description": "Error message when routing fails"
+  },
+  "failedToLoadRoute": "Failed to load route: {error}",
+  "@failedToLoadRoute": {
+    "description": "Error message when route loading fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "arrivalMessage": "You have arrived at your destination.",
+  "@arrivalMessage": {
+    "description": "Notification message upon destination arrival"
+  },
+  "roadIncidentRerouting": "Road incident detected. Rerouting...",
+  "@roadIncidentRerouting": {
+    "description": "Snackbar when rerouting due to incident"
+  },
+  "mapStyleStreets": "Streets",
+  "@mapStyleStreets": {
+    "description": "Streets map style display name"
+  },
+  "mapStyleTerrain": "Terrain",
+  "@mapStyleTerrain": {
+    "description": "Terrain map style display name"
+  },
+  "mapStyleSatellite": "Satellite",
+  "@mapStyleSatellite": {
+    "description": "Satellite map style display name"
+  },
+  "unknownDate": "Unknown",
+  "@unknownDate": {
+    "description": "Label when timestamp is unknown"
+  },
+  "navigateButton": "Navigate",
+  "@navigateButton": {
+    "description": "Navigate action button"
+  },
+  "navigationFutureNotice": "Navigation will be available in v0.5.0",
+  "@navigationFutureNotice": {
+    "description": "Notice for navigation release"
+  },
+  "confirmButton": "Confirm",
+  "@confirmButton": {
+    "description": "Confirm button label"
+  },
+  "incidentConfirmedMessage": "Thanks for confirming this incident.",
+  "@incidentConfirmedMessage": {
+    "description": "Snackbar thanking user for confirmation"
+  },
+  "eta": "ETA",
+  "@eta": {
+    "description": "Estimated time of arrival label"
+  },
+  "startNavigation": "START NAVIGATION",
+  "@startNavigation": {
+    "description": "Button to start navigation mode"
+  },
+  "nextInstruction": "Next instruction",
+  "@nextInstruction": {
+    "description": "Label for next turn instruction"
+  },
+  "continueCurrentRoute": "Continue on the current route",
+  "@continueCurrentRoute": {
+    "description": "Default navigation instruction"
+  },
+  "inDistance": "In {distance}",
+  "@inDistance": {
+    "description": "Distance remaining until next instruction",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "endJourney": "End journey",
+  "@endJourney": {
+    "description": "Tooltip for ending active journey"
+  },
+  "remaining": "Remaining",
+  "@remaining": {
+    "description": "Remaining distance/time label"
+  },
+  "distanceMeters": "{count} m",
+  "@distanceMeters": {
+    "description": "Distance in meters",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "distanceKm": "{distance} km",
+  "@distanceKm": {
+    "description": "Distance in kilometers",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "durationMin": "{count} min",
+  "@durationMin": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHours": "{count} hr",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHoursMinutes": "{hours} hr {minutes} min",
+  "@durationHoursMinutes": {
+    "description": "Duration in hours and minutes",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "reportIncidentTitle": "Report Incident",
+  "@reportIncidentTitle": {
+    "description": "Title of report incident page"
+  },
+  "reportIncidentSubtitle": "Help keep Nashik roads safer",
+  "@reportIncidentSubtitle": {
+    "description": "Subtitle of report incident page"
+  },
+  "incidentLocation": "Incident Location",
+  "@incidentLocation": {
+    "description": "Heading for incident location section"
+  },
+  "locationSelectedOnMap": "Location selected on map",
+  "@locationSelectedOnMap": {
+    "description": "Notice that location is manually chosen"
+  },
+  "usingCurrentLocation": "Using your current location",
+  "@usingCurrentLocation": {
+    "description": "Notice that GPS location is used"
+  },
+  "changeLocation": "Change Location",
+  "@changeLocation": {
+    "description": "Button to change selected location"
+  },
+  "chooseOnMap": "Choose on Map",
+  "@chooseOnMap": {
+    "description": "Button to pick location on map"
+  },
+  "incidentDetails": "Incident Details",
+  "@incidentDetails": {
+    "description": "Heading for incident details section"
+  },
+  "incidentTitle": "Incident Title",
+  "@incidentTitle": {
+    "description": "Field label for incident title"
+  },
+  "incidentTitleHint": "e.g. Accident near bridge",
+  "@incidentTitleHint": {
+    "description": "Placeholder hint for incident title"
+  },
+  "incidentTitleEmptyError": "Enter an incident title",
+  "@incidentTitleEmptyError": {
+    "description": "Validation error when title is empty"
+  },
+  "incidentTitleMinError": "Title must be at least 3 characters",
+  "@incidentTitleMinError": {
+    "description": "Validation error when title is too short"
+  },
+  "incidentDescriptionOptional": "Description (Optional)",
+  "@incidentDescriptionOptional": {
+    "description": "Field label for optional description"
+  },
+  "incidentDescriptionHint": "Add useful details for other drivers...",
+  "@incidentDescriptionHint": {
+    "description": "Placeholder hint for incident description"
+  },
+  "incidentType": "Incident Type",
+  "@incidentType": {
+    "description": "Field label for incident type"
+  },
+  "whatIsHappening": "What is happening on the road?",
+  "@whatIsHappening": {
+    "description": "Subtitle on incident type picker sheet"
+  },
+  "selectIncidentType": "Select incident type",
+  "@selectIncidentType": {
+    "description": "Placeholder when no incident type is selected"
+  },
+  "selectIncidentTypeError": "Please select an incident type",
+  "@selectIncidentTypeError": {
+    "description": "Validation error when incident type missing"
+  },
+  "resolvingRoadAndSubmitting": "Resolving Road & Submitting...",
+  "@resolvingRoadAndSubmitting": {
+    "description": "Button label during submission"
+  },
+  "submitIncident": "Submit Incident",
+  "@submitIncident": {
+    "description": "Button label to submit incident"
+  },
+  "reportReviewDisclaimer": "Reports are reviewed before becoming active traffic alerts.",
+  "@reportReviewDisclaimer": {
+    "description": "Disclaimer under report submit button"
+  },
+  "reportSuccessMessage": "Incident submitted successfully.\nYour report has been sent for review.",
+  "@reportSuccessMessage": {
+    "description": "Snackbar on report success"
+  },
+  "reportErrorMessage": "Unable to submit the incident.\n{error}",
+  "@reportErrorMessage": {
+    "description": "Snackbar on report error",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unableToGetLocation": "Unable to get your location",
+  "@unableToGetLocation": {
+    "description": "Error heading when location cannot be fetched"
+  },
+  "unableToLoadIncidentTypes": "Unable to load incident types.\n{error}",
+  "@unableToLoadIncidentTypes": {
+    "description": "Error banner when incident types fail to load",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "chooseIncidentLocation": "Choose Incident Location",
+  "@chooseIncidentLocation": {
+    "description": "AppBar title on location picker"
+  },
+  "resetLocation": "Reset location",
+  "@resetLocation": {
+    "description": "Tooltip to reset location to GPS"
+  },
+  "tapMapToSelectLocation": "Tap the map to select the incident location",
+  "@tapMapToSelectLocation": {
+    "description": "Instruction overlay on map picker"
+  },
+  "selectedPointAttached": "The selected point will be attached to your report.",
+  "@selectedPointAttached": {
+    "description": "Subtitle in location picker bottom card"
+  },
+  "useThisLocation": "Use This Location",
+  "@useThisLocation": {
+    "description": "Confirmation button on location picker"
+  },
+  "incidentRoadClosed": "Road Closed",
+  "@incidentRoadClosed": {
+    "description": "Incident type Road Closed"
+  },
+  "incidentAccident": "Accident",
+  "@incidentAccident": {
+    "description": "Incident type Accident"
+  },
+  "incidentConstruction": "Construction",
+  "@incidentConstruction": {
+    "description": "Incident type Construction"
+  },
+  "incidentFlooding": "Flooding",
+  "@incidentFlooding": {
+    "description": "Incident type Flooding"
+  },
+  "incidentTrafficJam": "Traffic Jam",
+  "@incidentTrafficJam": {
+    "description": "Incident type Traffic Jam"
+  },
+  "incidentPothole": "Pothole",
+  "@incidentPothole": {
+    "description": "Incident type Pothole"
+  },
+  "incidentPublicEvent": "Public Event",
+  "@incidentPublicEvent": {
+    "description": "Incident type Public Event"
+  },
+  "incidentDiversion": "Diversion",
+  "@incidentDiversion": {
+    "description": "Incident type Diversion"
+  },
+  "incidentOther": "Other",
+  "@incidentOther": {
+    "description": "Incident type Other"
+  },
+  "trafficAlertsTitle": "Traffic Alerts",
+  "@trafficAlertsTitle": {
+    "description": "Title of alerts page"
+  },
+  "trafficAlertsSubtitle": "Stay informed about incidents nearby",
+  "@trafficAlertsSubtitle": {
+    "description": "Subtitle of alerts page"
+  },
+  "refreshAlertsTooltip": "Refresh alerts",
+  "@refreshAlertsTooltip": {
+    "description": "Tooltip for refresh button on alerts page"
+  },
+  "loadingTrafficAlerts": "Loading traffic alerts...",
+  "@loadingTrafficAlerts": {
+    "description": "Loading state on alerts page"
+  },
+  "unableToLoadAlerts": "Unable to load alerts",
+  "@unableToLoadAlerts": {
+    "description": "Error title on alerts page"
+  },
+  "alertsErrorMessage": "Something went wrong while loading the latest traffic alerts.",
+  "@alertsErrorMessage": {
+    "description": "Error description on alerts page"
+  },
+  "activeAlertsCount": "{count, plural, =1{1 active alert} other{{count} active alerts}}",
+  "@activeAlertsCount": {
+    "description": "Summary count of active alerts",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "updatedLive": "Updated live",
+  "@updatedLive": {
+    "description": "Badge indicating live updates"
+  },
+  "communityVerified": "Community verified",
+  "@communityVerified": {
+    "description": "Badge indicating community verification"
+  },
+  "viewOnMap": "View on Map",
+  "@viewOnMap": {
+    "description": "Button to focus alert on map"
+  },
+  "timeJustNow": "Just now",
+  "@timeJustNow": {
+    "description": "Relative time: just now"
+  },
+  "timeMinAgo": "{count} min ago",
+  "@timeMinAgo": {
+    "description": "Relative time: minutes ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeHrAgo": "{count} hr ago",
+  "@timeHrAgo": {
+    "description": "Relative time: hours ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "timeDayAgo": "1 day ago",
+  "@timeDayAgo": {
+    "description": "Relative time: 1 day ago"
+  },
+  "timeDaysAgo": "{count} days ago",
+  "@timeDaysAgo": {
+    "description": "Relative time: days ago",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statusActive": "ACTIVE",
+  "@statusActive": {
+    "description": "Status badge: ACTIVE"
+  },
+  "statusVerified": "VERIFIED",
+  "@statusVerified": {
+    "description": "Status badge: VERIFIED"
+  },
+  "statusResolved": "RESOLVED",
+  "@statusResolved": {
+    "description": "Status badge: RESOLVED"
+  },
+  "noActiveAlerts": "No active alerts",
+  "@noActiveAlerts": {
+    "description": "Empty state title on alerts page"
+  },
+  "noActiveAlertsDescription": "There are no verified traffic incidents affecting the road network right now.",
+  "@noActiveAlertsDescription": {
+    "description": "Empty state description on alerts page"
+  },
+  "youAreAllClear": "You are all clear",
+  "@youAreAllClear": {
+    "description": "Empty state reassurance pill"
+  },
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Title of profile page"
+  },
+  "profileCommunityActivity": "Your community activity",
+  "@profileCommunityActivity": {
+    "description": "Subtitle of profile page"
+  },
+  "yourActivity": "Your Activity",
+  "@yourActivity": {
+    "description": "Heading for activity stats section"
+  },
+  "yourContribution": "Your contribution to the community",
+  "@yourContribution": {
+    "description": "Subtitle for activity section"
+  },
+  "reportsCountLabel": "Reports",
+  "@reportsCountLabel": {
+    "description": "Stats tile label for reports"
+  },
+  "activeCountLabel": "Active",
+  "@activeCountLabel": {
+    "description": "Stats tile label for active reports"
+  },
+  "reputationLabel": "Reputation",
+  "@reputationLabel": {
+    "description": "Stats tile label for reputation"
+  },
+  "achievementsLabel": "Achievements",
+  "@achievementsLabel": {
+    "description": "Heading / tile label for achievements"
+  },
+  "communityMilestones": "Your community milestones",
+  "@communityMilestones": {
+    "description": "Subtitle for achievements card"
+  },
+  "badgeFirstReport": "First Report",
+  "@badgeFirstReport": {
+    "description": "Achievement badge: First Report"
+  },
+  "badgeRoadGuardian": "Road Guardian",
+  "@badgeRoadGuardian": {
+    "description": "Achievement badge: Road Guardian"
+  },
+  "badgeCommunityHelper": "Community Helper",
+  "@badgeCommunityHelper": {
+    "description": "Achievement badge: Community Helper"
+  },
+  "authorityTools": "Authority Tools",
+  "@authorityTools": {
+    "description": "Heading for authority tools section"
+  },
+  "authorityToolsSubtitle": "Tools available to authorized users",
+  "@authorityToolsSubtitle": {
+    "description": "Subtitle for authority tools section"
+  },
+  "moderateIncidentReports": "Moderate Incident Reports",
+  "@moderateIncidentReports": {
+    "description": "Menu tile title for moderation page"
+  },
+  "moderateReportsSubtitle": "Review, approve, or reject pending reports",
+  "@moderateReportsSubtitle": {
+    "description": "Menu tile subtitle for moderation page"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Heading for settings section"
+  },
+  "manageAppPreferences": "Manage your app preferences",
+  "@manageAppPreferences": {
+    "description": "Subtitle for settings section"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Menu tile for notifications"
+  },
+  "manageNotificationPreferences": "Manage notification preferences",
+  "@manageNotificationPreferences": {
+    "description": "Menu tile subtitle for notifications"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Menu tile for language"
+  },
+  "about": "About",
+  "@about": {
+    "description": "Menu tile for about"
+  },
+  "aboutAppVersion": "The Map Project v2.0",
+  "@aboutAppVersion": {
+    "description": "Menu tile subtitle for about"
+  },
+  "footerNashik": "The Map Project • Nashik",
+  "@footerNashik": {
+    "description": "Profile footer text"
+  },
+  "unableToLoadProfile": "Unable to load profile",
+  "@unableToLoadProfile": {
+    "description": "Error title on profile page"
+  },
+  "unableToLoadProfileMessage": "We could not load your profile information.",
+  "@unableToLoadProfileMessage": {
+    "description": "Error message on profile page"
+  },
+  "authorityAccount": "Authority account",
+  "@authorityAccount": {
+    "description": "Badge for authority account"
+  },
+  "communityMember": "Community member",
+  "@communityMember": {
+    "description": "Badge for community member"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button label"
+  },
+  "logoutFailed": "Logout failed\n{error}",
+  "@logoutFailed": {
+    "description": "Snackbar when logout fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "incidentModerationTitle": "Incident Moderation",
+  "@incidentModerationTitle": {
+    "description": "AppBar title on moderation page"
+  },
+  "incidentModerationSubtitle": "Review community reports",
+  "@incidentModerationSubtitle": {
+    "description": "AppBar subtitle on moderation page"
+  },
+  "pendingReports": "Pending Reports",
+  "@pendingReports": {
+    "description": "Section header for pending reports"
+  },
+  "pendingReportsSubtitle": "Awaiting authority review",
+  "@pendingReportsSubtitle": {
+    "description": "Subtitle for pending reports"
+  },
+  "activeIncidents": "Active Incidents",
+  "@activeIncidents": {
+    "description": "Section header for active incidents"
+  },
+  "activeIncidentsSubtitle": "Currently affecting road routing",
+  "@activeIncidentsSubtitle": {
+    "description": "Subtitle for active incidents"
+  },
+  "noPendingReports": "No pending reports",
+  "@noPendingReports": {
+    "description": "Empty state title for pending reports"
+  },
+  "noPendingReportsSubtitle": "New community reports will appear here.",
+  "@noPendingReportsSubtitle": {
+    "description": "Empty state subtitle for pending reports"
+  },
+  "noActiveIncidents": "No active incidents",
+  "@noActiveIncidents": {
+    "description": "Empty state title for active incidents"
+  },
+  "noActiveIncidentsSubtitle": "All verified incidents are currently resolved.",
+  "@noActiveIncidentsSubtitle": {
+    "description": "Empty state subtitle for active incidents"
+  },
+  "pendingReportsUnavailable": "Pending reports unavailable",
+  "@pendingReportsUnavailable": {
+    "description": "Error title for pending reports"
+  },
+  "activeIncidentsUnavailable": "Active incidents unavailable",
+  "@activeIncidentsUnavailable": {
+    "description": "Error title for active incidents"
+  },
+  "osmWay": "OSM Way",
+  "@osmWay": {
+    "description": "OSM Way label"
+  },
+  "notAssigned": "Not assigned",
+  "@notAssigned": {
+    "description": "Label when OSM Way is not assigned"
+  },
+  "reject": "Reject",
+  "@reject": {
+    "description": "Reject button label"
+  },
+  "approve": "Approve",
+  "@approve": {
+    "description": "Approve button label"
+  },
+  "resolveIncident": "Resolve Incident",
+  "@resolveIncident": {
+    "description": "Resolve incident button label"
+  },
+  "approveIncidentTitle": "Approve incident?",
+  "@approveIncidentTitle": {
+    "description": "Dialog title for approving incident"
+  },
+  "approveIncidentMessage": "Approve \"{title}\" and make this incident available to the routing system?",
+  "@approveIncidentMessage": {
+    "description": "Dialog body for approving incident",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "incidentApprovedMessage": "Incident report approved.",
+  "@incidentApprovedMessage": {
+    "description": "Snackbar on incident approval"
+  },
+  "approvalFailedMessage": "Approval failed: {error}",
+  "@approvalFailedMessage": {
+    "description": "Snackbar when approval fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "rejectIncidentTitle": "Reject incident?",
+  "@rejectIncidentTitle": {
+    "description": "Dialog title for rejecting incident"
+  },
+  "rejectIncidentMessage": "Reject \"{title}\"? This report will not be activated for routing.",
+  "@rejectIncidentMessage": {
+    "description": "Dialog body for rejecting incident",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "incidentRejectedMessage": "Incident report rejected.",
+  "@incidentRejectedMessage": {
+    "description": "Snackbar on incident rejection"
+  },
+  "rejectionFailedMessage": "Rejection failed: {error}",
+  "@rejectionFailedMessage": {
+    "description": "Snackbar when rejection fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "resolveIncidentTitle": "Resolve incident?",
+  "@resolveIncidentTitle": {
+    "description": "Dialog title for resolving incident"
+  },
+  "resolveIncidentMessage": "Mark \"{title}\" as completed and remove its road restriction from active routing?",
+  "@resolveIncidentMessage": {
+    "description": "Dialog body for resolving incident",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "incidentResolvedMessage": "Incident resolved and road restriction removed.",
+  "@incidentResolvedMessage": {
+    "description": "Snackbar on incident resolution"
+  },
+  "resolutionFailedMessage": "Resolution failed: {error}",
+  "@resolutionFailedMessage": {
+    "description": "Snackbar when resolution fails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "smartNavigationSubtitle": "Community Powered Smart Navigation",
+  "@smartNavigationSubtitle": {
+    "description": "Tagline on login and about screen"
+  },
+  "loginTaglineDescription": "Navigate smarter with live road information and community-powered alerts.",
+  "@loginTaglineDescription": {
+    "description": "Login hero description"
+  },
+  "liveTraffic": "Live Traffic",
+  "@liveTraffic": {
+    "description": "Feature highlight: Live Traffic"
+  },
+  "smartRoutes": "Smart Routes",
+  "@smartRoutes": {
+    "description": "Feature highlight: Smart Routes"
+  },
+  "getStarted": "Get started",
+  "@getStarted": {
+    "description": "Login sign-in card header"
+  },
+  "signInSubtitle": "Sign in to access your personalized map experience.",
+  "@signInSubtitle": {
+    "description": "Login sign-in card subtitle"
+  },
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {
+    "description": "Google sign-in button label"
+  },
+  "secureSignInGoogle": "Secure sign-in with Google",
+  "@secureSignInGoogle": {
+    "description": "Login helper note"
+  },
+  "termsNotice": "By continuing, you agree to use the app responsibly.",
+  "@termsNotice": {
+    "description": "Login terms footnote"
+  },
+  "stayInformed": "Stay informed",
+  "@stayInformed": {
+    "description": "AppBar title on notifications page"
+  },
+  "notificationSettings": "Notification settings",
+  "@notificationSettings": {
+    "description": "AppBar subtitle on notifications page"
+  },
+  "pushNotifications": "Push Notifications",
+  "@pushNotifications": {
+    "description": "Master switch label for push notifications"
+  },
+  "pushNotificationsDescription": "Receive important notifications from The Map Project.",
+  "@pushNotificationsDescription": {
+    "description": "Master switch subtitle for notifications"
+  },
+  "notificationTypes": "Notification Types",
+  "@notificationTypes": {
+    "description": "Section header on notifications page"
+  },
+  "nearbyRoadAlerts": "Nearby Road Alerts",
+  "@nearbyRoadAlerts": {
+    "description": "Setting tile for nearby road alerts"
+  },
+  "nearbyRoadAlertsDescription": "Get alerts about incidents and road conditions near you.",
+  "@nearbyRoadAlertsDescription": {
+    "description": "Setting description for nearby alerts"
+  },
+  "routeUpdates": "Route Updates",
+  "@routeUpdates": {
+    "description": "Setting tile for route updates"
+  },
+  "routeUpdatesDescription": "Be notified when your active route needs to change.",
+  "@routeUpdatesDescription": {
+    "description": "Setting description for route updates"
+  },
+  "communityReportsNotification": "Community Reports",
+  "@communityReportsNotification": {
+    "description": "Setting tile for community reports"
+  },
+  "communityReportsNotificationDescription": "Receive updates related to community-reported incidents.",
+  "@communityReportsNotificationDescription": {
+    "description": "Setting description for community reports"
+  },
+  "notificationSessionNotice": "Notification preferences currently apply to this session. Persistent notification preferences will be added in a future update.",
+  "@notificationSessionNotice": {
+    "description": "Info box in notifications settings"
+  },
+  "notificationFooter": "The Map Project • Notification Settings",
+  "@notificationFooter": {
+    "description": "Footer text on notifications settings"
+  },
+  "choosePreferredLanguage": "Choose your preferred language",
+  "@choosePreferredLanguage": {
+    "description": "Subtitle on language selection page"
+  },
+  "currentLanguage": "Current Language",
+  "@currentLanguage": {
+    "description": "Heading for current language card"
+  },
+  "availableLanguages": "Available Languages",
+  "@availableLanguages": {
+    "description": "Heading for available languages list"
+  },
+  "saveLanguage": "Save {language}",
+  "@saveLanguage": {
+    "description": "Button to save selected language",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "languageSelectedSnackbar": "{language} selected.",
+  "@languageSelectedSnackbar": {
+    "description": "Snackbar confirming saved language",
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "languageFutureNotice": "More regional Indian languages will be available in future updates.",
+  "@languageFutureNotice": {
+    "description": "Notice at bottom of language page"
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "English language name"
+  },
+  "languageHindi": "Hindi",
+  "@languageHindi": {
+    "description": "Hindi language name"
+  },
+  "languageMarathi": "Marathi",
+  "@languageMarathi": {
+    "description": "Marathi language name"
+  },
+  "appVersionBuild": "Version {version} • Build {build}",
+  "@appVersionBuild": {
+    "description": "Version and build badge text",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutTheProject": "About the Project",
+  "@aboutTheProject": {
+    "description": "Heading for project overview in about page"
+  },
+  "hlpName": "HLP - Hibro Lab Productions",
+  "@hlpName": {
+    "description": "Organization name"
+  },
+  "aboutProjectDescription": "The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.",
+  "@aboutProjectDescription": {
+    "description": "Full description of project"
+  },
+  "developmentTeam": "Development Team",
+  "@developmentTeam": {
+    "description": "Heading for team section in about page"
+  },
+  "roleProjectGuide": "Project Guide",
+  "@roleProjectGuide": {
+    "description": "Role: Project Guide"
+  },
+  "roleLeadDeveloper": "Lead Developer",
+  "@roleLeadDeveloper": {
+    "description": "Role: Lead Developer"
+  },
+  "roleDocumentation": "Project Documentation",
+  "@roleDocumentation": {
+    "description": "Role: Project Documentation"
+  },
+  "roleResearchValidation": "Research & Field Validation",
+  "@roleResearchValidation": {
+    "description": "Role: Research & Field Validation"
+  },
+  "technologyStack": "Technology Stack",
+  "@technologyStack": {
+    "description": "Heading for tech stack in about page"
+  },
+  "techFramework": "Framework",
+  "@techFramework": {
+    "description": "Technology category: Framework"
+  },
+  "techBackend": "Backend",
+  "@techBackend": {
+    "description": "Technology category: Backend"
+  },
+  "techMaps": "Maps",
+  "@techMaps": {
+    "description": "Technology category: Maps"
+  },
+  "techRouting": "Routing",
+  "@techRouting": {
+    "description": "Technology category: Routing"
+  },
+  "techLanguage": "Programming Language",
+  "@techLanguage": {
+    "description": "Technology category: Programming Language"
+  },
+  "featureReporting": "Community Incident Reporting",
+  "@featureReporting": {
+    "description": "Core feature: Incident Reporting"
+  },
+  "featureTrafficAlerts": "Real-Time Traffic Alerts",
+  "@featureTrafficAlerts": {
+    "description": "Core feature: Traffic Alerts"
+  },
+  "featureRoadClosure": "Road Closure Detection",
+  "@featureRoadClosure": {
+    "description": "Core feature: Road Closure Detection"
+  },
+  "featureSmartRouting": "Smart Route Navigation",
+  "@featureSmartRouting": {
+    "description": "Core feature: Smart Route Navigation"
+  },
+  "featureCommunityVerification": "Community Verification",
+  "@featureCommunityVerification": {
+    "description": "Core feature: Community Verification"
+  },
+  "featureUserProfiles": "User Profiles & Statistics",
+  "@featureUserProfiles": {
+    "description": "Core feature: User Profiles"
+  },
+  "projectInformation": "Project Information",
+  "@projectInformation": {
+    "description": "Heading for project metadata"
+  },
+  "statusLabel": "Status",
+  "@statusLabel": {
+    "description": "Label for project status"
+  },
+  "statusActiveDevelopment": "Active Development",
+  "@statusActiveDevelopment": {
+    "description": "Value: Active Development"
+  },
+  "publisherLabel": "Publisher",
+  "@publisherLabel": {
+    "description": "Label for publisher"
+  },
+  "licenseLabel": "License",
+  "@licenseLabel": {
+    "description": "Label for license"
+  },
+  "licenseEducational": "Educational & Research Project",
+  "@licenseEducational": {
+    "description": "Value: Educational & Research Project"
+  },
+  "support": "Support",
+  "@support": {
+    "description": "Heading for support section"
+  },
+  "reportBug": "Report a Bug",
+  "@reportBug": {
+    "description": "Button to report bug"
+  },
+  "contactDeveloper": "Contact Developer",
+  "@contactDeveloper": {
+    "description": "Button to contact developer"
+  },
+  "reportBugDialogTitle": "Report a Bug",
+  "@reportBugDialogTitle": {
+    "description": "Dialog title for report bug"
+  },
+  "reportBugDialogContent": "Bug reporting portal will be available in a future update.\n\nFor now, you can report bugs directly to the developer using the Contact Developer option.",
+  "@reportBugDialogContent": {
+    "description": "Dialog body for report bug"
+  },
+  "unableOpenEmail": "Unable to open email application.",
+  "@unableOpenEmail": {
+    "description": "Snackbar when email app cannot be opened"
+  },
+  "hlpDescription": "The Map Project is a product developed and maintained by HLP - Hibro Lab Productions.",
+  "@hlpDescription": {
+    "description": "HLP summary card body"
+  },
+  "developerContact": "Developer Contact",
+  "@developerContact": {
+    "description": "Heading for developer contact"
+  },
+  "copyrightNotice": "© 2026 HLP - Hibro Lab Productions",
+  "@copyrightNotice": {
+    "description": "Copyright notice in about page"
+  },
+  "allRightsReserved": "All Rights Reserved.",
+  "@allRightsReserved": {
+    "description": "Rights reserved note"
+  },
+  "notificationGeneralName": "The Map Project",
+  "@notificationGeneralName": {
+    "description": "Notification channel name"
+  },
+  "notificationGeneralDescription": "Navigation, route, and road alert notifications.",
+  "@notificationGeneralDescription": {
+    "description": "Notification channel description"
+  },
+  "notificationTestBody": "Notifications are working successfully!",
+  "@notificationTestBody": {
+    "description": "Body for test notification"
+  },
+  "notificationJourneyStartedTitle": "Journey Started",
+  "@notificationJourneyStartedTitle": {
+    "description": "Title for journey started notification"
+  },
+  "notificationJourneyStartedBody": "Navigation has started.",
+  "@notificationJourneyStartedBody": {
+    "description": "Body for journey started notification"
+  },
+  "notificationJourneyCompletedTitle": "Journey Completed",
+  "@notificationJourneyCompletedTitle": {
+    "description": "Title for journey completed notification"
+  },
+  "notificationJourneyCompletedBody": "You have reached your destination.",
+  "@notificationJourneyCompletedBody": {
+    "description": "Body for journey completed notification"
+  },
+  "notificationRouteUpdatedTitle": "Route Updated",
+  "@notificationRouteUpdatedTitle": {
+    "description": "Title for route updated notification"
+  },
+  "notificationRouteUpdatedBody": "Your route has been updated because of a road event.",
+  "@notificationRouteUpdatedBody": {
+    "description": "Body for route updated notification"
+  },
+  "noUserLoggedIn": "No User Logged In",
+  "@noUserLoggedIn": {
+    "description": "Home page placeholder when logged out"
+  },
+  "welcomeUser": "Welcome\n\n{email}",
+  "@welcomeUser": {
+    "description": "Home page greeting with email",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "singleActiveAlert": "1 active alert",
+  "multipleActiveAlerts": "{count, plural, =0 {No active alerts} =1 {1 active alert} other {{count} active alerts}}",
+  "somethingWentWrongAlerts": "Something went wrong while loading traffic alerts.",
+  "arrivedAtDestinationSnackbar": "You have arrived at your destination.",
+  "communityReporterFallback": "Community member",
+  "navigationAvailableSoon": "Navigation for this incident will be available soon.",
+  "thanksForConfirming": "Thanks for confirming this incident.",
+  "continueOnCurrentRoute": "Continue on current route",
+  "statReports": "Reports",
+  "statActive": "Active",
+  "statReputation": "Reputation",
+  "statAchievements": "Achievements",
+  "appTitleWithCity": "The Map Project ? Nashik",
+  "couldNotLoadProfileInfo": "Could not load profile information.",
+  "achievementFirstReport": "First Report",
+  "achievementRoadGuardian": "Road Guardian",
+  "achievementCommunityHelper": "Community Helper",
+  "unableToOpenEmail": "Unable to open email.",
+  "reportBugContent": "If you found a problem with the app, please describe it and send us the details.",
+  "coreFeatures": "Core Features",
+  "featureIncidentReporting": "Incident Reporting",
+  "featureSmartNavigation": "Smart Navigation",
+  "versionBuildSummary": "Version {appVersion} ? Build {buildNumber}",
+  "languageChangedSnackbar": "Language changed to {language}.",
+  "saveLanguageButton": "Save {language}",
+  "languageAppliesInstantly": "Language changes apply instantly throughout the app.",
+  "notificationPreferencesFootnote": "Notification preferences are currently applied for this session.",
+  "notificationSettingsSummary": "Manage your notification preferences for road alerts and community updates."
+}

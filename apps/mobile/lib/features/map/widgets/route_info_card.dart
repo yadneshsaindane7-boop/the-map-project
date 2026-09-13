@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/services/notification_service.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../navigation/models/route_model.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
@@ -112,6 +113,7 @@ class _RoutePreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
@@ -122,7 +124,7 @@ class _RoutePreviewCard extends StatelessWidget {
             Expanded(
               child: _InfoTile(
                 icon: Icons.route,
-                title: 'Distance',
+                title: l10n.distance,
                 value:
                     '${route.distanceKm.toStringAsFixed(1)} km',
               ),
@@ -135,7 +137,7 @@ class _RoutePreviewCard extends StatelessWidget {
             Expanded(
               child: _InfoTile(
                 icon: Icons.access_time,
-                title: 'ETA',
+                title: l10n.eta,
                 value:
                     '${route.durationMinutes.round()} min',
               ),
@@ -148,8 +150,8 @@ class _RoutePreviewCard extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: onStart,
             icon: const Icon(Icons.navigation),
-            label: const Text(
-              'START NAVIGATION',
+            label: Text(
+              l10n.startNavigation,
             ),
             style: FilledButton.styleFrom(
               padding:
@@ -218,12 +220,13 @@ class _NavigationModeCard
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final instructionText =
         instruction?.trim().isNotEmpty == true
             ? instruction!
-            : 'Continue on the current route';
+            : l10n.continueOnCurrentRoute;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -250,7 +253,7 @@ class _NavigationModeCard
                     CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Next instruction',
+                    l10n.nextInstruction,
                     style: TextStyle(
                       color: theme
                           .colorScheme
@@ -290,7 +293,7 @@ class _NavigationModeCard
               ),
             ),
             IconButton(
-              tooltip: 'End journey',
+              tooltip: l10n.endJourney,
               icon: const Icon(Icons.close),
               color: theme.colorScheme.error,
               onPressed: onEndJourney,
@@ -311,7 +314,7 @@ class _NavigationModeCard
             Expanded(
               child: _InfoTile(
                 icon: Icons.route,
-                title: 'Remaining',
+                title: l10n.remaining,
                 value: _formatDistance(
                   remainingDistanceMeters,
                 ),
@@ -325,7 +328,7 @@ class _NavigationModeCard
             Expanded(
               child: _InfoTile(
                 icon: Icons.access_time,
-                title: 'ETA',
+                title: l10n.eta,
                 value: _formatDuration(
                   remainingDurationMillis,
                 ),
