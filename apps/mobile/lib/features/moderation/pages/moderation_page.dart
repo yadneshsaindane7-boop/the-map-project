@@ -76,8 +76,7 @@ class ModerationPage extends ConsumerWidget {
             FilledButton(
               style: destructive
                   ? FilledButton.styleFrom(
-                      backgroundColor:
-                          theme.colorScheme.error,
+                      backgroundColor: theme.colorScheme.error,
                     )
                   : null,
               onPressed: () {
@@ -465,7 +464,6 @@ class ModerationPage extends ConsumerWidget {
                 ),
               ],
             ),
-
             if (report.description.trim().isNotEmpty) ...[
               const SizedBox(height: 12),
               Container(
@@ -486,25 +484,19 @@ class ModerationPage extends ConsumerWidget {
                 ),
               ),
             ],
-
             const SizedBox(height: 12),
-
             Divider(
               height: 1,
               color: theme.dividerColor,
             ),
-
             const SizedBox(height: 12),
-
             Text(
               'Incident Details',
               style: theme.textTheme.labelLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
-
             const SizedBox(height: 9),
-
             _buildDetailItem(
               context,
               icon: Icons.access_time_rounded,
@@ -513,7 +505,6 @@ class ModerationPage extends ConsumerWidget {
                 report.createdAt,
               ),
             ),
-
             _buildDetailItem(
               context,
               icon: Icons.location_on_outlined,
@@ -522,7 +513,6 @@ class ModerationPage extends ConsumerWidget {
                   '${report.latitude.toStringAsFixed(5)}, '
                   '${report.longitude.toStringAsFixed(5)}',
             ),
-
             _buildDetailItem(
               context,
               icon: Icons.route_outlined,
@@ -531,17 +521,15 @@ class ModerationPage extends ConsumerWidget {
                   report.osmWayId?.toString() ??
                       'Not assigned',
             ),
-
-            if (report.userId != null)
+            if (report.reporterEmail != null &&
+                report.reporterEmail!.trim().isNotEmpty)
               _buildDetailItem(
                 context,
-                icon: Icons.person_outline_rounded,
+                icon: Icons.email_outlined,
                 label: 'Reporter',
-                value: report.userId!,
+                value: report.reporterEmail!,
               ),
-
             const SizedBox(height: 5),
-
             if (!isActiveIncident)
               Row(
                 children: [
@@ -610,7 +598,6 @@ class ModerationPage extends ConsumerWidget {
                   ),
                 ],
               ),
-
             if (isActiveIncident)
               SizedBox(
                 width: double.infinity,
@@ -1059,6 +1046,7 @@ class ModerationPage extends ConsumerWidget {
           ref.invalidate(
             pendingReportsProvider,
           );
+
           ref.invalidate(
             activeIncidentReportsProvider,
           );

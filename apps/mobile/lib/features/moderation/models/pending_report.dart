@@ -8,6 +8,7 @@ class PendingReport {
     required this.longitude,
     required this.createdAt,
     required this.userId,
+    required this.reporterEmail,
     required this.eventTypeId,
     required this.eventTypeName,
     required this.osmWayId,
@@ -21,6 +22,7 @@ class PendingReport {
   final double longitude;
   final DateTime createdAt;
   final String? userId;
+  final String? reporterEmail;
   final String eventTypeId;
   final String eventTypeName;
   final int? osmWayId;
@@ -42,6 +44,7 @@ class PendingReport {
       longitude: (map['longitude'] as num).toDouble(),
       createdAt: DateTime.parse(map['created_at'] as String),
       userId: (map['user_id'] ?? map['reported_by']) as String?,
+      reporterEmail: map['reporter_email'] as String?,
       eventTypeId: eventTypeId,
       eventTypeName: eventTypeName,
       osmWayId: osmWayIdValue == null
@@ -62,6 +65,8 @@ class PendingReport {
       'longitude': longitude,
       'created_at': createdAt.toIso8601String(),
       'user_id': userId,
+      'reported_by': userId,
+      'reporter_email': reporterEmail,
       'event_type_id': eventTypeId,
       'event_type': eventTypeName,
       'osm_way_id': osmWayId,
@@ -77,6 +82,7 @@ class PendingReport {
     double? longitude,
     DateTime? createdAt,
     String? userId,
+    String? reporterEmail,
     String? eventTypeId,
     String? eventTypeName,
     int? osmWayId,
@@ -90,6 +96,7 @@ class PendingReport {
       longitude: longitude ?? this.longitude,
       createdAt: createdAt ?? this.createdAt,
       userId: userId ?? this.userId,
+      reporterEmail: reporterEmail ?? this.reporterEmail,
       eventTypeId: eventTypeId ?? this.eventTypeId,
       eventTypeName: eventTypeName ?? this.eventTypeName,
       osmWayId: osmWayId ?? this.osmWayId,

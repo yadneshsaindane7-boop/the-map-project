@@ -3,7 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/pending_report.dart';
 
 class ModerationRepository {
-  ModerationRepository() : _supabase = Supabase.instance.client;
+  ModerationRepository()
+      : _supabase = Supabase.instance.client;
 
   final SupabaseClient _supabase;
 
@@ -15,7 +16,9 @@ class ModerationRepository {
         .order('created_at', ascending: false);
 
     return response
-        .map<PendingReport>((json) => PendingReport.fromMap(json))
+        .map<PendingReport>(
+          (json) => PendingReport.fromMap(json),
+        )
         .toList();
   }
 
@@ -26,11 +29,15 @@ class ModerationRepository {
         .order('created_at', ascending: false);
 
     return response
-        .map<PendingReport>((json) => PendingReport.fromMap(json))
+        .map<PendingReport>(
+          (json) => PendingReport.fromMap(json),
+        )
         .toList();
   }
 
-  Future<Map<String, dynamic>> approveReport(String reportId) async {
+  Future<Map<String, dynamic>> approveReport(
+    String reportId,
+  ) async {
     final user = _supabase.auth.currentUser;
 
     if (user == null) {
@@ -47,10 +54,14 @@ class ModerationRepository {
       },
     );
 
-    return Map<String, dynamic>.from(result as Map);
+    return Map<String, dynamic>.from(
+      result as Map,
+    );
   }
 
-  Future<Map<String, dynamic>> rejectReport(String reportId) async {
+  Future<Map<String, dynamic>> rejectReport(
+    String reportId,
+  ) async {
     final user = _supabase.auth.currentUser;
 
     if (user == null) {
@@ -67,10 +78,14 @@ class ModerationRepository {
       },
     );
 
-    return Map<String, dynamic>.from(result as Map);
+    return Map<String, dynamic>.from(
+      result as Map,
+    );
   }
 
-  Future<Map<String, dynamic>> resolveReport(String reportId) async {
+  Future<Map<String, dynamic>> resolveReport(
+    String reportId,
+  ) async {
     final user = _supabase.auth.currentUser;
 
     if (user == null) {
@@ -87,6 +102,8 @@ class ModerationRepository {
       },
     );
 
-    return Map<String, dynamic>.from(result as Map);
+    return Map<String, dynamic>.from(
+      result as Map,
+    );
   }
 }
