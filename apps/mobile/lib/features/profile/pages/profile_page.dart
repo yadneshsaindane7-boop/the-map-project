@@ -28,6 +28,7 @@ class ProfilePage extends ConsumerWidget {
     final currentLocale = ref.watch(localeProvider);
 
     String currentLanguageName;
+
     switch (currentLocale.languageCode) {
       case 'hi':
         currentLanguageName = 'हिन्दी';
@@ -129,24 +130,20 @@ class ProfilePage extends ConsumerWidget {
                 ProfileHeader(
                   profile: user,
                 ),
-
                 const SizedBox(height: 18),
-
                 _SectionHeading(
                   icon: Icons.insights_rounded,
                   title: l10n.yourActivity,
                   subtitle: l10n.yourContribution,
                 ),
-
                 const SizedBox(height: 10),
-
                 GridView.count(
                   crossAxisCount: 2,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
-                  childAspectRatio: 1.65,
+                  childAspectRatio: 1.06,
                   children: [
                     ProfileStatsCard(
                       title: l10n.statReports,
@@ -174,22 +171,16 @@ class ProfilePage extends ConsumerWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 18),
-
                 const ProfileAchievements(),
-
                 if (user.isAuthority) ...[
                   const SizedBox(height: 24),
-
                   _SectionHeading(
                     icon: Icons.admin_panel_settings_outlined,
                     title: l10n.authorityTools,
                     subtitle: l10n.authorityToolsSubtitle,
                   ),
-
                   const SizedBox(height: 10),
-
                   ProfileMenuTile(
                     icon: Icons.admin_panel_settings_outlined,
                     title: l10n.moderateIncidentReports,
@@ -197,24 +188,19 @@ class ProfilePage extends ConsumerWidget {
                     onTap: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const ModerationPage(),
+                          builder: (context) => const ModerationPage(),
                         ),
                       );
                     },
                   ),
                 ],
-
                 const SizedBox(height: 24),
-
                 _SectionHeading(
                   icon: Icons.settings_outlined,
                   title: l10n.settings,
                   subtitle: l10n.manageAppPreferences,
                 ),
-
                 const SizedBox(height: 10),
-
                 ProfileMenuTile(
                   icon: Icons.notifications_outlined,
                   title: l10n.notifications,
@@ -222,13 +208,11 @@ class ProfilePage extends ConsumerWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            const NotificationsPage(),
+                        builder: (context) => const NotificationsPage(),
                       ),
                     );
                   },
                 ),
-
                 ProfileMenuTile(
                   icon: Icons.language_rounded,
                   title: l10n.language,
@@ -236,13 +220,11 @@ class ProfilePage extends ConsumerWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            const LanguagePage(),
+                        builder: (context) => const LanguagePage(),
                       ),
                     );
                   },
                 ),
-
                 ProfileMenuTile(
                   icon: Icons.info_outline_rounded,
                   title: l10n.about,
@@ -250,19 +232,14 @@ class ProfilePage extends ConsumerWidget {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            const AboutPage(),
+                        builder: (context) => const AboutPage(),
                       ),
                     );
                   },
                 ),
-
                 const SizedBox(height: 24),
-
                 const LogoutButton(),
-
                 const SizedBox(height: 12),
-
                 Text(
                   l10n.appTitleWithCity,
                   textAlign: TextAlign.center,

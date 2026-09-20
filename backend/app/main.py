@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from app.api.routes.routing import router as routing_router
 from app.routing.real_router import RealNashikRouter
+from app.services.mdns_service import MdnsService
 
 
 @asynccontextmanager
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
     routing_engine.load()
 
     from app.services.road_event_service import RoadEventService
+
     road_event_service = RoadEventService()
 
     if road_event_service.is_connected():
@@ -33,8 +35,19 @@ async def lifespan(app: FastAPI):
     else:
         print("Running in offline mode (no active Supabase connection).")
 
+    mdns_service = MdnsService()
+
+    try:
+        mdns_service.start()
+    except Exception as e:
+        print(
+            "Warning: Failed to start mDNS service: "
+            f"{type(e).__name__}: {repr(e)}"
+        )
+
     app.state.routing_engine = routing_engine
     app.state.road_event_service = road_event_service
+    app.state.mdns_service = mdns_service
 
     print()
     print("Routing engine ready.")
@@ -46,6 +59,7 @@ async def lifespan(app: FastAPI):
 
     print()
     print("Shutting down The Map Project backend...")
+    mdns_service.stop()
     print()
 
 

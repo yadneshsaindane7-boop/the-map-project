@@ -3,18 +3,23 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../../core/constants/app_constants.dart';
+import '../../../../core/services/local_backend_discovery_service.dart';
 import '../../models/route_model.dart';
 
 class RoutingBackendService {
+  final LocalBackendDiscoveryService _discovery =
+      LocalBackendDiscoveryService();
+
   Future<RouteModel> getRoute({
     required double startLatitude,
     required double startLongitude,
     required double endLatitude,
     required double endLongitude,
   }) async {
+    final backendUrl = await _discovery.getBackendUrl();
+
     final url = Uri.parse(
-      '${AppConstants.routingBackendUrl}/api/routing/route',
+      '$backendUrl/api/routing/route',
     );
 
     debugPrint('========== ROUTING REQUEST ==========');
@@ -45,7 +50,10 @@ class RoutingBackendService {
 
       stopwatch.stop();
 
-      debugPrint('Response received after ${stopwatch.elapsedMilliseconds} ms');
+      debugPrint(
+        'Response received after '
+        '${stopwatch.elapsedMilliseconds} ms',
+      );
       debugPrint('Status code: ${response.statusCode}');
       debugPrint('Response length: ${response.body.length}');
 
@@ -58,7 +66,8 @@ class RoutingBackendService {
 
       debugPrint('Decoding JSON...');
 
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
+      final json = jsonDecode(response.body)
+          as Map<String, dynamic>;
 
       debugPrint('JSON decoded successfully');
       debugPrint('success: ${json['success']}');
@@ -68,7 +77,9 @@ class RoutingBackendService {
       );
 
       if (json['success'] != true) {
-        throw Exception('Routing backend did not return a successful route.');
+        throw Exception(
+          'Routing backend did not return a successful route.',
+        );
       }
 
       debugPrint('Creating RouteModel...');
@@ -78,14 +89,19 @@ class RoutingBackendService {
       debugPrint('RouteModel created successfully');
       debugPrint('points: ${route.points.length}');
       debugPrint('distance: ${route.distance} m');
-      debugPrint('duration: ${route.durationMinutes} min');
+      debugPrint(
+        'duration: ${route.durationMinutes} min',
+      );
       debugPrint('========== ROUTING COMPLETE ==========');
 
       return route;
     } catch (error, stackTrace) {
       stopwatch.stop();
 
-      debugPrint('ROUTING FAILED after ${stopwatch.elapsedMilliseconds} ms');
+      debugPrint(
+        'ROUTING FAILED after '
+        '${stopwatch.elapsedMilliseconds} ms',
+      );
       debugPrint('ERROR: $error');
       debugPrint('$stackTrace');
 
