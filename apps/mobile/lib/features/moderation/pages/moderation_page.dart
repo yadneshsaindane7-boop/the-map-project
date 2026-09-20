@@ -5,6 +5,7 @@ import '../models/pending_report.dart';
 import '../providers/active_incident_reports_provider.dart';
 import '../providers/moderation_controller.dart';
 import '../providers/pending_reports_provider.dart';
+import '../repositories/moderation_repository.dart';
 
 class ModerationPage extends ConsumerWidget {
   const ModerationPage({super.key});
@@ -352,6 +353,121 @@ class ModerationPage extends ConsumerWidget {
     );
   }
 
+  Widget _buildIncidentPhoto(
+    BuildContext context,
+    PendingReport report,
+  ) {
+    if (report.imagePath == null ||
+        report.imagePath!.trim().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+
+    return FutureBuilder<String?>(
+      future: ModerationRepository().getImageUrl(
+        report.imagePath,
+      ),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState ==
+            ConnectionState.waiting) {
+          return Container(
+            width: double.infinity,
+            height: 180,
+            decoration: BoxDecoration(
+              color: theme
+                  .colorScheme
+                  .surfaceContainerHighest,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasError ||
+            snapshot.data == null) {
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: theme
+                  .colorScheme
+                  .errorContainer
+                  .withValues(alpha: 0.45),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.broken_image_outlined,
+                  color: theme
+                      .colorScheme
+                      .onErrorContainer,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Unable to load incident photo.',
+                    style: TextStyle(
+                      color: theme
+                          .colorScheme
+                          .onErrorContainer,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: Image.network(
+            snapshot.data!,
+            width: double.infinity,
+            height: 220,
+            fit: BoxFit.cover,
+            loadingBuilder:
+                (context, child, loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              }
+
+              return Container(
+                width: double.infinity,
+                height: 220,
+                color: theme
+                    .colorScheme
+                    .surfaceContainerHighest,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            },
+            errorBuilder:
+                (context, error, stackTrace) {
+              return Container(
+                width: double.infinity,
+                height: 180,
+                color: theme
+                    .colorScheme
+                    .surfaceContainerHighest,
+                child: const Center(
+                  child: Icon(
+                    Icons.broken_image_outlined,
+                    size: 40,
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildReportCard(
     BuildContext context,
     WidgetRef ref,
@@ -389,10 +505,12 @@ class ModerationPage extends ConsumerWidget {
           12,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
           children: [
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
                 Container(
                   width: 42,
@@ -401,7 +519,8 @@ class ModerationPage extends ConsumerWidget {
                     color: accentColor.withValues(
                       alpha: 0.10,
                     ),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius:
+                        BorderRadius.circular(12),
                   ),
                   child: Icon(
                     titleIcon,
@@ -418,8 +537,11 @@ class ModerationPage extends ConsumerWidget {
                       Text(
                         report.title,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium
+                        overflow:
+                            TextOverflow.ellipsis,
+                        style: theme
+                            .textTheme
+                            .titleMedium
                             ?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -474,7 +596,8 @@ class ModerationPage extends ConsumerWidget {
                       .colorScheme
                       .surfaceContainerHighest
                       .withValues(alpha: 0.45),
-                  borderRadius: BorderRadius.circular(11),
+                  borderRadius:
+                      BorderRadius.circular(11),
                 ),
                 child: Text(
                   report.description,
@@ -482,6 +605,21 @@ class ModerationPage extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall,
                 ),
+              ),
+            ],
+            if (report.imagePath != null &&
+                report.imagePath!.trim().isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                'Incident Photo',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 9),
+              _buildIncidentPhoto(
+                context,
+                report,
               ),
             ],
             const SizedBox(height: 12),
@@ -547,14 +685,17 @@ class ModerationPage extends ConsumerWidget {
                         size: 18,
                       ),
                       label: const Text('Reject'),
-                      style: OutlinedButton.styleFrom(
+                      style:
+                          OutlinedButton.styleFrom(
                         foregroundColor:
                             theme.colorScheme.error,
                         side: BorderSide(
                           color: theme
                               .colorScheme
                               .error
-                              .withValues(alpha: 0.5),
+                              .withValues(
+                                alpha: 0.5,
+                              ),
                         ),
                         padding:
                             const EdgeInsets.symmetric(
@@ -563,7 +704,9 @@ class ModerationPage extends ConsumerWidget {
                         shape:
                             RoundedRectangleBorder(
                           borderRadius:
-                              BorderRadius.circular(12),
+                              BorderRadius.circular(
+                            12,
+                          ),
                         ),
                       ),
                     ),
@@ -583,7 +726,8 @@ class ModerationPage extends ConsumerWidget {
                         size: 18,
                       ),
                       label: const Text('Approve'),
-                      style: FilledButton.styleFrom(
+                      style:
+                          FilledButton.styleFrom(
                         padding:
                             const EdgeInsets.symmetric(
                           vertical: 11,
@@ -591,7 +735,9 @@ class ModerationPage extends ConsumerWidget {
                         shape:
                             RoundedRectangleBorder(
                           borderRadius:
-                              BorderRadius.circular(12),
+                              BorderRadius.circular(
+                            12,
+                          ),
                         ),
                       ),
                     ),
@@ -765,7 +911,8 @@ class ModerationPage extends ConsumerWidget {
       ),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(
+        padding:
+            const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 18,
         ),
@@ -774,7 +921,8 @@ class ModerationPage extends ConsumerWidget {
               .colorScheme
               .surfaceContainerHighest
               .withValues(alpha: 0.45),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius:
+              BorderRadius.circular(16),
         ),
         child: Row(
           children: [
@@ -840,7 +988,8 @@ class ModerationPage extends ConsumerWidget {
               .colorScheme
               .errorContainer
               .withValues(alpha: 0.55),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius:
+              BorderRadius.circular(14),
         ),
         child: Row(
           crossAxisAlignment:
@@ -871,7 +1020,8 @@ class ModerationPage extends ConsumerWidget {
                   Text(
                     error.toString(),
                     maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                    overflow:
+                        TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 12,
                       color: theme
@@ -979,12 +1129,14 @@ class ModerationPage extends ConsumerWidget {
     final activeReports =
         ref.watch(activeIncidentReportsProvider);
 
-    final pendingCount = pendingReports.maybeWhen(
+    final pendingCount =
+        pendingReports.maybeWhen(
       data: (reports) => reports.length,
       orElse: () => 0,
     );
 
-    final activeCount = activeReports.maybeWhen(
+    final activeCount =
+        activeReports.maybeWhen(
       data: (reports) => reports.length,
       orElse: () => 0,
     );
@@ -1032,7 +1184,8 @@ class ModerationPage extends ConsumerWidget {
                     'Review community reports',
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.normal,
+                      fontWeight:
+                          FontWeight.normal,
                     ),
                   ),
                 ],
@@ -1073,7 +1226,8 @@ class ModerationPage extends ConsumerWidget {
               subtitle:
                   'Awaiting authority review',
               count: pendingCount,
-              icon: Icons.pending_actions_rounded,
+              icon:
+                  Icons.pending_actions_rounded,
               active: false,
             ),
             _buildPendingSection(
@@ -1082,7 +1236,8 @@ class ModerationPage extends ConsumerWidget {
               pendingReports,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
+              padding:
+                  const EdgeInsets.symmetric(
                 horizontal: 16,
               ),
               child: Divider(

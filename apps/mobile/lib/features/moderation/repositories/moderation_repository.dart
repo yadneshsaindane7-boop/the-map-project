@@ -35,6 +35,19 @@ class ModerationRepository {
         .toList();
   }
 
+  Future<String?> getImageUrl(String? imagePath) async {
+    if (imagePath == null || imagePath.trim().isEmpty) {
+      return null;
+    }
+
+    return _supabase.storage
+        .from('incident-images')
+        .createSignedUrl(
+          imagePath,
+          3600,
+        );
+  }
+
   Future<Map<String, dynamic>> approveReport(
     String reportId,
   ) async {

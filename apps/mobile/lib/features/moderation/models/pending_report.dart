@@ -12,6 +12,7 @@ class PendingReport {
     required this.eventTypeId,
     required this.eventTypeName,
     required this.osmWayId,
+    required this.imagePath,
   });
 
   final String id;
@@ -26,6 +27,7 @@ class PendingReport {
   final String eventTypeId;
   final String eventTypeName;
   final int? osmWayId;
+  final String? imagePath;
 
   factory PendingReport.fromMap(Map<String, dynamic> map) {
     final osmWayIdValue = map['osm_way_id'];
@@ -52,6 +54,7 @@ class PendingReport {
           : osmWayIdValue is num
               ? osmWayIdValue.toInt()
               : int.parse(osmWayIdValue.toString()),
+      imagePath: map['image_path'] as String?,
     );
   }
 
@@ -70,6 +73,7 @@ class PendingReport {
       'event_type_id': eventTypeId,
       'event_type': eventTypeName,
       'osm_way_id': osmWayId,
+      'image_path': imagePath,
     };
   }
 
@@ -86,6 +90,7 @@ class PendingReport {
     String? eventTypeId,
     String? eventTypeName,
     int? osmWayId,
+    String? imagePath,
   }) {
     return PendingReport(
       id: id ?? this.id,
@@ -100,6 +105,7 @@ class PendingReport {
       eventTypeId: eventTypeId ?? this.eventTypeId,
       eventTypeName: eventTypeName ?? this.eventTypeName,
       osmWayId: osmWayId ?? this.osmWayId,
+      imagePath: imagePath ?? this.imagePath,
     );
   }
 
