@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "The Map Project",
+  "appTitle": "Maarg Saarthi",
   "@appTitle": {
     "description": "Name of the application"
   },
@@ -608,11 +608,11 @@
   "@about": {
     "description": "Menu tile for about"
   },
-  "aboutAppVersion": "The Map Project v2.0",
+  "aboutAppVersion": "Maarg Saarthi v4.0",
   "@aboutAppVersion": {
     "description": "Menu tile subtitle for about"
   },
-  "footerNashik": "The Map Project • Nashik",
+  "footerNashik": "Maarg Saarthi • Nashik",
   "@footerNashik": {
     "description": "Profile footer text"
   },
@@ -839,7 +839,7 @@
   "@pushNotifications": {
     "description": "Master switch label for push notifications"
   },
-  "pushNotificationsDescription": "Receive important notifications from The Map Project.",
+  "pushNotificationsDescription": "Receive important notifications from Maarg Saarthi.",
   "@pushNotificationsDescription": {
     "description": "Master switch subtitle for notifications"
   },
@@ -875,7 +875,7 @@
   "@notificationSessionNotice": {
     "description": "Info box in notifications settings"
   },
-  "notificationFooter": "The Map Project • Notification Settings",
+  "notificationFooter": "Maarg Saarthi • Notification Settings",
   "@notificationFooter": {
     "description": "Footer text on notifications settings"
   },
@@ -945,7 +945,7 @@
   "@hlpName": {
     "description": "Organization name"
   },
-  "aboutProjectDescription": "The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.",
+  "aboutProjectDescription": "Maarg Saarthi is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.",
   "@aboutProjectDescription": {
     "description": "Full description of project"
   },
@@ -1065,7 +1065,7 @@
   "@unableOpenEmail": {
     "description": "Snackbar when email app cannot be opened"
   },
-  "hlpDescription": "The Map Project is a product developed and maintained by HLP - Hibro Lab Productions.",
+  "hlpDescription": "Maarg Saarthi is a product developed and maintained by HLP - Hibro Lab Productions.",
   "@hlpDescription": {
     "description": "HLP summary card body"
   },
@@ -1081,7 +1081,7 @@
   "@allRightsReserved": {
     "description": "Rights reserved note"
   },
-  "notificationGeneralName": "The Map Project",
+  "notificationGeneralName": "Maarg Saarthi",
   "@notificationGeneralName": {
     "description": "Notification channel name"
   },
@@ -1142,7 +1142,7 @@
   "statActive": "Active",
   "statReputation": "Reputation",
   "statAchievements": "Achievements",
-  "appTitleWithCity": "The Map Project ? Nashik",
+  "appTitleWithCity": "Maarg Saarthi • Nashik",
   "couldNotLoadProfileInfo": "Could not load profile information.",
   "achievementFirstReport": "First Report",
   "achievementRoadGuardian": "Road Guardian",

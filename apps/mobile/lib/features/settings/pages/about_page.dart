@@ -6,16 +6,17 @@ import '../../../l10n/app_localizations.dart';
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
-  static const String appVersion = '2.0.0';
-  static const String buildNumber = '2';
+  static const String appVersion = '4.0.0';
+  static const String buildNumber = '4';
 
   Future<void> _contactDeveloper(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
+
     final Uri email = Uri(
       scheme: 'mailto',
       path: 'yadneshsaindane7@gmail.com',
       query:
-          'subject=The Map Project&body=Hello HLP Team,%0A%0AI would like to contact you regarding The Map Project.%0A',
+          'subject=Maarg Saarthi&body=Hello HLP Team,%0A%0AI would like to contact you regarding Maarg Saarthi.%0A',
     );
 
     if (await canLaunchUrl(email)) {
@@ -24,9 +25,7 @@ class AboutPage extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              l10n.unableToOpenEmail,
-            ),
+            content: Text(l10n.unableToOpenEmail),
           ),
         );
       }
@@ -35,6 +34,7 @@ class AboutPage extends StatelessWidget {
 
   void _reportBug(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -209,7 +209,6 @@ class AboutPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // App identity
             Center(
               child: Column(
                 children: [
@@ -274,7 +273,10 @@ class AboutPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          l10n.appVersionBuild(appVersion, buildNumber),
+                          l10n.appVersionBuild(
+                            appVersion,
+                            buildNumber,
+                          ),
                           style: theme.textTheme.labelMedium?.copyWith(
                             color: colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.w700,
@@ -286,10 +288,7 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 18),
-
-            // About the project
             Card(
               margin: EdgeInsets.zero,
               elevation: 2,
@@ -325,7 +324,7 @@ class AboutPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'HLP - Hibro Lab Productions',
+                      'Maarg Saarthi',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -342,13 +341,11 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
             ),
-
             _sectionHeader(
               context,
               l10n.developmentTeam,
               Icons.groups_rounded,
             ),
-
             Card(
               margin: EdgeInsets.zero,
               elevation: 2,
@@ -382,13 +379,11 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-
             _sectionHeader(
               context,
               l10n.technologyStack,
               Icons.layers_rounded,
             ),
-
             Card(
               margin: EdgeInsets.zero,
               elevation: 2,
@@ -428,13 +423,11 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-
             _sectionHeader(
               context,
               l10n.coreFeatures,
               Icons.auto_awesome_rounded,
             ),
-
             Card(
               margin: EdgeInsets.zero,
               elevation: 2,
@@ -473,13 +466,11 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-
             _sectionHeader(
               context,
               l10n.projectInformation,
               Icons.info_outline_rounded,
             ),
-
             Card(
               margin: EdgeInsets.zero,
               elevation: 2,
@@ -507,13 +498,11 @@ class AboutPage extends StatelessWidget {
                 ],
               ),
             ),
-
             _sectionHeader(
               context,
               l10n.support,
               Icons.support_agent_rounded,
             ),
-
             Card(
               margin: EdgeInsets.zero,
               elevation: 2,
@@ -552,10 +541,7 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 18),
-
-            // HLP
             Card(
               margin: EdgeInsets.zero,
               elevation: 2,
@@ -615,9 +601,7 @@ class AboutPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 22),
-
             Center(
               child: Column(
                 children: [
@@ -630,7 +614,10 @@ class AboutPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    l10n.versionBuildSummary(appVersion, buildNumber),
+                    l10n.versionBuildSummary(
+                      appVersion,
+                      buildNumber,
+                    ),
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,

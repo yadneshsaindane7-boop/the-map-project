@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'The Map Project';
+  String get appTitle => 'Maarg Saarthi';
 
   @override
   String get appTagline => 'Real-time Road Intelligence';
@@ -455,10 +455,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get about => 'About';
 
   @override
-  String get aboutAppVersion => 'The Map Project v2.0';
+  String get aboutAppVersion => 'Maarg Saarthi v4.0';
 
   @override
-  String get footerNashik => 'The Map Project • Nashik';
+  String get footerNashik => 'Maarg Saarthi • Nashik';
 
   @override
   String get unableToLoadProfile => 'Unable to load profile';
@@ -624,7 +624,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pushNotificationsDescription =>
-      'Receive important notifications from The Map Project.';
+      'Receive important notifications from Maarg Saarthi.';
 
   @override
   String get notificationTypes => 'Notification Types';
@@ -655,7 +655,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notification preferences currently apply to this session. Persistent notification preferences will be added in a future update.';
 
   @override
-  String get notificationFooter => 'The Map Project • Notification Settings';
+  String get notificationFooter => 'Maarg Saarthi • Notification Settings';
 
   @override
   String get choosePreferredLanguage => 'Choose your preferred language';
@@ -702,7 +702,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutProjectDescription =>
-      'The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.';
+      'Maarg Saarthi is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.';
 
   @override
   String get developmentTeam => 'Development Team';
@@ -794,7 +794,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hlpDescription =>
-      'The Map Project is a product developed and maintained by HLP - Hibro Lab Productions.';
+      'Maarg Saarthi is a product developed and maintained by HLP - Hibro Lab Productions.';
 
   @override
   String get developerContact => 'Developer Contact';
@@ -806,7 +806,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allRightsReserved => 'All Rights Reserved.';
 
   @override
-  String get notificationGeneralName => 'The Map Project';
+  String get notificationGeneralName => 'Maarg Saarthi';
 
   @override
   String get notificationGeneralDescription =>
@@ -892,7 +892,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statAchievements => 'Achievements';
 
   @override
-  String get appTitleWithCity => 'The Map Project ? Nashik';
+  String get appTitleWithCity => 'Maarg Saarthi • Nashik';
 
   @override
   String get couldNotLoadProfileInfo => 'Could not load profile information.';

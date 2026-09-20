@@ -103,7 +103,7 @@ abstract class AppLocalizations {
   /// Name of the application
   ///
   /// In en, this message translates to:
-  /// **'The Map Project'**
+  /// **'Maarg Saarthi'**
   String get appTitle;
 
   /// App subtitle / tagline
@@ -913,13 +913,13 @@ abstract class AppLocalizations {
   /// Menu tile subtitle for about
   ///
   /// In en, this message translates to:
-  /// **'The Map Project v2.0'**
+  /// **'Maarg Saarthi v4.0'**
   String get aboutAppVersion;
 
   /// Profile footer text
   ///
   /// In en, this message translates to:
-  /// **'The Map Project • Nashik'**
+  /// **'Maarg Saarthi • Nashik'**
   String get footerNashik;
 
   /// Error title on profile page
@@ -1207,7 +1207,7 @@ abstract class AppLocalizations {
   /// Master switch subtitle for notifications
   ///
   /// In en, this message translates to:
-  /// **'Receive important notifications from The Map Project.'**
+  /// **'Receive important notifications from Maarg Saarthi.'**
   String get pushNotificationsDescription;
 
   /// Section header on notifications page
@@ -1261,7 +1261,7 @@ abstract class AppLocalizations {
   /// Footer text on notifications settings
   ///
   /// In en, this message translates to:
-  /// **'The Map Project • Notification Settings'**
+  /// **'Maarg Saarthi • Notification Settings'**
   String get notificationFooter;
 
   /// Subtitle on language selection page
@@ -1339,7 +1339,7 @@ abstract class AppLocalizations {
   /// Full description of project
   ///
   /// In en, this message translates to:
-  /// **'The Map Project is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.'**
+  /// **'Maarg Saarthi is a community-powered navigation platform designed to provide real-time road conditions, road closures, traffic incidents and intelligent route guidance using community reports and modern mapping technologies.'**
   String get aboutProjectDescription;
 
   /// Heading for team section in about page
@@ -1519,7 +1519,7 @@ abstract class AppLocalizations {
   /// HLP summary card body
   ///
   /// In en, this message translates to:
-  /// **'The Map Project is a product developed and maintained by HLP - Hibro Lab Productions.'**
+  /// **'Maarg Saarthi is a product developed and maintained by HLP - Hibro Lab Productions.'**
   String get hlpDescription;
 
   /// Heading for developer contact
@@ -1543,7 +1543,7 @@ abstract class AppLocalizations {
   /// Notification channel name
   ///
   /// In en, this message translates to:
-  /// **'The Map Project'**
+  /// **'Maarg Saarthi'**
   String get notificationGeneralName;
 
   /// Notification channel description
@@ -1681,7 +1681,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitleWithCity.
   ///
   /// In en, this message translates to:
-  /// **'The Map Project ? Nashik'**
+  /// **'Maarg Saarthi • Nashik'**
   String get appTitleWithCity;
 
   /// No description provided for @couldNotLoadProfileInfo.

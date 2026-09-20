@@ -228,7 +228,7 @@ class ProfilePage extends ConsumerWidget {
                 ProfileMenuTile(
                   icon: Icons.info_outline_rounded,
                   title: l10n.about,
-                  subtitle: 'The Map Project v2.0',
+                  subtitle: 'Maarg Saarthi v4.0',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(

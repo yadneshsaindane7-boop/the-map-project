@@ -9,7 +9,7 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
-  String get appTitle => 'द मैप प्रोजेक्ट';
+  String get appTitle => 'मार्ग सारथी';
 
   @override
   String get appTagline => 'सटीक व त्वरित सड़क जानकारी';
@@ -460,10 +460,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get about => 'ऐप के बारे में';
 
   @override
-  String get aboutAppVersion => 'द मैप प्रोजेक्ट v2.0';
+  String get aboutAppVersion => 'मार्ग सारथी v4.0';
 
   @override
-  String get footerNashik => 'द मैप प्रोजेक्ट • नाशिक';
+  String get footerNashik => 'मार्ग सारथी • नाशिक';
 
   @override
   String get unableToLoadProfile => 'प्रोफ़ाइल लोड करने में असमर्थ';
@@ -708,7 +708,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get aboutProjectDescription =>
-      'द मैप प्रोजेक्ट एक समुदाय-संचालित नेविगेशन प्लेटफॉर्म है जिसे समुदाय की रिपोर्टों और आधुनिक मैपिंग तकनीकों का उपयोग करके वास्तविक समय की सड़क स्थितियों, सड़क बंदी, यातायात की घटनाओं और बुद्धिमत्तापूर्ण मार्ग मार्गदर्शन प्रदान करने के लिए डिज़ाइन किया गया है।';
+      'मार्ग सारथी एक समुदाय-संचालित नेविगेशन प्लेटफॉर्म है जिसे समुदाय की रिपोर्टों और आधुनिक मैपिंग तकनीकों का उपयोग करके वास्तविक समय की सड़क स्थितियों, सड़क बंदी, यातायात की घटनाओं और बुद्धिमत्तापूर्ण मार्ग मार्गदर्शन प्रदान करने के लिए डिज़ाइन किया गया है।';
 
   @override
   String get developmentTeam => 'विकास टीम';
@@ -800,7 +800,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get hlpDescription =>
-      'द मैप प्रोजेक्ट HLP - हिब्रो लैब प्रोडक्शंस द्वारा विकसित और अनुरक्षित एक उत्पाद है।';
+      'मार्ग सारथी HLP - हिब्रो लैब प्रोडक्शंस द्वारा विकसित और अनुरक्षित एक उत्पाद है।';
 
   @override
   String get developerContact => 'डेवलपर संपर्क';
@@ -812,7 +812,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get allRightsReserved => 'सर्वाधिकार सुरक्षित।';
 
   @override
-  String get notificationGeneralName => 'द मैप प्रोजेक्ट';
+  String get notificationGeneralName => 'मार्ग सारथी';
 
   @override
   String get notificationGeneralDescription =>
@@ -896,7 +896,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get statAchievements => 'उपलब्धियाँ';
 
   @override
-  String get appTitleWithCity => 'द मैप प्रोजेक्ट • नासिक';
+  String get appTitleWithCity => 'मार्ग सारथी • नासिक';
 
   @override
   String get couldNotLoadProfileInfo => 'प्रोफ़ाइल जानकारी लोड नहीं की जा सकी';
