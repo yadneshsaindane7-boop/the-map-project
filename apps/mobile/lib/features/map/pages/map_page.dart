@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -13,6 +13,7 @@ import '../../../core/map/map_tile_provider.dart';
 import '../../../core/services/notification_service.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../navigation/providers/live_location_provider.dart';
+import '../../navigation/services/navigation_orchestrator.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
 import '../../navigation/widgets/route_polyline.dart';
@@ -266,10 +267,15 @@ class _MapPageState extends ConsumerState<MapPage> {
           }
 
           final l10n = AppLocalizations.of(context)!;
+          ref.read(navigationOrchestratorProvider).updatePosition(
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            remainingDistanceMeters: 0,
+            locale: Localizations.localeOf(context).languageCode,
+          );
+
           ref
-              .read(
-                journeyNavigationProvider.notifier,
-              )
+              .read(journeyNavigationProvider.notifier)
               .arrive();
 
           // Notify the user that the journey has completed.
@@ -327,10 +333,15 @@ class _MapPageState extends ConsumerState<MapPage> {
           return;
         }
 
+        ref.read(navigationOrchestratorProvider).updatePosition(
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          remainingDistanceMeters: remainingDistance,
+          locale: Localizations.localeOf(context).languageCode,
+        );
+
         ref
-            .read(
-              journeyNavigationProvider.notifier,
-            )
+            .read(journeyNavigationProvider.notifier)
             .updateProgress(
               remainingDistanceMeters: remainingDistance,
               remainingDurationMillis: remainingDuration,
@@ -787,6 +798,28 @@ class _MapPageState extends ConsumerState<MapPage> {
       (previous, next) {
         next.whenData(
           _handleRoadEventChanges,
+        );
+      },
+    );
+
+    ref.listen(
+      routeProvider,
+      (previous, next) {
+        if (!next.hasRoute || next.route == null) {
+          return;
+        }
+
+        if (previous?.lastUpdated == next.lastUpdated) {
+          return;
+        }
+
+        if (!ref.read(journeyNavigationProvider).isNavigating) {
+          return;
+        }
+
+        ref.read(navigationOrchestratorProvider).attachRoute(
+          next.route!,
+          locale: Localizations.localeOf(context).languageCode,
         );
       },
     );

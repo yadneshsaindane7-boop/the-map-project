@@ -1,3 +1,4 @@
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -8,18 +9,15 @@ import '../../../l10n/app_localizations.dart';
 import '../../navigation/models/route_model.dart';
 import '../../navigation/providers/navigation_provider.dart';
 import '../../navigation/providers/route_provider.dart';
+import '../../navigation/services/navigation_orchestrator.dart';
 
 class RouteInfoCard extends ConsumerWidget {
   const RouteInfoCard({super.key});
 
   @override
-  Widget build(
-    BuildContext context,
-    WidgetRef ref,
-  ) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final routeState = ref.watch(routeProvider);
-    final journeyState =
-        ref.watch(journeyNavigationProvider);
+    final journeyState = ref.watch(journeyNavigationProvider);
 
     if (!routeState.hasRoute) {
       return const SizedBox.shrink();
@@ -30,47 +28,28 @@ class RouteInfoCard extends ConsumerWidget {
     return SafeArea(
       top: false,
       child: Card(
-        margin: const EdgeInsets.fromLTRB(
-          12,
-          8,
-          12,
-          12,
-        ),
+        margin: const EdgeInsets.fromLTRB(12, 8, 12, 12),
         elevation: 12,
         shadowColor: Colors.black26,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
         ),
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            18,
-            16,
-            18,
-            18,
-          ),
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
           child: journeyState.isNavigating
               ? _NavigationModeCard(
                   route: route,
                   remainingDistanceMeters:
-                      journeyState
-                              .remainingDistanceMeters ??
+                      journeyState.remainingDistanceMeters ??
                           route.distance,
                   remainingDurationMillis:
-                      journeyState
-                              .remainingDurationMillis ??
-                          route.time,
-                  instruction:
-                      journeyState.currentInstruction?.text,
+                      journeyState.remainingDurationMillis ?? route.time,
+                  instruction: journeyState.currentInstruction?.text,
                   instructionDistance:
-                      journeyState
-                          .currentInstruction
-                          ?.distance,
+                      journeyState.currentInstruction?.distance,
                   onEndJourney: () {
                     ref
-                        .read(
-                          journeyNavigationProvider
-                              .notifier,
-                        )
+                        .read(journeyNavigationProvider.notifier)
                         .stopNavigation();
                   },
                 )
@@ -78,21 +57,20 @@ class RouteInfoCard extends ConsumerWidget {
                   route: route,
                   onStart: () {
                     ref
-                        .read(
-                          journeyNavigationProvider
-                              .notifier,
-                        )
+                        .read(journeyNavigationProvider.notifier)
                         .startNavigation(
-                          initialDistanceMeters:
-                              route.distance,
-                          initialDurationMillis:
-                              route.time,
+                          initialDistanceMeters: route.distance,
+                          initialDurationMillis: route.time,
+                        );
+
+                    ref.read(navigationOrchestratorProvider).attachRoute(
+                          route,
+                          locale:
+                              Localizations.localeOf(context).languageCode,
                         );
 
                     unawaited(
-                      NotificationService
-                          .instance
-                          .showJourneyStarted(),
+                      NotificationService.instance.showJourneyStarted(),
                     );
                   },
                 ),
@@ -125,8 +103,7 @@ class _RoutePreviewCard extends StatelessWidget {
               child: _InfoTile(
                 icon: Icons.route,
                 title: l10n.distance,
-                value:
-                    '${route.distanceKm.toStringAsFixed(1)} km',
+                value: '${route.distanceKm.toStringAsFixed(1)} km',
               ),
             ),
             Container(
@@ -138,8 +115,7 @@ class _RoutePreviewCard extends StatelessWidget {
               child: _InfoTile(
                 icon: Icons.access_time,
                 title: l10n.eta,
-                value:
-                    '${route.durationMinutes.round()} min',
+                value: '${route.durationMinutes.round()} min',
               ),
             ),
           ],
@@ -150,17 +126,11 @@ class _RoutePreviewCard extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: onStart,
             icon: const Icon(Icons.navigation),
-            label: Text(
-              l10n.startNavigation,
-            ),
+            label: Text(l10n.startNavigation),
             style: FilledButton.styleFrom(
-              padding:
-                  const EdgeInsets.symmetric(
-                vertical: 14,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
           ),
@@ -170,8 +140,7 @@ class _RoutePreviewCard extends StatelessWidget {
   }
 }
 
-class _NavigationModeCard
-    extends StatelessWidget {
+class _NavigationModeCard extends StatelessWidget {
   final RouteModel route;
   final double remainingDistanceMeters;
   final int remainingDurationMillis;
@@ -197,8 +166,7 @@ class _NavigationModeCard
   }
 
   String _formatDuration(int milliseconds) {
-    final totalMinutes =
-        (milliseconds / 60000).ceil();
+    final totalMinutes = (milliseconds / 60000).ceil();
 
     if (totalMinutes <= 1) {
       return '1 min';
@@ -223,41 +191,33 @@ class _NavigationModeCard
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    final instructionText =
-        instruction?.trim().isNotEmpty == true
-            ? instruction!
-            : l10n.continueOnCurrentRoute;
+    final instructionText = instruction?.trim().isNotEmpty == true
+        ? instruction!
+        : l10n.continueOnCurrentRoute;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
               radius: 22,
-              backgroundColor:
-                  theme.colorScheme.primaryContainer,
+              backgroundColor: theme.colorScheme.primaryContainer,
               child: Icon(
                 Icons.navigation,
-                color: theme
-                    .colorScheme
-                    .onPrimaryContainer,
+                color: theme.colorScheme.onPrimaryContainer,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     l10n.nextInstruction,
                     style: TextStyle(
-                      color: theme
-                          .colorScheme
-                          .onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -266,8 +226,7 @@ class _NavigationModeCard
                   Text(
                     instructionText,
                     maxLines: 2,
-                    overflow:
-                        TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
@@ -275,16 +234,11 @@ class _NavigationModeCard
                   ),
                   if (instructionDistance != null)
                     Padding(
-                      padding:
-                          const EdgeInsets.only(
-                        top: 5,
-                      ),
+                      padding: const EdgeInsets.only(top: 5),
                       child: Text(
                         'In ${_formatDistance(instructionDistance!)}',
                         style: TextStyle(
-                          color: theme
-                              .colorScheme
-                              .onSurfaceVariant,
+                          color: theme.colorScheme.onSurfaceVariant,
                           fontSize: 13,
                         ),
                       ),
@@ -300,24 +254,16 @@ class _NavigationModeCard
             ),
           ],
         ),
-
         const SizedBox(height: 14),
-
-        Divider(
-          color: theme.dividerColor,
-        ),
-
+        Divider(color: theme.dividerColor),
         const SizedBox(height: 10),
-
         Row(
           children: [
             Expanded(
               child: _InfoTile(
                 icon: Icons.route,
                 title: l10n.remaining,
-                value: _formatDistance(
-                  remainingDistanceMeters,
-                ),
+                value: _formatDistance(remainingDistanceMeters),
               ),
             ),
             Container(
@@ -329,9 +275,7 @@ class _NavigationModeCard
               child: _InfoTile(
                 icon: Icons.access_time,
                 title: l10n.eta,
-                value: _formatDuration(
-                  remainingDurationMillis,
-                ),
+                value: _formatDuration(remainingDurationMillis),
               ),
             ),
           ],
@@ -368,9 +312,7 @@ class _InfoTile extends StatelessWidget {
           title,
           style: TextStyle(
             fontSize: 13,
-            color: theme
-                .colorScheme
-                .onSurfaceVariant,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 4),
