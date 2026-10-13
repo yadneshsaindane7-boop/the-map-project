@@ -14,13 +14,35 @@ class RoadEventRepository {
 
     debugPrint('========== ACTIVE INCIDENTS ==========');
     debugPrint('Count: ${response.length}');
-    debugPrint(response.toString());
+
+    final events = await Future.wait(
+      response.map((row) async {
+        final json = Map<String, dynamic>.from(row);
+        final imagePath = json['image_path']?.toString().trim();
+
+        if (imagePath != null && imagePath.isNotEmpty) {
+          try {
+            json['image_url'] = await _client.storage
+                .from('incident-images')
+                .createSignedUrl(imagePath, 3600);
+          } catch (error) {
+            json['image_url'] = null;
+            debugPrint(
+              'Could not load incident image for '
+              '${json['id']}: $error',
+            );
+          }
+        } else {
+          json['image_url'] = null;
+        }
+
+        return RoadEvent.fromJson(json);
+      }),
+    );
+
+    debugPrint('Loaded ${events.length} road events.');
     debugPrint('======================================');
 
-    return response
-        .map<RoadEvent>(
-          (json) => RoadEvent.fromJson(json),
-        )
-        .toList();
+    return events;
   }
 }

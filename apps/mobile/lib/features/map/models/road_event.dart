@@ -6,16 +6,15 @@ class RoadEvent {
   final String title;
   final String description;
   final String status;
-
   final String? eventTypeId;
   final String? eventType;
   final int? osmWayId;
-
   final double latitude;
   final double longitude;
-
   final DateTime? createdAt;
   final String? reportedBy;
+  final String? reporterEmail;
+  final String? imagePath;
   final String? imageUrl;
 
   const RoadEvent({
@@ -30,17 +29,17 @@ class RoadEvent {
     this.osmWayId,
     this.createdAt,
     this.reportedBy,
+    this.reporterEmail,
+    this.imagePath,
     this.imageUrl,
   });
 
   bool get isRoadClosure {
-    return eventType?.trim().toLowerCase() ==
-        'road closure';
+    return eventType?.trim().toLowerCase() == 'road closure';
   }
 
   bool get isActive {
-    final normalizedStatus =
-        status.trim().toLowerCase();
+    final normalizedStatus = status.trim().toLowerCase();
 
     return normalizedStatus == 'pending' ||
         normalizedStatus == 'approved' ||
@@ -51,42 +50,24 @@ class RoadEvent {
     return isRoadClosure && isActive;
   }
 
-  factory RoadEvent.fromJson(
-    Map<String, dynamic> json,
-  ) {
+  factory RoadEvent.fromJson(Map<String, dynamic> json) {
     return RoadEvent(
-      id: json['id'] as String,
+      id: json['id'].toString(),
       title: (json['title'] ?? '') as String,
-      description:
-          (json['description'] ?? '') as String,
-      status: json['status'].toString(),
-
-      eventTypeId:
-          json['event_type_id'] as String?,
-
-      eventType:
-          json['event_type'] as String?,
-
-      osmWayId:
-          (json['osm_way_id'] as num?)?.toInt(),
-
-      latitude:
-          (json['latitude'] as num).toDouble(),
-
-      longitude:
-          (json['longitude'] as num).toDouble(),
-
+      description: (json['description'] ?? '') as String,
+      status: (json['status'] ?? 'unknown').toString(),
+      eventTypeId: json['event_type_id'] as String?,
+      eventType: json['event_type'] as String?,
+      osmWayId: (json['osm_way_id'] as num?)?.toInt(),
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
       createdAt: json['created_at'] == null
           ? null
-          : DateTime.parse(
-              json['created_at'] as String,
-            ),
-
-      reportedBy:
-          json['reported_by'] as String?,
-
-      imageUrl:
-          json['image_url'] as String?,
+          : DateTime.tryParse(json['created_at'].toString()),
+      reportedBy: json['reported_by']?.toString(),
+      reporterEmail: json['reporter_email']?.toString(),
+      imagePath: json['image_path']?.toString(),
+      imageUrl: json['image_url']?.toString(),
     );
   }
 }
